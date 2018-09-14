@@ -46,7 +46,7 @@ def main():
 
     range_filter = args['filter'].upper()
 
-    camera = cv2.VideoCapture('ball.avi')
+    camera = cv2.VideoCapture(0)
 
     setup_trackbars(range_filter)
 
