@@ -3,24 +3,41 @@ import time
 import datetime
 import RPi.GPIO as GPIO
 
-def sensorCallback(channel):
+def leftSensorCallback(channel):
 	# Called if sensor output changes
-	timestamp = time.time()
-	stamp = datetime.datetime.fromtimestamp(timestamp).strftime('%H:%M:%S')
-	global encoderticks
+	
+	global leftencoderticks
 
 	if GPIO.input(channel):
         	# No magnet
 
     		#print("Sensor HIGH "+stamp )
-		encoderticks += 1
-		print encoderticks
+		leftencoderticks += 1
+		print leftencoderticks
     	else:
      	# Magnet
 
 		#print("Sensor LOW "+stamp )
-		encoderticks += 1
-		print encoderticks
+		leftencoderticks += 1
+		print leftencoderticks
+
+def rightSensorCallback(channel):
+        # Called if sensor output changes
+       
+        global rightencoderticks
+
+        if GPIO.input(channel):
+                # No magnet
+
+                #print("Sensor HIGH "+stamp )
+                rightencoderticks += 1
+                print rightencoderticks
+        else:
+        # Magnet
+
+                #print("Sensor LOW "+stamp )
+                rightencoderticks += 1
+                print rightencoderticks
 
 def main():
     # Wrap main content in a try block so we can
@@ -30,7 +47,8 @@ def main():
     # messages.
 
 	# Get initial reading
-	sensorCallback(2)
+	leftSensorCallback(2)
+	rightSensorCallback(4)
 
     	try:
     # Loop until users quits with CTRL-C
@@ -45,11 +63,14 @@ GPIO.setmode(GPIO.BCM)
 
 print("Setup GPIO pin as input on GPIO2")
 
-encoderticks = 0
+leftencoderticks = 0
+rightencoderticks = 0
 # Set Switch GPIO as input
 # Pull high by default
-GPIO.setup(2, GPIO.IN,  pull_up_down=GPIO.PUD_UP)
-GPIO.add_event_detect(2, GPIO.BOTH, callback=sensorCallback, bouncetime=1)
+GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(2, GPIO.BOTH, callback=leftSensorCallback, bouncetime=1)
+GPIO.add_event_detect(4, GPIO.BOTH, callback=rightSensorCallback, bouncetime=1)
 
 if __name__=="__main__":
 	main()
