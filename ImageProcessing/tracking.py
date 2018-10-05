@@ -1,8 +1,12 @@
 # python tracking.py --filter HSV
-
+from __future__ import division
+from shapedetector import ShapeDetector
 import cv2
 import argparse
 import numpy as np
+from matplotlib import pyplot as plt
+from math import cos, sin
+import imutils
 
 
 def callback(value):
@@ -46,7 +50,7 @@ def main():
 
     range_filter = args['filter'].upper()
 
-    camera = cv2.VideoCapture(0)
+    camera = cv2.VideoCapture('shapes.avi')
 
     setup_trackbars(range_filter)
 
@@ -76,7 +80,7 @@ def main():
         # get center of the ball
         cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[-2]
         center = None
- 
+        sd = ShapeDetector()
         # if a countour has been found
         if len(cnts) > 0:
             # find the largest contour 
@@ -84,6 +88,10 @@ def main():
             c = max(cnts, key=cv2.contourArea)
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             M = cv2.moments(c)
+            shape = sd.detect(c)
+            print shape
+
+
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
  
             # if image is big enough
