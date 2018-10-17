@@ -8,14 +8,24 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import time
 
-MQTT_SERVER = "2607:f278:410e:5:11ef:4551:be43:5595"
+MQTT_SERVER = "2607:f278:410e:5:518d:fe3f:e7c0:b30f"
 MQTT_PATH = "test_channel"
 
 class Thread(QThread):
-    changePixmap =  pyqtSignal(QImage)
+    changePixmap = pyqtSignal(str)
+
+    def run(self):
+        client = mqtt.Client()
+        print "In thread run"
+        client.on_connect = self.on_connect
+        client.on_message = self.on_message
+        print "After connect and messages"
+        client.connect(MQTT_SERVER, 1883, 60)
+        client.loop_forever()
 
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(client, userdata, flags, rc):
+        print "In on_connect"
         print "Connected with result code "+str(rc)
 
         # Subscribing in on_connect() means that if we lose the connection and
@@ -25,11 +35,9 @@ class Thread(QThread):
     # The callback for when a PUBLISH message is received from the server.
     def on_message(client, userdata, msg):
         #print msg.topic+" sent "+str(msg.payload)
-
+        print "In on_message"
         nparr = np.fromstring(msg.payload.decode('base64'), np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_ANYCOLOR)
-
-
 
         print 'debug4'
     # Testing to convert opencv image to pixmap
@@ -40,7 +48,6 @@ class Thread(QThread):
         print 'Debug6'
         self.changePixmap.emit(convertToQtFormat)
         print 'Debug7'
-
 
         # height, width, channel = img.shape
         # bytesPerLine= 3 * width
@@ -60,12 +67,18 @@ class Image(QWidget):
         super(Image, self).__init__()
         self.initUI()
 
+
+
     @pyqtSlot(QImage)
     def setImage(self,image):
             self.label.setPixmap(QPixmap.fromImage(image))
 
+
+
     def initUI(self):
         self.setWindowTitle('convertToQtFormat')
+        self.label = QLabel(self)
+        print "In initui"
         self.label = QLabel(self)
         th = Thread(self)
         th.changePixmap.connect(self.setImage)
@@ -85,14 +98,8 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     print "Please 1"
     w = Image()
-    client = mqtt.Client()
-    client.on_connect = Thread.on_connect
-    client.on_message = Thread.on_message
-    client.connect(MQTT_SERVER, 1883, 60)
-
     w.show()
     print "Please 2"
-    client.loop_forever()
     sys.exit(app.exec_())
     print "Please 3"
 

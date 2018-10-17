@@ -106,10 +106,6 @@ def main():
         # cv2.imshow("Thresh", thresh)
         # cv2.imshow("Mask", mask)
 
-        if time.time() < endtime:
-                count = count + 1
-                print count
-
         img_str = cv2.imencode('.jpg', image)[1].tostring()
         encoded_str = base64.b64encode(img_str)
         publish.single(MQTT_PATH, encoded_str, 0)
