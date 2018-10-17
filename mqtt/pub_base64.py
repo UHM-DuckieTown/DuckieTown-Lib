@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 import time
 
-MQTT_SERVER = "local_host"
+MQTT_SERVER = "192.168.0.105"
 MQTT_PATH = "test_channel"
 
 def callback(value):

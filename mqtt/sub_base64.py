@@ -8,20 +8,21 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import time
 
-MQTT_SERVER = "2607:f278:410e:5:518d:fe3f:e7c0:b30f"
+
+MQTT_SERVER = "2607:f278:410e:5:8f:b33:3bf:ffa0"
 MQTT_PATH = "test_channel"
 
 class Thread(QThread):
-    changePixmap = pyqtSignal(str)
-
+    changePixmap = pyqtSignal(QImage)
     def run(self):
         client = mqtt.Client()
         print "In thread run"
         client.on_connect = self.on_connect
         client.on_message = self.on_message
         print "After connect and messages"
+        client.loop_start()
         client.connect(MQTT_SERVER, 1883, 60)
-        client.loop_forever()
+
 
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(client, userdata, flags, rc):
@@ -47,6 +48,7 @@ class Thread(QThread):
 
         print 'Debug6'
         self.changePixmap.emit(convertToQtFormat)
+        print convertToQtFormat
         print 'Debug7'
 
         # height, width, channel = img.shape
@@ -62,46 +64,41 @@ class Thread(QThread):
 
         cv2.waitKey(1)
 
-class Image(QWidget):
+class App(QWidget):
     def __init__(self):
-        super(Image, self).__init__()
+        super(App,self).__init__()
+        self.title = 'PyQt5 Video'
+        self.left = 100
+        self.top = 100
+        self.width = 640
+        self.height = 480
         self.initUI()
 
-
-
     @pyqtSlot(QImage)
-    def setImage(self,image):
-            self.label.setPixmap(QPixmap.fromImage(image))
-
-
+    def setImage(self, image):
+        self.label.setPixmap(QPixmap.fromImage(image))
 
     def initUI(self):
-        self.setWindowTitle('convertToQtFormat')
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+        self.resize(1800, 1200)
+        # create a label
         self.label = QLabel(self)
-        print "In initui"
-        self.label = QLabel(self)
+        self.label.move(280, 120)
+        self.label.resize(640, 480)
         th = Thread(self)
         th.changePixmap.connect(self.setImage)
         th.start()
-        #pixmap = QPixmap(convertToQtFormat)
-        #pixmap = pixmap.scaled(640,400, Qt.KeepAspectRatio)
-        # label.setPixmap(pixmap)
-        # self.resize(pixmap.width(),pixmap.height())
-        # self.show()
-
-        #added
-        # pixmap = QPixmap('test.jpg')
-        # self.label.setPixmap(pixmap)
-        #
 
 if __name__ == '__main__':
+    client = mqtt.Client()
+    client.on_connect = Thread.on_connect
+    client.on_message = Thread.on_message
     app = QApplication(sys.argv)
-    print "Please 1"
-    w = Image()
-    w.show()
-    print "Please 2"
+    ex = App()
+    ex.show()
+    client.loop_start()
     sys.exit(app.exec_())
-    print "Please 3"
 
 
 
