@@ -9,7 +9,7 @@ from PyQt5.QtCore import *
 import time
 
 
-MQTT_SERVER = "192.168.0.106"
+MQTT_SERVER = "192.168.0.108"
 MQTT_PATH = "test_channel"
 
 
