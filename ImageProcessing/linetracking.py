@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 #cap = cv2.VideoCapture('silent.mp4')
 #cap = cv2.VideoCapture('Video.MOV')
-raw = cv2.imread('screen-shot.png');
+cap = cv2.VideoCapture('duckie_vid.mp4')
+#raw = cv2.imread('screen-shot.png');
 '''
     window_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     window_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -16,10 +17,19 @@ window_height = 360
 ROI_road_offset = int(0.66*window_height)
 
 while(True):
-    #ret, raw = cap.read()
-    #raw = cv2.resize(raw, (window_width, window_height))
+    ret, raw = cap.read()
+    raw = cv2.resize(raw, (window_width, window_height))
+
+    #rotate image
+ #   rows,cols,_ = raw.shape
+  #  rawrot = cv2.getRotationMatrix2D((cols/2,rows/2),90,1)
+    #raw = cv2.warpAffine(raw,rawrot,(cols,rows))
+
 
     finished = cv2.resize(raw, (window_width, window_height))
+#   ROI?
+    #finished = finished[0:200,0:480]
+    
     frame = cv2.GaussianBlur(finished, (5, 5), 0)
     Sum = 0
     numx = 0
