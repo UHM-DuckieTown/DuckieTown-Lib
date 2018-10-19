@@ -33,9 +33,9 @@ rightMotor.run(Adafruit_MotorHAT.FORWARD)
 #rightMotor.setSpeed(int(255))
 #leftMotor.setSpeed(int(255))
 def position_controller(kp, target, actual):
-    error = actual-target
+    error = target-actual
     #print 'Error = ',error
-    if error < 5:
+    if abs(error) < 5:
         #do nothing
         return int(0)
     else:
@@ -106,15 +106,22 @@ try:
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
     
-        rightspeed = int(115 + position_controller(0.1,180,avg))
+        rightspeed = int(95 + position_controller(0.2,180,avg))
+        leftspeed = int(105 - position_controller(0.2,180,avg))
         if rightspeed > 255:
             rightspeed = 255
     
         elif rightspeed < 0:
             rightspeed = 0
 
+        if leftspeed > 255:
+            leftspeed = 255
+
+        elif rightspeed < 0:
+            rightspeed = 0
+
         rightMotor.setSpeed(rightspeed)
-        leftMotor.setSpeed(125)
+        leftMotor.setSpeed(leftspeed)
         print 'Rightspeed = ',rightspeed 
         capture.truncate(0)
 except KeyboardInterrupt:
