@@ -9,14 +9,15 @@ from PyQt5 import uic
 import paho.mqtt.client as mqtt
 from videofeed import Ui_MainWindow
 
-MQTT_SERVER = "168.105.254.101"
+MQTT_SERVER = "168.105.238.127"
 MQTT_PATH1 = "video_channel1"
 MQTT_PATH2 = "video_channel2"
 MQTT_PATH3 = "text_channel1"
 MQTT_PATH4 = "text_channel2"
 
 class MyApp(QMainWindow):
-    client_message = pyqtSignal(QImage)
+    client_message1 = pyqtSignal(QImage)
+    client_message2 = pyqtSignal(QImage)
 
     def __init__(self, mqtt_client):
         super(MyApp, self).__init__()
@@ -38,8 +39,8 @@ class MyApp(QMainWindow):
         self._client.on_message_duck1 = self.on_message_duck1
         self._client.on_message_duck2 = self.on_message_duck2
 
-        self.client_message.connect(self.setImage1)
-        self.client_message.connect(self.setImage2)
+        self.client_message1.connect(self.setImage1)
+        self.client_message2.connect(self.setImage2)
 
         self.ui.label_3 = QLabel(self)
         self.ui.label_3.resize(520, 461)
@@ -48,19 +49,23 @@ class MyApp(QMainWindow):
         self.ui.label_4.resize(520, 461)
 
     def on_message_duck1(self, client, userdata, msg):
+        print "In message Duck 1"
         nparr = np.fromstring(msg.payload.decode('base64'), np.uint8)
         rgbImage = cv2.imdecode(nparr, cv2.IMREAD_ANYCOLOR)
         convertToQtFormat = QImage(rgbImage, rgbImage.shape[1], rgbImage.shape[0], rgbImage.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
-        self.client_message.emit(convertToQtFormat)
+        self.client_message1.emit(convertToQtFormat)
 
     def on_message_duck2(self, client, userdata, msg):
+        print "In message Duck 2"
         nparr = np.fromstring(msg.payload.decode('base64'), np.uint8)
         rgbImage = cv2.imdecode(nparr, cv2.IMREAD_ANYCOLOR)
         convertToQtFormat = QImage(rgbImage, rgbImage.shape[1], rgbImage.shape[0], rgbImage.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
-        self.client_message.emit(convertToQtFormat)
+        self.client_message2.emit(convertToQtFormat)
 
     def on_connect(self, client, userdata, flags, rc):
         print "Connected with result code "+str(rc)
+        client.message_callback_add(MQTT_PATH1, self.on_message_duck1)
+        client.message_callback_add(MQTT_PATH2, self.on_message_duck2)
         client.subscribe([(MQTT_PATH1,1),(MQTT_PATH2,2)])
 
     def SendMessage(self):
