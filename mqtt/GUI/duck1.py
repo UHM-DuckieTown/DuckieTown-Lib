@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import base64
 
-MQTT_SERVER = "168.105.254.101"
+MQTT_SERVER = "192.168.1.90"
 MQTT_PATH1 = "video_channel1"
 MQTT_PATH3 = "text_channel1"
 

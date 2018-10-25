@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import base64
 
-MQTT_SERVER = "168.105.254.101"
+MQTT_SERVER = "192.168.1.90"
 MQTT_PATH2 = "video_channel2"
 MQTT_PATH4 = "text_channel2"
 
@@ -13,7 +13,7 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe(MQTT_PATH3)
+    client.subscribe(MQTT_PATH4)
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
