@@ -67,6 +67,8 @@ class MyApp(QMainWindow):
 
     def on_connect(self, client, userdata, flags, rc):
         print "Connected with result code "+str(rc)
+        client.message_callback_add(MQTT_PATH1, self.on_message_duck1)
+        client.message_callback_add(MQTT_PATH2, self.on_message_duck2)
         client.subscribe([(MQTT_PATH1,1),(MQTT_PATH2,2)])
 
     def SendMessage(self):
