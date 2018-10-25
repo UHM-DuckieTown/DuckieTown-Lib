@@ -27,15 +27,19 @@ class MyApp(QMainWindow):
         self.ui.pushButton.clicked.connect(self.SendMessage)
 
     @pyqtSlot(QImage)
-    def setImage(self, image):
+    def setImage1(self, image):
         self.ui.label_3.setPixmap(QPixmap.fromImage(image))
+    def setImage2(self, image):
         self.ui.label_4.setPixmap(QPixmap.fromImage(image))
 
     def initUI(self):
-        self._client.on_connect = self.on_connect
-        self._client.on_message = self.on_message
 
-        self.client_message.connect(self.setImage)
+        self._client.on_connect = self.on_connect
+        self._client.on_message_duck1 = self.on_message_duck1
+        self._client.on_message_duck2 = self.on_message_duck2
+
+        self.client_message.connect(self.setImage1)
+        self.client_message.connect(self.setImage2)
 
         self.ui.label_3 = QLabel(self)
         self.ui.label_3.resize(520, 461)
@@ -43,17 +47,17 @@ class MyApp(QMainWindow):
         self.ui.label_4= QLabel(self)
         self.ui.label_4.resize(520, 461)
 
-    def on_message(self, client, userdata, msg):
-        if msg.topic == MQTT_PATH1:
-            nparr = np.fromstring(msg.payload.decode('base64'), np.uint8)
-            rgbImage = cv2.imdecode(nparr, cv2.IMREAD_ANYCOLOR)
-            convertToQtFormat = QImage(rgbImage, rgbImage.shape[1], rgbImage.shape[0], rgbImage.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
-            self.client_message.emit(convertToQtFormat)
-        elif msg.topic == MQTT_PATH2:
-            nparr = np.fromstring(msg.payload.decode('base64'), np.uint8)
-            rgbImage = cv2.imdecode(nparr, cv2.IMREAD_ANYCOLOR)
-            convertToQtFormat = QImage(rgbImage, rgbImage.shape[1], rgbImage.shape[0], rgbImage.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
-            self.client_message.emit(convertToQtFormat)
+    def on_message_duck1(self, client, userdata, msg):
+        nparr = np.fromstring(msg.payload.decode('base64'), np.uint8)
+        rgbImage = cv2.imdecode(nparr, cv2.IMREAD_ANYCOLOR)
+        convertToQtFormat = QImage(rgbImage, rgbImage.shape[1], rgbImage.shape[0], rgbImage.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
+        self.client_message.emit(convertToQtFormat)
+
+    def on_message_duck2(self, client, userdata, msg):
+        nparr = np.fromstring(msg.payload.decode('base64'), np.uint8)
+        rgbImage = cv2.imdecode(nparr, cv2.IMREAD_ANYCOLOR)
+        convertToQtFormat = QImage(rgbImage, rgbImage.shape[1], rgbImage.shape[0], rgbImage.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
+        self.client_message.emit(convertToQtFormat)
 
     def on_connect(self, client, userdata, flags, rc):
         print "Connected with result code "+str(rc)
