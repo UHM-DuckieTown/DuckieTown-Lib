@@ -64,10 +64,10 @@ try:
     #road = raw[ROI_road_offset:window_height, 0:window_width]
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        min_yellow = np.array([18, 94, 140])
-        max_yellow = np.array([48, 255, 255])
-        upper = np.array([101, 13, 255])
-        lower = np.array([3, 0, 229])
+        min_yellow = np.array([0, 64, 236])
+        max_yellow = np.array([32, 255, 255])
+        upper = np.array([0, 0, 255])
+        lower = np.array([0, 0, 255])
         mask1 = cv2.inRange(hsv, lower, upper)
     #cv2.imshow("white mask", mask1)
 
