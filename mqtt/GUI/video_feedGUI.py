@@ -9,7 +9,7 @@ from PyQt5 import uic
 import paho.mqtt.client as mqtt
 from videofeed import Ui_MainWindow
 
-MQTT_SERVER = "192.168.1.90"
+MQTT_SERVER = "168.105.249.242"
 MQTT_PATH1 = "video_channel1"
 MQTT_PATH2 = "video_channel2"
 MQTT_PATH3 = "text_channel1"
@@ -29,7 +29,7 @@ class MyApp(QMainWindow):
 
     @pyqtSlot(QImage)
     def setImage1(self, image1):
-        self.ui.label_3.setPixmap(QPixmap.fromImage(image1))
+        self.ui.label_3.setPixmap(QPixmap.fromImage(image1).scaled(480,369))
     @pyqtSlot(QImage)
     def setImage2(self, image2):
         self.ui.label_4.setPixmap(QPixmap.fromImage(image2))
