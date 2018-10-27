@@ -3,8 +3,8 @@ import numpy as np
 import cv2
 import base64
 
-MQTT_SERVER = "192.168.1.90"
-MQTT_PATH2 = "video_channel2"
+MQTT_SERVER = "168.105.252.131"
+MQTT_PATH2 = "video_channel3"
 MQTT_PATH4 = "text_channel2"
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -27,9 +27,12 @@ def main():
     client.loop_start()
     try:
         camera = cv2.VideoCapture(0)
-
+        camera.set(cv2.CAP_PROP_FPS, 20)
+        camera.set(cv2.CAP_PROP_FRAME_WIDTH,640);
+        camera.set(cv2.CAP_PROP_FRAME_HEIGHT,480);
         while True:
             ret, image = camera.read()
+
 
             img_str = cv2.imencode('.jpg', image)[1].tostring()
             encoded_str = base64.b64encode(img_str)
