@@ -1,4 +1,4 @@
-from picamera import PiCamera
+﻿from picamera import PiCamera
 import time
 from picamera.array import PiRGBArray
 import cv2
@@ -14,7 +14,7 @@ camera.framerate = 30
 raw = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
 
-MQTT_SERVER = "192.168.0.108"
+MQTT_SERVER = "192.168.0.102"
 MQTT_PATH = "test_channel"
 
 
@@ -22,10 +22,10 @@ MQTT_PATH = "test_channel"
 for frame in camera.capture_continuous(raw, format='bgr', use_video_port=True):
 	image= raw.array
 
-	#cv2.imshow("Preview", image)
-	img_str = cv2.imencode('.jpg', image)[1].tostring()
-	encoded_str = base64.b64encode(img_str)
-	publish.single(MQTT_PATH, encoded_str, 0)
+	cv2.imshow("Preview", image)
+	#img_str = cv2.imencode('.jpg', image)[1].tostring()
+	#encoded_str = base64.b64encode(img_str)
+	#publish.single(MQTT_PATH, encoded_str, 0,hostname = MQTT_SERVER)
         #print "Sent" + encoded_str
 
 	key = cv2.waitKey(1)

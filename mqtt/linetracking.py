@@ -1,13 +1,20 @@
 import numpy as np
 import cv2
+import base64
 from picamera import PiCamera
 import time
-from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
+import paho.mqtt.publish as publish
+#from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 #cap = cv2.VideoCapture('silent.mp4')
 #cap = cv2.VideoCapture('Video.MOV')
 #cap = cv2.VideoCapture('duckie_vid.mp4')
 #raw = cv2.imread('screen-shot.png');
+
+MQTT_SERVER = "192.168.0.102"
+MQTT_PATH1 = "video_channel1"
+MQTT_PATH2 = "video_channel2"
+
 camera = PiCamera()
 camera.resolution = (640, 480)
 camera.framerate = 20
@@ -24,11 +31,11 @@ time.sleep(0.1)
 window_width = 480
 window_height = 360
 ROI_road_offset = int(0.66*window_height)
-mh = Adafruit_MotorHAT(addr=0x60)
-leftMotor = mh.getMotor(2)
-rightMotor = mh.getMotor(1)
-leftMotor.run(Adafruit_MotorHAT.FORWARD)
-rightMotor.run(Adafruit_MotorHAT.FORWARD)
+#mh = Adafruit_MotorHAT(addr=0x60)
+#leftMotor = mh.getMotor(2)
+#rightMotor = mh.getMotor(1)
+#leftMotor.run(Adafruit_MotorHAT.FORWARD)
+#rightMotor.run(Adafruit_MotorHAT.FORWARD)
 
 #rightMotor.setSpeed(int(255))
 #leftMotor.setSpeed(int(255))
@@ -95,9 +102,21 @@ try:
         else:
             avg = old_avg
         cv2.circle(frame,(avg,300),2,(0,0,255),3)
-        print 'Average = ', avg
-        cv2.imshow('frame', frame)
-        cv2.imshow('edges', edges)
+        #print 'Average = ', avg
+        #cv2.imshow('frame', frame)
+        
+        
+        #img_str = cv2.imencode('.jpg', frame)[1].tostring()
+        #encoded_str = base64.b64encode(img_str)
+        #publish.single(MQTT_PATH1, encoded_str, 0,hostname = MQTT_SERVER)
+        
+        print type(frame)
+        #print type(edges)
+        
+        #cv2.imshow('edges', edges)
+        img_str2 = cv2.imencode('.jpg', mask2)[1].tostring()
+        encoded_str2 = base64.b64encode(img_str2)
+        publish.single(MQTT_PATH2, encoded_str2, 0,hostname = MQTT_SERVER)
 #cv2.imshow('road', road)
 
 #overlay = cv2.line(frame,(int(window_width/2),0),(int(window_width/2), int(window_height)),(0,0,255),5)
@@ -120,11 +139,12 @@ try:
         elif rightspeed < 0:
             rightspeed = 0
 
-        rightMotor.setSpeed(rightspeed)
-        leftMotor.setSpeed(leftspeed)
-        print 'Rightspeed = ',rightspeed 
+        #rightMotor.setSpeed(rightspeed)
+        #leftMotor.setSpeed(leftspeed)
+        #print 'Rightspeed = ',rightspeed 
         capture.truncate(0)
 except KeyboardInterrupt:
-	leftMotor.run(Adafruit_MotorHAT.RELEASE)
-	rightMotor.run(Adafruit_MotorHAT.RELEASE)
+	print ""
+	#leftMotor.run(Adafruit_MotorHAT.RELEASE)
+	#rightMotor.run(Adafruit_MotorHAT.RELEASE)
 cv2.destroyAllWindows()
