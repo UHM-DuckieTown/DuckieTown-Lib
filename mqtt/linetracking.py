@@ -4,14 +4,14 @@ import base64
 from picamera import PiCamera
 import time
 import paho.mqtt.publish as publish
-#from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
+from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 #cap = cv2.VideoCapture('silent.mp4')
 #cap = cv2.VideoCapture('Video.MOV')
 #cap = cv2.VideoCapture('duckie_vid.mp4')
 #raw = cv2.imread('screen-shot.png');
 
-MQTT_SERVER = "192.168.0.102"
+MQTT_SERVER = "168.105.227.57"
 MQTT_PATH1 = "video_channel1"
 MQTT_PATH2 = "video_channel2"
 
@@ -31,14 +31,14 @@ time.sleep(0.1)
 window_width = 480
 window_height = 360
 ROI_road_offset = int(0.66*window_height)
-#mh = Adafruit_MotorHAT(addr=0x60)
-#leftMotor = mh.getMotor(2)
-#rightMotor = mh.getMotor(1)
-#leftMotor.run(Adafruit_MotorHAT.FORWARD)
-#rightMotor.run(Adafruit_MotorHAT.FORWARD)
+mh = Adafruit_MotorHAT(addr=0x60)
+leftMotor = mh.getMotor(2)
+rightMotor = mh.getMotor(1)
+leftMotor.run(Adafruit_MotorHAT.FORWARD)
+rightMotor.run(Adafruit_MotorHAT.FORWARD)
 
-#rightMotor.setSpeed(int(255))
-#leftMotor.setSpeed(int(255))
+rightMotor.setSpeed(int(255))
+leftMotor.setSpeed(int(255))
 def position_controller(kp, target, actual):
     error = target-actual
     #print 'Error = ',error
@@ -81,7 +81,7 @@ try:
 
         mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
         mask = cv2.bitwise_or(mask2, mask1)
-        cv2.imshow(" mask", mask2)
+        #cv2.imshow(" mask", mask2)
         masked_img = cv2.bitwise_and(hsv, hsv, mask=mask2)
         H, S, V = cv2.split(masked_img)
         edges = cv2.Canny(mask2, 50, 150, apertureSize=3)
@@ -110,13 +110,19 @@ try:
         #encoded_str = base64.b64encode(img_str)
         #publish.single(MQTT_PATH1, encoded_str, 0,hostname = MQTT_SERVER)
         
-        print type(frame)
+        #print type(frame)
         #print type(edges)
         
-        #cv2.imshow('edges', edges)
-        img_str2 = cv2.imencode('.jpg', mask2)[1].tostring()
+        cv2.imshow('edges', edges)
+        
+        img_str2 = cv2.imencode('.jpg', masked_img)[1].tostring()
         encoded_str2 = base64.b64encode(img_str2)
         publish.single(MQTT_PATH2, encoded_str2, 0,hostname = MQTT_SERVER)
+        
+        video = cv2.imencode('.jpg', frame)[1].tostring()
+        encoded_video = base64.b64encode(video)
+        publish.single(MQTT_PATH1, encoded_video, 0,hostname = MQTT_SERVER)
+        
 #cv2.imshow('road', road)
 
 #overlay = cv2.line(frame,(int(window_width/2),0),(int(window_width/2), int(window_height)),(0,0,255),5)
@@ -139,12 +145,12 @@ try:
         elif rightspeed < 0:
             rightspeed = 0
 
-        #rightMotor.setSpeed(rightspeed)
-        #leftMotor.setSpeed(leftspeed)
+        rightMotor.setSpeed(rightspeed)
+        leftMotor.setSpeed(leftspeed)
         #print 'Rightspeed = ',rightspeed 
         capture.truncate(0)
 except KeyboardInterrupt:
 	print ""
-	#leftMotor.run(Adafruit_MotorHAT.RELEASE)
-	#rightMotor.run(Adafruit_MotorHAT.RELEASE)
+	leftMotor.run(Adafruit_MotorHAT.RELEASE)
+	rightMotor.run(Adafruit_MotorHAT.RELEASE)
 cv2.destroyAllWindows()
