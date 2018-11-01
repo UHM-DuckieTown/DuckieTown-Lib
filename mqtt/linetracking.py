@@ -11,18 +11,20 @@ from picamera.array import PiRGBArray
 #cap = cv2.VideoCapture('duckie_vid.mp4')
 #raw = cv2.imread('screen-shot.png');
 
-MQTT_SERVER = "192.168.0.106"
+MQTT_SERVER = "192.168.0.102"
 MQTT_PATH1 = "video_channel1"
-#MQTT_PATH2 = "video_channel2"
+MQTT_PATH2 = "video_channel2"
 MQTT_PATH3 = "text_channel1"
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     
-    client.subsribe(MQTT_PATH3)
+    client.subscribe(MQTT_PATH3)
     
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+    #print(msg.topic+" "+str(msg.payload))
+    print str(msg.payload)
+    
 
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -131,9 +133,9 @@ try:
         
         cv2.imshow('edges', edges)
         
-        #img_str2 = cv2.imencode('.jpg', masked_img)[1].tostring()
-        #encoded_str2 = base64.b64encode(img_str2)
-        #publish.single(MQTT_PATH2, encoded_str2, 0,hostname = MQTT_SERVER)
+        img_str2 = cv2.imencode('.jpg', masked_img)[1].tostring()
+        encoded_str2 = base64.b64encode(img_str2)
+        client.publish(MQTT_PATH2, encoded_str2, 0)
         
         video = cv2.imencode('.jpg', frame)[1].tostring()
         encoded_video = base64.b64encode(video)
