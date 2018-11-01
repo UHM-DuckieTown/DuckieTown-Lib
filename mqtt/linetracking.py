@@ -137,7 +137,7 @@ try:
         
         video = cv2.imencode('.jpg', frame)[1].tostring()
         encoded_video = base64.b64encode(video)
-        client.publish(MQTT_PATH1, encoded_video, 0,hostname = MQTT_SERVER)
+        client.publish(MQTT_PATH1, encoded_video, 0)
         
 #cv2.imshow('road', road)
 
