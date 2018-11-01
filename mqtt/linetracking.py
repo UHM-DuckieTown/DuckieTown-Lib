@@ -3,7 +3,7 @@ import cv2
 import base64
 from picamera import PiCamera
 import time
-import paho.mqtt.publish as publish
+import paho.mqtt.client as mqtt
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 #cap = cv2.VideoCapture('silent.mp4')
@@ -14,6 +14,15 @@ from picamera.array import PiRGBArray
 MQTT_SERVER = "192.168.0.106"
 MQTT_PATH1 = "video_channel1"
 #MQTT_PATH2 = "video_channel2"
+MQTT_PATH3 = "text_channel1"
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    
+    client.subsribe(MQTT_PATH3)
+    
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
 
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -48,6 +57,13 @@ def position_controller(kp, target, actual):
     else:
         adjustment = kp*error
         return int(adjustment)
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+client.connect(MQTT_SERVER, 1883, 60)
+client.loop_start()
+
 try:
     for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
        #ret, raw = cap.read()
@@ -153,4 +169,7 @@ except KeyboardInterrupt:
 	print ""
 	leftMotor.run(Adafruit_MotorHAT.RELEASE)
 	rightMotor.run(Adafruit_MotorHAT.RELEASE)
-cv2.destroyAllWindows()
+	
+finally:
+    client.loop_stop()
+#cv2.destroyAllWindows()
