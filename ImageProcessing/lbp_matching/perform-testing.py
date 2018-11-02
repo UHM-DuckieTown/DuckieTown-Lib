@@ -15,6 +15,8 @@ parser.add_argument("-t", "--testingSet", help="Path to Testing Set", required="
 parser.add_argument("-l", "--imageLabels", help="Path to Image Label Files", required="True")
 args = vars(parser.parse_args())
 
+
+#load training result histograms
 X_name, X_test, y_test = joblib.load("lbp.pkl")
 
 test_images = cvutils.imlist(args["testingSet"])
@@ -45,24 +47,3 @@ for test_image in test_images:
     print "Scores: " + str(test_image)
     for image, score in results:
         print "{} has score {}".format(image, score)
-
-# for test_image, results in results_all.items():
-#     # Read the image
-#     im = cv2.imread(test_image)
-#     # Display the results
-#     nrows = 2
-#     ncols = 3
-#     fig, axes = plt.subplots(nrows,ncols)
-#     fig.suptitle("** Scores for -> {}**".format(test_image))
-#     for row in range(nrows):
-#         for col in range(ncols):
-#             axes[row][col].imshow(cv2.imread(results[row*ncols+col][0]))
-#             axes[row][col].axis('off')
-#             axes[row][col].set_title("Score {}".format(results[row*ncols+col][1]))
-#     fig.canvas.draw()
-#     im_ts = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-#     im_ts = im_ts.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-#     cv2.imshow("** Query Image -> {}**".format(test_image), im)
-#     cv2.imshow("** Scores for -> {}**".format(test_image), im_ts)
-#     cv2.waitKey()
-#     cv2.destroyAllWindows()

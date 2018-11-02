@@ -60,21 +60,4 @@ for train_image in train_images:
     y_test.append(train_dic[os.path.split(train_image)[1]])
 
 # Save Python Data
-joblib.dump((X_name, X_test, y_test), "lbp.pkl", compress=3)
-    
-# Display the training images
-# nrows = 2
-# ncols = 3
-# fig, axes = plt.subplots(nrows,ncols)
-# for row in range(nrows):
-#     for col in range(ncols):
-#         axes[row][col].imshow(cv2.imread(X_name[row*ncols+col]))
-#         axes[row][col].axis('off')
-#         axes[row][col].set_title("{}".format(os.path.split(X_name[row*ncols+col])[1]))
-
-# Convert to numpy and display the image
-# fig.canvas.draw()
-# im_ts = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-# im_ts = im_ts.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-# cv2.imshow("Training Set", im_ts)
-# cv2.waitKey()
+joblib.dump((X_name, X_test, y_test), "lbp.pkl", compress=True)
