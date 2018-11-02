@@ -56,7 +56,7 @@ try:
     #finished = cv2.resize(raw, (window_width, window_height))
 #   ROI?
     #finished = finished[0:200,0:480]
-    
+	raw = raw[300:480,0:480]    
         frame = cv2.GaussianBlur(raw, (5, 5), 0)
         Sum = 0
         numx = 0
@@ -74,13 +74,13 @@ try:
 
         mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
         mask = cv2.bitwise_or(mask2, mask1)
-        cv2.imshow(" mask", mask2)
-        masked_img = cv2.bitwise_and(hsv, hsv, mask=mask2)
+        cv2.imshow(" mask", mask1)
+        masked_img = cv2.bitwise_and(hsv, hsv, mask=mask1)
         H, S, V = cv2.split(masked_img)
-        edges = cv2.Canny(mask2, 50, 150, apertureSize=3)
+        edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #road = edges[260:360, 0:480]
 
-        lines = cv2.HoughLinesP(edges, 1, np.pi/180,100, minLineLength= 50, maxLineGap=10)
+        lines = cv2.HoughLinesP(edges, 1, np.pi/180,10, minLineLength= 1, maxLineGap=1)
         if lines is not None:
             for line in lines:
                 x1, y1, x2, y2 = line[0]
@@ -105,9 +105,9 @@ try:
 
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
-    
-        rightspeed = int(95 + position_controller(0.2,180,avg))
-        leftspeed = int(105 - position_controller(0.2,180,avg))
+    	#130 for yellow line, 450 for white
+        rightspeed = int(95 + position_controller(0.15,450,avg))
+        leftspeed = int(105 - position_controller(0.15,450,avg))
         if rightspeed > 255:
             rightspeed = 255
     
