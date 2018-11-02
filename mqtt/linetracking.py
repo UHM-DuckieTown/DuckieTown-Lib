@@ -11,12 +11,13 @@ from picamera.array import PiRGBArray
 #cap = cv2.VideoCapture('duckie_vid.mp4')
 #raw = cv2.imread('screen-shot.png');
 
-MQTT_SERVER = "192.168.0.102"
+MQTT_SERVER = "192.168.0.106"
 MQTT_PATH1 = "video_channel1"
 MQTT_PATH2 = "video_channel2"
 MQTT_PATH3 = "text_channel1"
 
 global command
+command = " "
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -25,12 +26,13 @@ def on_connect(client, userdata, flags, rc):
     
 def on_message(client, userdata, msg):
     #print(msg.topic+" "+str(msg.payload))
-    print str(msg.payload)
-    global command = msg.payload
+    global command
+    print 'on__message: '+ str(msg.payload)
+    command = str(msg.payload)
     
 camera = PiCamera()
 camera.resolution = (640, 480)
-camera.framerate = 20
+camera.framerate = 30
 capture = PiRGBArray(camera, size=(640,480))
 time.sleep(0.1)
 #'''
@@ -67,6 +69,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.connect(MQTT_SERVER, 1883, 60)
 client.loop_start()
+
 
 try:
     for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
@@ -133,7 +136,8 @@ try:
         #print type(frame)
         #print type(edges)
         
-        cv2.imshow('edges', edges)
+        cv2.imshow('edges', masked_img)
+        cv2.imshow('edges', frame)
         
         img_str2 = cv2.imencode('.jpg', masked_img)[1].tostring()
         encoded_str2 = base64.b64encode(img_str2)
@@ -151,6 +155,7 @@ try:
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
     
+        global command
         rightspeed = int(95 + position_controller(0.2,180,avg))
         leftspeed = int(105 - position_controller(0.2,180,avg))
         if rightspeed > 255:
@@ -165,14 +170,17 @@ try:
         elif rightspeed < 0:
             rightspeed = 0
 
-        if global command == 'stop':
+        print command
+        if command == 'stop':
             leftMotor.run(Adafruit_MotorHAT.RELEASE)
             rightMotor.run(Adafruit_MotorHAT.RELEASE)
             
-        elif
+        else:
+            leftMotor.run(Adafruit_MotorHAT.FORWARD)
+            rightMotor.run(Adafruit_MotorHAT.FORWARD)
             rightMotor.setSpeed(rightspeed)
             leftMotor.setSpeed(leftspeed)
-        #print 'Rightspeed = ',rightspeed
+        print 'Rightspeed = ',rightspeed
             
         capture.truncate(0)
 except KeyboardInterrupt:
