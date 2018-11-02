@@ -29,11 +29,15 @@ leftMotor = mh.getMotor(2)
 rightMotor = mh.getMotor(1)
 leftMotor.run(Adafruit_MotorHAT.FORWARD)
 rightMotor.run(Adafruit_MotorHAT.FORWARD)
-
+#global old_error
+#old_error = 0
 #rightMotor.setSpeed(int(255))
 #leftMotor.setSpeed(int(255))
 def position_controller(kp, target, actual):
     error = target-actual
+    #errorD = error - old_error
+    #global old_error
+    #old_error = error
     #print 'Error = ',error
     if abs(error) < 5:
         #do nothing
@@ -61,6 +65,7 @@ try:
         Sum = 0
         numx = 0
         avg = 0
+	Kp = 0.15
     #road = raw[ROI_road_offset:window_height, 0:window_width]
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -73,14 +78,20 @@ try:
 
 
         mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
-        mask = cv2.bitwise_or(mask2, mask1)
-        cv2.imshow(" mask", mask1)
-        masked_img = cv2.bitwise_and(hsv, hsv, mask=mask1)
+        #mask = cv2.bitwise_or(mask2, mask1)
+	if np.all(cv2.bitwise_not(mask2)) == False: 
+		mask = mask2
+		yellow = True
+	else:
+		mask = mask1
+		yellow = False
+        cv2.imshow(" mask", mask)
+        masked_img = cv2.bitwise_and(hsv, hsv, mask=mask)
         H, S, V = cv2.split(masked_img)
-        edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
+        edges = cv2.Canny(mask, 50, 150, apertureSize=3)
     #road = edges[260:360, 0:480]
 
-        lines = cv2.HoughLinesP(edges, 1, np.pi/180,10, minLineLength= 1, maxLineGap=1)
+        lines = cv2.HoughLinesP(edges, 1, np.pi/180,20, minLineLength= 1, maxLineGap=1)
         if lines is not None:
             for line in lines:
                 x1, y1, x2, y2 = line[0]
@@ -105,9 +116,13 @@ try:
 
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
+	if yellow:
+		threshold = 105
+	else:
+		threshold = 430
     	#130 for yellow line, 450 for white
-        rightspeed = int(95 + position_controller(0.15,450,avg))
-        leftspeed = int(105 - position_controller(0.15,450,avg))
+        rightspeed = int(95 + position_controller(Kp,threshold,avg))
+        leftspeed = int(105 - position_controller(Kp,threshold,avg))
         if rightspeed > 255:
             rightspeed = 255
     
