@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from math import cos, sin
 import imutils
 
+video = 'ball.avi'
 
 def callback(value):
     pass
@@ -50,7 +51,7 @@ def main():
 
     range_filter = args['filter'].upper()
 
-    camera = cv2.VideoCapture('shapes.avi')
+    camera = cv2.VideoCapture(video)
 
     setup_trackbars(range_filter)
 
