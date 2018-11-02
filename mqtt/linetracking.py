@@ -16,6 +16,8 @@ MQTT_PATH1 = "video_channel1"
 MQTT_PATH2 = "video_channel2"
 MQTT_PATH3 = "text_channel1"
 
+global command
+
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     
@@ -24,8 +26,8 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     #print(msg.topic+" "+str(msg.payload))
     print str(msg.payload)
+    global command = msg.payload
     
-
 camera = PiCamera()
 camera.resolution = (640, 480)
 camera.framerate = 20
@@ -163,9 +165,15 @@ try:
         elif rightspeed < 0:
             rightspeed = 0
 
-        rightMotor.setSpeed(rightspeed)
-        leftMotor.setSpeed(leftspeed)
-        #print 'Rightspeed = ',rightspeed 
+        if global command == 'stop':
+            leftMotor.run(Adafruit_MotorHAT.RELEASE)
+            rightMotor.run(Adafruit_MotorHAT.RELEASE)
+            
+        elif
+            rightMotor.setSpeed(rightspeed)
+            leftMotor.setSpeed(leftspeed)
+        #print 'Rightspeed = ',rightspeed
+            
         capture.truncate(0)
 except KeyboardInterrupt:
 	print ""
