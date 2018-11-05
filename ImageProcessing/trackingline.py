@@ -5,7 +5,8 @@ import time
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 
-def trackingline(raw):
+def linetracking(raw):
+    cv2.imshow('raw',raw)
     raw = raw[300:480,0:480]
     frame = cv2.GaussianBlur(raw, (5, 5), 0)
     Sum = 0
@@ -24,13 +25,13 @@ def trackingline(raw):
 
 
     mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
-        #mask = cv2.bitwise_or(mask2, mask1)
-	if np.all(cv2.bitwise_not(mask2)) == False:
+    #mask = cv2.bitwise_or(mask2, mask1)
+    if np.all(cv2.bitwise_not(mask2)) == False:
         mask = mask2
         yellow = True
     else:
         mask = mask1
-		yellow = False
+	yellow = False
 
     cv2.imshow(" mask", mask)
     masked_img = cv2.bitwise_and(hsv, hsv, mask=mask)
@@ -56,6 +57,7 @@ def trackingline(raw):
     print 'Average = ', avg
     cv2.imshow('frame', frame)
     cv2.imshow('edges', edges)
-    if cv2.waitKey(20) & 0xFF == ord('q'):
-        break
+    cv2.waitKey(20)
+    #if cv2.waitKey(20) & 0xFF == ord('q'):
+        #break
     return yellow,avg

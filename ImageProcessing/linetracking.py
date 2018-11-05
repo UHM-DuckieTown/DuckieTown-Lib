@@ -4,7 +4,7 @@ from picamera import PiCamera
 import time
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
-import trackingline
+from trackingline import linetracking
 #cap = cv2.VideoCapture('silent.mp4')
 #cap = cv2.VideoCapture('Video.MOV')
 #cap = cv2.VideoCapture('duckie_vid.mp4')
@@ -120,7 +120,7 @@ try:
                    break
        '''
 
-       yellow,avg = trackingline(raw)
+       yellow,avg = linetracking(raw)
        #130 for yellow line, 450 for white
        if yellow:
            threshold = 105
