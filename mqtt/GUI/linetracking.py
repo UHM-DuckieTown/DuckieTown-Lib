@@ -155,7 +155,7 @@ try:
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
 
-    global command
+        global command
 
     if yellow:
 		threshold = 105
