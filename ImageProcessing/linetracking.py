@@ -49,9 +49,9 @@ def position_controller(kp, target, actual):
 try:
     for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
        #ret, raw = cap.read()
-        image = capture.array
-        raw = cv2.resize(image, (window_width, window_height))
-        Kp = 0.15
+       image = capture.array
+       raw = cv2.resize(image, (window_width, window_height))
+       Kp = 0.15
 #    rotate image
     #rows,cols,_ = raw.shape
     #rawrot = cv2.getRotationMatrix2D((cols/2,rows/2),90,1)
@@ -120,9 +120,10 @@ try:
             break
     '''
         yellow,avg = trackingline(raw)
-
-	    if yellow:
+        
+        if yellow:
             threshold = 105
+
         else:
             threshold = 430
     	#130 for yellow line, 450 for white
