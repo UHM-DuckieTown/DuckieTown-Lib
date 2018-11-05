@@ -11,7 +11,7 @@ from picamera.array import PiRGBArray
 #cap = cv2.VideoCapture('duckie_vid.mp4')
 #raw = cv2.imread('screen-shot.png');
 
-MQTT_SERVER = "192.168.0.106"
+MQTT_SERVER = "192.168.0.100"
 MQTT_PATH1 = "video_channel1"
 MQTT_PATH2 = "video_channel2"
 MQTT_PATH3 = "text_channel1"
@@ -136,8 +136,8 @@ try:
         #print type(frame)
         #print type(edges)
         
-        cv2.imshow('edges', masked_img)
-        cv2.imshow('edges', frame)
+        #cv2.imshow('edges', masked_img)
+        #cv2.imshow('edges', frame)
         
         img_str2 = cv2.imencode('.jpg', masked_img)[1].tostring()
         encoded_str2 = base64.b64encode(img_str2)
