@@ -9,7 +9,7 @@ from PyQt5 import uic
 import paho.mqtt.client as mqtt
 from feed import Ui_MainWindow
 
-MQTT_SERVER = "168.105.252.131"
+MQTT_SERVER = "192.168.0.100"
 MQTT_PATH1 = "video_channel1"
 MQTT_PATH2 = "video_channel2"
 MQTT_PATH3 = "text_channel1"
