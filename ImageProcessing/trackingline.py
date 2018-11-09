@@ -4,7 +4,10 @@ from picamera import PiCamera
 import time
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
-
+global rightspeed
+rightspeed = 95
+global leftspeed
+leftspeed = 105
 def linetracking(raw):
     cv2.imshow('raw',raw)
     raw = raw[300:480,0:480]
@@ -61,3 +64,50 @@ def linetracking(raw):
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
     return yellow,avg
+
+def position_controller(kp, target, actual):
+    error = target-actual
+    #errorD = error - old_error
+    #global old_error
+    #old_error = error
+    #print 'Error = ',error
+    if abs(error) < 5:
+        #do nothing
+        return int(0)
+    else:
+        adjustment = kp*error
+        return int(adjustment)
+
+def position_p(camera, capture):
+    window_width = 480
+    window_height = 360
+    for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
+       #ret, raw = cap.read()
+       image = capture.array
+       raw = cv2.resize(image, (window_width, window_height))
+       Kp = 0.15
+       yellow,avg = linetracking(raw)
+       #130 for yellow line, 450 for white
+       if yellow:
+           threshold = 105
+
+       else:
+           threshold = 430
+       global rightspeed
+       global leftspeed
+       rightspeed = int(95 + position_controller(Kp,threshold,avg))
+       leftspeed = int(105 - position_controller(Kp,threshold,avg))
+
+       if rightspeed > 255:
+           rightspeed = 255
+
+       elif rightspeed < 0:
+           rightspeed = 0
+
+       if leftspeed > 255:
+           leftspeed = 255
+
+       elif rightspeed < 0:
+           rightspeed = 0
+       capture.truncate(0)
+       #return rightspeed, leftspeed
