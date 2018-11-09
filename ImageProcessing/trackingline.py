@@ -87,7 +87,7 @@ def linetracking(raw):
         #break
     return yellow,avg
 
-def position_controller(kp, target, actual):
+def position_controller(target, actual):
     global Position_errorP_v
     Position_errorP_v = target-actual
     global Position_errorI_v
