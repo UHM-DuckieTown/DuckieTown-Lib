@@ -6,7 +6,7 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 
 def trackingline(raw):
-	raw = raw[300:480,0:480]
+    raw = raw[300:480,0:480]
     frame = cv2.GaussianBlur(raw, (5, 5), 0)
     Sum = 0
     numx = 0
