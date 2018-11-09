@@ -119,13 +119,12 @@ try:
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
     '''
-    yellow,avg = trackingline(raw)
-    
-	if yellow:
-		threshold = 105
+        yellow,avg = trackingline(raw)
 
-	else:
-		threshold = 430
+	    if yellow:
+            threshold = 105
+        else:
+            threshold = 430
     	#130 for yellow line, 450 for white
         rightspeed = int(95 + position_controller(Kp,threshold,avg))
         leftspeed = int(105 - position_controller(Kp,threshold,avg))
