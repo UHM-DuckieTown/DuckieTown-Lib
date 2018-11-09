@@ -7,23 +7,23 @@ from picamera.array import PiRGBArray
 
 def trackingline(raw):
 	raw = raw[300:480,0:480]
-        frame = cv2.GaussianBlur(raw, (5, 5), 0)
-        Sum = 0
-        numx = 0
-        avg = 0
+    frame = cv2.GaussianBlur(raw, (5, 5), 0)
+    Sum = 0
+    numx = 0
+    avg = 0
 
     #road = raw[ROI_road_offset:window_height, 0:window_width]
 
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        min_yellow = np.array([0, 64, 236])
-        max_yellow = np.array([32, 255, 255])
-        upper = np.array([0, 0, 255])
-        lower = np.array([0, 0, 255])
-        mask1 = cv2.inRange(hsv, lower, upper)
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    min_yellow = np.array([0, 64, 236])
+    max_yellow = np.array([32, 255, 255])
+    upper = np.array([0, 0, 255])
+    lower = np.array([0, 0, 255])
+    mask1 = cv2.inRange(hsv, lower, upper)
     #cv2.imshow("white mask", mask1)
 
 
-        mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
+    mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
         #mask = cv2.bitwise_or(mask2, mask1)
 	if np.all(cv2.bitwise_not(mask2)) == False:
 		mask = mask2
@@ -57,4 +57,4 @@ def trackingline(raw):
         cv2.imshow('edges', edges)
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
-        return yellow, avg 
+        return yellow,avg

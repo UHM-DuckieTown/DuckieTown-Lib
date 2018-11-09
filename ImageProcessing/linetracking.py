@@ -119,7 +119,7 @@ try:
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
     '''
-    yellow, avg = trackingline(raw)
+    yellow,avg = trackingline(raw)
 	if yellow:
 		threshold = 105
 	else:
