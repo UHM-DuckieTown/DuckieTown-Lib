@@ -16,6 +16,20 @@ camera.framerate = 20
 global capture
 capture = PiRGBArray(camera, size=(640,480))
 time.sleep(0.1)
+global Position_errorP_v
+Position_errorP_v = 0
+global Position_old_errorP_v
+Position_old_errorP_v = 0
+global Position_errorD_v
+Position_errorD_v = 0
+global Position_errorI_v
+Position_errorI_v = 0
+global Position_totalError_v
+Position_totalError_v = 0
+POSITIONP = 0.15
+POSITIONI = 0.0001
+POSITIOND = 0.005
+POSITIONF = 0
 def linetracking(raw):
     cv2.imshow('raw',raw)
     raw = raw[250:480,0:480]
@@ -74,16 +88,24 @@ def linetracking(raw):
     return yellow,avg
 
 def position_controller(kp, target, actual):
-    error = target-actual
-    errorD = error - old_error
+    global Position_errorP_v
+    Position_errorP_v = target-actual
+    global Position_errorI_v
+    Position_errorI_v = Position_errorI_v + Position_errorP_v
+    global Position_errorD_v
+    Position_errorD_v = Position_errorP_v - Position_old_errorP_v
+    global Position_totalError_v
+    Position_totalError_v = POSITIONP * Position_errorP_v + POSITIONI * Position_errorI_v + POSITIOND *Position_errorD_v + POSITIONF
+    global Position_old_errorP_v
+    Position_old_errorP_v = Position_errorP_v
     #global old_error
     #old_error = error
     #print 'Error = ',error
-    if abs(error) < 5:
+    if abs(Position_totalError_v) < 5:
         #do nothing
         return int(0)
     else:
-        adjustment = kp*error
+        adjustment = Position_totalError_v
         return int(adjustment)
 
 def position_p():
@@ -96,7 +118,7 @@ def position_p():
        global capture
        image = capture.array
        raw = cv2.resize(image, (window_width, window_height))
-       Kp = 0.15
+
        yellow,avg = linetracking(raw)
        #130 for yellow line, 450 for white
        if yellow:
@@ -106,8 +128,8 @@ def position_p():
            threshold = 430
        global rightspeed
        global leftspeed
-       rightspeed = int(100 + position_controller(Kp,threshold,avg))
-       leftspeed = int(100 - position_controller(Kp,threshold,avg))
+       rightspeed = int(100 + position_controller(threshold,avg))
+       leftspeed = int(100 - position_controller(threshold,avg))
        #rightspeed = 100
        #leftspeed = 100
        if rightspeed > 255:
