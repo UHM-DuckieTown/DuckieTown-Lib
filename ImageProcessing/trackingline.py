@@ -4,10 +4,18 @@ from picamera import PiCamera
 import time
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
+
 global rightspeed
 rightspeed = 95
 global leftspeed
 leftspeed = 105
+global camera
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 20
+global capture
+capture = PiRGBArray(camera, size=(640,480))
+time.sleep(0.1)
 def linetracking(raw):
     cv2.imshow('raw',raw)
     raw = raw[300:480,0:480]
@@ -81,8 +89,11 @@ def position_controller(kp, target, actual):
 def position_p(camera, capture):
     window_width = 480
     window_height = 360
+    global camera
+    global capture
     for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
        #ret, raw = cap.read()
+       global capture
        image = capture.array
        raw = cv2.resize(image, (window_width, window_height))
        Kp = 0.15

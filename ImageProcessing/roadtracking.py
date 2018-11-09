@@ -12,10 +12,10 @@ import RPi.GPIO as GPIO
 import trackingline
 
 velocity.getEncoderTicks()
-camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 20
-capture = PiRGBArray(camera, size=(640,480))
+#camera = PiCamera()
+#camera.resolution = (640, 480)
+#camera.framerate = 20
+#capture = PiRGBArray(camera, size=(640,480))
 time.sleep(0.1)
 '''
 mh = Adafruit_MotorHAT(addr=0x60)
@@ -56,11 +56,12 @@ def main():
         velocity.rightSensorCallback(17)
         #left_target_vel = 0.3
         #right_target_vel = 0.3
-
+        left_target_vel = ((leftspeed*0.004) - 0.006)-0.004
+        right_target_vel = ((rightspeed*0.004) - 0.006)-0.004
         threads = []
         position_adjust = Thread(target = trackingline.position_p, args=(camera, capture))
         encoder_polling = Thread(target = velocity.getVelocity)
-        vel_pid = Thread(target = velocity.velocityPid, args=(leftspeed, rightspeed))
+        vel_pid = Thread(target = velocity.velocityPid, args=(left_target_vel, right_target_vel))
 
         encoder_polling.setDaemon(True)
         vel_pid.setDaemon(True)
