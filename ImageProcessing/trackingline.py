@@ -4,11 +4,11 @@ from picamera import PiCamera
 import time
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
-
-global rightspeed
-rightspeed = 95
-global leftspeed
-leftspeed = 105
+import velocity
+#global rightspeed
+#rightspeed = 95
+#global leftspeed
+#leftspeed = 105
 global camera
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -86,7 +86,7 @@ def position_controller(kp, target, actual):
         adjustment = kp*error
         return int(adjustment)
 
-def position_p(camera, capture):
+def position_p():
     window_width = 480
     window_height = 360
     global camera
@@ -104,10 +104,10 @@ def position_p(camera, capture):
 
        else:
            threshold = 430
-       global rightspeed
-       global leftspeed
-       rightspeed = int(95 + position_controller(Kp,threshold,avg))
-       leftspeed = int(105 - position_controller(Kp,threshold,avg))
+       #global rightspeed
+       #global leftspeed
+       rightspeed = int(85 + position_controller(Kp,threshold,avg))
+       leftspeed = int(85 - position_controller(Kp,threshold,avg))
 
        if rightspeed > 255:
            rightspeed = 255
@@ -120,5 +120,8 @@ def position_p(camera, capture):
 
        elif rightspeed < 0:
            rightspeed = 0
+       leftspeed = ((leftspeed*0.004)-0.006)
+       rightspeed = ((rightspeed*0.004)-0.006)
+       velocity.velocityPid(leftspeed,rightspeed)
        capture.truncate(0)
        #return rightspeed, leftspeed

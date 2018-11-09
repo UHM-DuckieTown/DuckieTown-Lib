@@ -56,23 +56,23 @@ def main():
         velocity.rightSensorCallback(17)
         #left_target_vel = 0.3
         #right_target_vel = 0.3
-        left_target_vel = ((leftspeed*0.004) - 0.006)-0.004
-        right_target_vel = ((rightspeed*0.004) - 0.006)-0.004
+        #left_target_vel = ((trackingline.leftspeed*0.004) - 0.006)-0.004
+        #right_target_vel = ((trackingline.rightspeed*0.004) - 0.006)-0.004
         threads = []
-        position_adjust = Thread(target = trackingline.position_p, args=(camera, capture))
+        position_adjust = Thread(target = trackingline.position_p)
         encoder_polling = Thread(target = velocity.getVelocity)
-        vel_pid = Thread(target = velocity.velocityPid, args=(left_target_vel, right_target_vel))
+        #vel_pid = Thread(target = velocity.velocityPid, args=(left_target_vel, right_target_vel))
 
         encoder_polling.setDaemon(True)
-        vel_pid.setDaemon(True)
+        #vel_pid.setDaemon(True)
         position_adjust.setDaemon(True)
 
         threads.append(encoder_polling)
-        threads.append(vel_pid)
+        #threads.append(vel_pid)
         threads.append(position_adjust)
 
         encoder_polling.start()
-        vel_pid.start()
+        #vel_pid.start()
         position_adjust.start()
 
         try:
