@@ -4,6 +4,7 @@ from picamera import PiCamera
 import time
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
+import trackingline
 #cap = cv2.VideoCapture('silent.mp4')
 #cap = cv2.VideoCapture('Video.MOV')
 #cap = cv2.VideoCapture('duckie_vid.mp4')
@@ -50,7 +51,7 @@ try:
        #ret, raw = cap.read()
         image = capture.array
         raw = cv2.resize(image, (window_width, window_height))
-
+        Kp = 0.15
 #    rotate image
     #rows,cols,_ = raw.shape
     #rawrot = cv2.getRotationMatrix2D((cols/2,rows/2),90,1)
@@ -60,7 +61,8 @@ try:
     #finished = cv2.resize(raw, (window_width, window_height))
 #   ROI?
     #finished = finished[0:200,0:480]
-	raw = raw[300:480,0:480]    
+    '''
+	raw = raw[300:480,0:480]
         frame = cv2.GaussianBlur(raw, (5, 5), 0)
         Sum = 0
         numx = 0
@@ -79,7 +81,7 @@ try:
 
         mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
         #mask = cv2.bitwise_or(mask2, mask1)
-	if np.all(cv2.bitwise_not(mask2)) == False: 
+	if np.all(cv2.bitwise_not(mask2)) == False:
 		mask = mask2
 		yellow = True
 	else:
@@ -116,6 +118,8 @@ try:
 
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
+    '''
+    yellow, avg = trackingline(raw)
 	if yellow:
 		threshold = 105
 	else:
@@ -125,7 +129,7 @@ try:
         leftspeed = int(105 - position_controller(Kp,threshold,avg))
         if rightspeed > 255:
             rightspeed = 255
-    
+
         elif rightspeed < 0:
             rightspeed = 0
 
@@ -137,7 +141,7 @@ try:
 
         rightMotor.setSpeed(rightspeed)
         leftMotor.setSpeed(leftspeed)
-        print 'Rightspeed = ',rightspeed 
+        print 'Rightspeed = ',rightspeed
         capture.truncate(0)
 except KeyboardInterrupt:
 	leftMotor.run(Adafruit_MotorHAT.RELEASE)
