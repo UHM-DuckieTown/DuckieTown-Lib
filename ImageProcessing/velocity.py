@@ -126,85 +126,84 @@ def getVelocity():
 
 
 def velocityPid(left_target, right_target):
-        while True:
+    while True:
 
-            global L_errorP_v
-            L_errorP_v = left_target - left_vel
-            global L_errorI_v
-            L_errorI_v = L_errorI_v + L_errorP_v
-            global L_errorD_v
-            L_errorD_v = L_errorP_v - L_old_errorP_v
-            global L_totalError_v
-            L_totalError_v = LEFTP * L_errorP_v + LEFTI * L_errorI_v + LEFTD * L_errorD_v + LEFTF
-            global L_old_errorP_v
-            L_old_errorP_v = L_errorP_v
+        global L_errorP_v
+        L_errorP_v = left_target - left_vel
+        global L_errorI_v
+        L_errorI_v = L_errorI_v + L_errorP_v
+        global L_errorD_v
+        L_errorD_v = L_errorP_v - L_old_errorP_v
+        global L_totalError_v
+        L_totalError_v = LEFTP * L_errorP_v + LEFTI * L_errorI_v + LEFTD * L_errorD_v + LEFTF
+        global L_old_errorP_v
+        L_old_errorP_v = L_errorP_v
 
-            #if left_target_vel > 0:
-            #        if L_totalError_v > 1:
-            #                global L_totalError_v
-            #                L_totalError_v = 1
-            #        elif L_totalError_v < 0:
-            #                global L_totalError_v
-            #                L_totalError_v = 0
-            if L_totalError_v > 255:
-                speedL = 255
-            elif L_totalError_v <0:
-                speedL = 0
-            else:
-                speedL = int(L_totalError_v)
-            leftMotor.setSpeed(int(speedL))
-            print "Left Error Total: " + str(L_totalError_v)
-            #print "Left Motor Speed: " + str(int(L_totalError_v + 100))
-            #print "Left Cm/Sec: " + str(left_vel)
+        #if left_target_vel > 0:
+        #        if L_totalError_v > 1:
+        #                global L_totalError_v
+        #                L_totalError_v = 1
+        #        elif L_totalError_v < 0:
+        #                global L_totalError_v
+        #                L_totalError_v = 0
+        if L_totalError_v > 255:
+            speedL = 255
+        elif L_totalError_v <0:
+            speedL = 0
+        else:
+            speedL = int(L_totalError_v)
+        leftMotor.setSpeed(int(speedL))
+        print "Left Error Total: " + str(L_totalError_v)
+        #print "Left Motor Speed: " + str(int(L_totalError_v + 100))
+        #print "Left Cm/Sec: " + str(left_vel)
 
 
-            global R_errorP_v
-            R_errorP_v = right_target - right_vel
-            global R_errorI_v
-            R_errorI_v = R_errorI_v + R_errorP_v
-            global R_errorD_v
-            R_errorD_v = R_errorP_v - R_old_errorP_v
-            global R_totalError_v
-            R_totalError_v = RIGHTP * R_errorP_v + RIGHTI * R_errorI_v + RIGHTD * R_errorD_v + RIGHTF
-            global R_old_errorP_v
-            R_old_errorP_v = R_errorP_v
+        global R_errorP_v
+        R_errorP_v = right_target - right_vel
+        global R_errorI_v
+        R_errorI_v = R_errorI_v + R_errorP_v
+        global R_errorD_v
+        R_errorD_v = R_errorP_v - R_old_errorP_v
+        global R_totalError_v
+        R_totalError_v = RIGHTP * R_errorP_v + RIGHTI * R_errorI_v + RIGHTD * R_errorD_v + RIGHTF
+        global R_old_errorP_v
+        R_old_errorP_v = R_errorP_v
 
-            #if right_target_vel > 0:
-            #        if R_totalError_v > 1:
-            #                global R_totalError_v
-            #                R_totalError_v = 1
-            #        elif R_totalError_v < 0:
-            #                global R_totalError_v
-            #                R_totalError_v = 0
-            if R_totalError_v > 255:
-                speedR = 255
-            elif R_totalError_v <0:
-                speedR = 0
-            else:
-                speedR = int(R_totalError_v)
-            rightMotor.setSpeed(int(speedR))
-            print "Right Error Total: " + str(R_totalError_v)
-            #print "Right Motor Speed: " + str(int(speedR))
-            #print "Right Cm/Sec: " + str(right_vel)
+        #if right_target_vel > 0:
+        #        if R_totalError_v > 1:
+        #                global R_totalError_v
+        #                R_totalError_v = 1
+        #        elif R_totalError_v < 0:
+        #                global R_totalError_v
+        #                R_totalError_v = 0
+        if R_totalError_v > 255:
+            speedR = 255
+        elif R_totalError_v <0:
+            speedR = 0
+        else:
+            speedR = int(R_totalError_v)
+        rightMotor.setSpeed(int(speedR))
+        print "Right Error Total: " + str(R_totalError_v)
+        #print "Right Motor Speed: " + str(int(speedR))
+        #print "Right Cm/Sec: " + str(right_vel)
 
-            '''
-            if len(samples) <= 5000:
-                global left_velocity
-                global right_velocity
-                global samples
-                global t
-                global target_left
-                global target_right
-                left_velocity.append(left_vel)
-                right_velocity.append(right_vel)
-                t += 0.001
-                samples.append(t)
-                target_left.append(left_target_vel)
-                target_right.append(right_target_vel)
+        '''
+        if len(samples) <= 5000:
+            global left_velocity
+            global right_velocity
+            global samples
+            global t
+            global target_left
+            global target_right
+            left_velocity.append(left_vel)
+            right_velocity.append(right_vel)
+            t += 0.001
+            samples.append(t)
+            target_left.append(left_target_vel)
+            target_right.append(right_target_vel)
 
-            '''
-
-                time.sleep(0.001)
+        '''
+        time.sleep(0.001)
 
 def getEncoderTicks():
         # Set Switch GPIO as input
