@@ -26,11 +26,10 @@ def trackingline(raw):
     mask2 = cv2.inRange(hsv, min_yellow, max_yellow)
         #mask = cv2.bitwise_or(mask2, mask1)
 	if np.all(cv2.bitwise_not(mask2)) == False:
-		mask = mask2
-		yellow = True
-
-	else:
-		mask = mask1
+        mask = mask2
+        yellow = True
+    else:
+        mask = mask1
 		yellow = False
 
     cv2.imshow(" mask", mask)
