@@ -83,12 +83,12 @@ def stopMotors():
 def leftSensorCallback(channel):
         global leftencoderticks
         leftencoderticks += 1
-        print "left encoder ticks:" + str(leftencoderticks)
+        #print "left encoder ticks:" + str(leftencoderticks)
 
 def rightSensorCallback(channel):
         global rightencoderticks
         rightencoderticks += 1
-        print "right encoder ticks:" + str(rightencoderticks)
+        #print "right encoder ticks:" + str(rightencoderticks)
 
 
 def plotVelocity():
@@ -153,9 +153,9 @@ def velocityPid(left_target, right_target):
             else:
                 speedL = int(L_totalError_v)
             leftMotor.setSpeed(int(speedL))
-            print "Left Error P: " + str(L_errorP_v)
-            print "Left Motor Speed: " + str(int(L_totalError_v + 100))
-            print "Left Cm/Sec: " + str(left_vel)
+            print "Left Error Total: " + str(L_totalError_v)
+            #print "Left Motor Speed: " + str(int(L_totalError_v + 100))
+            #print "Left Cm/Sec: " + str(left_vel)
 
 
             global R_errorP_v
@@ -183,9 +183,9 @@ def velocityPid(left_target, right_target):
             else:
                 speedR = int(R_totalError_v)
             rightMotor.setSpeed(int(speedR))
-            print "Right Error P: " + str(R_errorP_v)
-            print "Right Motor Speed: " + str(int(speedR))
-            print "Right Cm/Sec: " + str(right_vel)
+            print "Right Error Total: " + str(R_totalError_v)
+            #print "Right Motor Speed: " + str(int(speedR))
+            #print "Right Cm/Sec: " + str(right_vel)
 
             '''
             if len(samples) <= 5000:

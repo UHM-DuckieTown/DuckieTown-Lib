@@ -43,12 +43,12 @@ lastrightencoderticks = 0
 def leftSensorCallback(channel):
         global leftencoderticks
         leftencoderticks += 1
-        print "left encoder ticks: " + str(leftencoderticks)
+        #print "left encoder ticks: " + str(leftencoderticks)
 
 def rightSensorCallback(channel)
         global rightencoderticks
         rightencoderticks += 1
-        print "right encoder ticks: " + str(rightencoderticks)
+        #print "right encoder ticks: " + str(rightencoderticks)
 '''
 
 def main():
@@ -56,23 +56,25 @@ def main():
         velocity.rightSensorCallback(17)
         #left_target_vel = 0.3
         #right_target_vel = 0.3
-        #left_target_vel = ((trackingline.leftspeed*0.004) - 0.006)-0.004
-        #right_target_vel = ((trackingline.rightspeed*0.004) - 0.006)-0.004
-        threads = []
+        #left_target_vel = ((trackingline.leftspeed*0.004) - 0.006)
+        #right_target_vel = ((trackingline.rightspeed*0.004) - 0.006)
+        #print "Position Left Vel:",left_target_vel
+	#print "Position Right Vel:",right_target_vel
+	threads = []
         position_adjust = Thread(target = trackingline.position_p)
         encoder_polling = Thread(target = velocity.getVelocity)
-        #vel_pid = Thread(target = velocity.velocityPid, args=(left_target_vel, right_target_vel))
+        vel_pid = Thread(target = velocity.velocityPid, args=(trackingline.leftspeed, trackingline.rightspeed))
 
         encoder_polling.setDaemon(True)
-        #vel_pid.setDaemon(True)
+        vel_pid.setDaemon(True)
         position_adjust.setDaemon(True)
 
         threads.append(encoder_polling)
-        #threads.append(vel_pid)
+        threads.append(vel_pid)
         threads.append(position_adjust)
 
         encoder_polling.start()
-        #vel_pid.start()
+        vel_pid.start()
         position_adjust.start()
 
         try:

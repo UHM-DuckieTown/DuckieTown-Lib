@@ -4,11 +4,11 @@ from picamera import PiCamera
 import time
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
-import velocity
-#global rightspeed
-#rightspeed = 95
-#global leftspeed
-#leftspeed = 105
+#import velocity
+global rightspeed
+rightspeed = 85
+global leftspeed
+leftspeed = 85
 global camera
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -65,7 +65,7 @@ def linetracking(raw):
     else:
         avg = old_avg
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
-    print 'Average = ', avg
+    #print 'Average = ', avg
     cv2.imshow('frame', frame)
     cv2.imshow('edges', edges)
     cv2.waitKey(20)
@@ -122,6 +122,8 @@ def position_p():
            rightspeed = 0
        leftspeed = ((leftspeed*0.004)-0.006)
        rightspeed = ((rightspeed*0.004)-0.006)
-       velocity.velocityPid(leftspeed,rightspeed)
+       #print "Leftspeed Position:",leftspeed
+       #print "Rightspeed Position:",rightspeed
+       #velocity.velocityPid(leftspeed,rightspeed)
        capture.truncate(0)
        #return rightspeed, leftspeed
