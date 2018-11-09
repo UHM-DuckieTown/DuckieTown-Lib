@@ -126,7 +126,7 @@ def getVelocity():
 
 
 def velocityPid(left_target, right_target):
-        #while True:
+        while True:
 
             global L_errorP_v
             L_errorP_v = left_target - left_vel
@@ -204,7 +204,7 @@ def velocityPid(left_target, right_target):
 
             '''
 
-                #time.sleep(0.001)
+                time.sleep(0.001)
 
 def getEncoderTicks():
         # Set Switch GPIO as input
