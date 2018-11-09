@@ -120,8 +120,10 @@ try:
             break
     '''
     yellow,avg = trackingline(raw)
+    
 	if yellow:
 		threshold = 105
+
 	else:
 		threshold = 430
     	#130 for yellow line, 450 for white
