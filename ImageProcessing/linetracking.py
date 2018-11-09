@@ -61,7 +61,7 @@ try:
            #finished = cv2.resize(raw, (window_width, window_height))
        #   ROI?
            #finished = finished[0:200,0:480]
-           '''
+       '''
        	raw = raw[300:480,0:480]
                frame = cv2.GaussianBlur(raw, (5, 5), 0)
                Sum = 0
@@ -118,7 +118,7 @@ try:
 
                if cv2.waitKey(20) & 0xFF == ord('q'):
                    break
-           '''
+       '''
 
        yellow,avg = trackingline(raw)
        #130 for yellow line, 450 for white
@@ -147,7 +147,7 @@ try:
        leftMotor.setSpeed(leftspeed)
        print 'Rightspeed = ',rightspeed
        capture.truncate(0)
-       
+
 except KeyboardInterrupt:
 	leftMotor.run(Adafruit_MotorHAT.RELEASE)
 	rightMotor.run(Adafruit_MotorHAT.RELEASE)
