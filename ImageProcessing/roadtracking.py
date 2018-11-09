@@ -63,7 +63,7 @@ def main():
 	threads = []
         position_adjust = Thread(target = trackingline.position_p)
         encoder_polling = Thread(target = velocity.getVelocity)
-        vel_pid = Thread(target = velocity.velocityPid, args=(trackingline.leftspeed, trackingline.rightspeed))
+        vel_pid = Thread(target = velocity.velocityPid)
 
         encoder_polling.setDaemon(True)
         vel_pid.setDaemon(True)
@@ -79,7 +79,7 @@ def main():
 
         try:
                 while True:
-                        time.sleep(1)
+                        time.sleep(0.1)
                         print "looping"
 
         except KeyboardInterrupt:

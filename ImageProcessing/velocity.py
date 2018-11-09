@@ -5,6 +5,7 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from threading import Thread
 import matplotlib.pyplot as plt
 import numpy as np
+import trackingline
 
 global leftencoderticks
 leftencoderticks = 0
@@ -48,15 +49,15 @@ target_left = []
 global target_right
 target_right = []
 
-LEFTP = 500
-LEFTI = 0
-LEFTD = 0.01
-LEFTF = 110
+LEFTP = 3
+LEFTI = 0.0001
+LEFTD = 0.005
+LEFTF = 0
 
-RIGHTP = 500
-RIGHTI = 0
-RIGHTD= 0.01
-RIGHTF = 100
+RIGHTP = 3
+RIGHTI = 0.0001
+RIGHTD= 0.005
+RIGHTF = 0
 
 global left_velocity
 left_velocity= []
@@ -66,6 +67,11 @@ global samples
 samples = []
 global t
 t = 0
+
+global left_target
+left_target = 0
+global right_target
+right_target = 0
 # Tell GPIO library to use GPIO references
 GPIO.setmode(GPIO.BCM)
 
@@ -111,12 +117,12 @@ def getVelocity():
 
         while True:
                 global left_vel
-                left_vel = (leftencoderticks - lastleftencoderticks) * 0.053
+                left_vel = ((leftencoderticks - lastleftencoderticks) * 0.053)+0.005
                 global lastleftencoderticks
                 lastleftencoderticks = leftencoderticks
 
                 global right_vel
-                right_vel = (rightencoderticks - lastrightencoderticks) * 0.053
+                right_vel =((rightencoderticks - lastrightencoderticks) * 0.053)
                 global lastrightencoderticks
                 lastrightencoderticks = rightencoderticks
 
@@ -125,9 +131,14 @@ def getVelocity():
                 time.sleep(0.01)
 
 
-def velocityPid(left_target, right_target):
+def velocityPid():
     while True:
-
+	global left_target
+	global right_target
+	left_target = trackingline.leftspeed
+	right_target = trackingline.rightspeed
+	print "Left Target",left_target
+	print "Right Target",right_target
         global L_errorP_v
         L_errorP_v = left_target - left_vel
         global L_errorI_v
@@ -146,14 +157,16 @@ def velocityPid(left_target, right_target):
         #        elif L_totalError_v < 0:
         #                global L_totalError_v
         #                L_totalError_v = 0
-        if L_totalError_v > 255:
+        L_totalError_v = (L_totalError_v+0.006)/0.004
+	if L_totalError_v > 255:
             speedL = 255
         elif L_totalError_v <0:
             speedL = 0
         else:
             speedL = int(L_totalError_v)
+	#speedL = 100
         leftMotor.setSpeed(int(speedL))
-        print "Left Error Total: " + str(L_totalError_v)
+        #print "Left Error Total: " + str(L_totalError_v)
         #print "Left Motor Speed: " + str(int(L_totalError_v + 100))
         #print "Left Cm/Sec: " + str(left_vel)
 
@@ -176,14 +189,16 @@ def velocityPid(left_target, right_target):
         #        elif R_totalError_v < 0:
         #                global R_totalError_v
         #                R_totalError_v = 0
+	R_totalError_v = (R_totalError_v+0.006)/0.004
         if R_totalError_v > 255:
             speedR = 255
         elif R_totalError_v <0:
             speedR = 0
         else:
             speedR = int(R_totalError_v)
+	#speedR = 100
         rightMotor.setSpeed(int(speedR))
-        print "Right Error Total: " + str(R_totalError_v)
+        #print "Right Error Total: " + str(R_totalError_v)
         #print "Right Motor Speed: " + str(int(speedR))
         #print "Right Cm/Sec: " + str(right_vel)
 

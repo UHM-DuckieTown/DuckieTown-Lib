@@ -6,9 +6,9 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 #import velocity
 global rightspeed
-rightspeed = 85
+rightspeed = 0 
 global leftspeed
-leftspeed = 85
+leftspeed = 0
 global camera
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -18,7 +18,7 @@ capture = PiRGBArray(camera, size=(640,480))
 time.sleep(0.1)
 def linetracking(raw):
     cv2.imshow('raw',raw)
-    raw = raw[300:480,0:480]
+    raw = raw[250:480,0:480]
     frame = cv2.GaussianBlur(raw, (5, 5), 0)
     Sum = 0
     numx = 0
@@ -75,7 +75,7 @@ def linetracking(raw):
 
 def position_controller(kp, target, actual):
     error = target-actual
-    #errorD = error - old_error
+    errorD = error - old_error
     #global old_error
     #old_error = error
     #print 'Error = ',error
@@ -104,11 +104,12 @@ def position_p():
 
        else:
            threshold = 430
-       #global rightspeed
-       #global leftspeed
-       rightspeed = int(85 + position_controller(Kp,threshold,avg))
-       leftspeed = int(85 - position_controller(Kp,threshold,avg))
-
+       global rightspeed
+       global leftspeed
+       rightspeed = int(100 + position_controller(Kp,threshold,avg))
+       leftspeed = int(100 - position_controller(Kp,threshold,avg))
+       #rightspeed = 100
+       #leftspeed = 100
        if rightspeed > 255:
            rightspeed = 255
 
