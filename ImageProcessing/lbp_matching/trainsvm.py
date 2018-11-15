@@ -12,7 +12,7 @@ import cvutils
 import csv
 
 nou = []
-labels = [0]*5+[1]*3
+labels = [0]*9
 # ARGUMENTS
 parser = ap.ArgumentParser()
 parser.add_argument("-t", "--trainingSet", help="Path to Training Set", required="True")
@@ -30,8 +30,12 @@ with open(args['imageLabels'], 'rb') as csvfile:
         train_dic[row[0]] = int(row[1])
 #itterate through train images
 for train_image in train_images:
+    #cv2.imread(train_image)
+    #
     im = cv2.imread(train_image)
-    im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    #im = np.array(im, dtype=np.uint8)
+#    cv2.imshow('test',im)
+    im_gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
     radius = 1
     no_points = 8 * radius
     lbp = local_binary_pattern(im_gray, no_points, radius, method='uniform')
