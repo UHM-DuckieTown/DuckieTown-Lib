@@ -16,18 +16,11 @@ labels = [0]*9+[1]*9
 # ARGUMENTS
 parser = ap.ArgumentParser()
 parser.add_argument("-t", "--trainingSet", help="Path to Training Set", required="True")
-parser.add_argument("-l", "--imageLabels", help="Path to Image Label Files", required="True")
 args = vars(parser.parse_args())
 
 #Get Training Images Paths
 train_images = cvutils.imlist(args["trainingSet"])
 
-#Make Dic to store files and keys
-train_dic = {}
-with open(args['imageLabels'], 'rb') as csvfile:
-    reader = csv.reader(csvfile, delimiter=' ')
-    for row in reader:
-        train_dic[row[0]] = int(row[1])
 #itterate through train images
 for train_image in train_images:
     #cv2.imread(train_image)

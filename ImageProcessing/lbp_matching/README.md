@@ -5,10 +5,17 @@ __Perform training using__
 
 ```
 python perform-training.py -t data/lbp/train/ -l data/lbp/class_train.txt
+
 ```
 
 __Perform testing using__
 
 ```
 python perform-testing.py -t data/lbp/test/ -l data/lbp/class_test.txt
+```
+
+__Perform SVM testing using__
+
+```
+python trainsvm.py -t data/lbp/others/
 ```
