@@ -17,5 +17,5 @@ python perform-testing.py -t data/lbp/test/ -l data/lbp/class_test.txt
 __Perform SVM testing using__
 
 ```
-python trainsvm.py -t data/lbp/others/
+python trainsvm.py -n data/lbp/<path to negative set>/ -p data/lbp/<path to positive set>/
 ```

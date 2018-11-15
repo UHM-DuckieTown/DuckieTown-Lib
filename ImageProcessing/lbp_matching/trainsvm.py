@@ -11,48 +11,50 @@ import argparse as ap
 import cvutils
 import csv
 
-nou = []
-labels = [0]*9+[1]*9
+def lbp(train_images, lbpset):
+    #itterate through train images
+    for train_image in train_images:
+        #open image
+        im = cv2.imread(train_image)
+        #convert to grayscale image
+        im_gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
+        #set pts & radius
+        radius = 1
+        no_points = 8 * radius
+        #get lbp image
+        lbp = local_binary_pattern(im_gray, no_points, radius, method='uniform')
+        #sort by freq
+        x = itemfreq(lbp.ravel())
+        # Normalize values
+        hist = x[:, 1]/sum(x[:, 1])
+        #set default hist
+        hist = np.histogram(hist,bins =20, range =(0,1))
+        #print(list(hist[0]))
+        #add values to set
+        lbpset.append(list(hist[0]))
+
+
+
 # ARGUMENTS
 parser = ap.ArgumentParser()
-parser.add_argument("-t", "--trainingSet", help="Path to Training Set", required="True")
+parser.add_argument("-p", "--posSet", help="Path to Positive Set", required="True")
+parser.add_argument("-n", "--negSet", help="Path to Negitive Set", required="True")
 args = vars(parser.parse_args())
 
-#Get Training Images Paths
-train_images = cvutils.imlist(args["trainingSet"])
+#Get Training Images
+posSet = cvutils.imlist(args["posSet"])
+negSet = cvutils.imlist(args["negSet"])
+lbpset = []
+labels = [0]*len(negSet)+[1]*len(posSet)
+lbp(negSet, lbpset)
+lbp(posSet, lbpset)
 
-#itterate through train images
-for train_image in train_images:
-    #cv2.imread(train_image)
-    #
-    im = cv2.imread(train_image)
-    #im = np.array(im, dtype=np.uint8)
-#    cv2.imshow('test',im)
-    im_gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
-    radius = 1
-    no_points = 8 * radius
-    lbp = local_binary_pattern(im_gray, no_points, radius, method='uniform')
-    #y = lbp.ravel()
-    #print y
-    x = itemfreq(lbp.ravel())
-    #print x
-    # Normalize the histogram
-    hist = x[:, 1]/sum(x[:, 1])
-    #    print(hist)
-    hist = np.histogram(hist,bins =20, range =(0,1))
-    #x.append(list(hist[0]))
-    #print(list(hist[0]))
 
-    #x = np.concatenate(x,a, axis=1)
-    nou.append(list(hist[0]))
-        #for i in hist:
-        # print i[0]
-        #np.append(x,i[0])
-print nou
+# print lbpset
 
 # Split data to train and test on 80-20 ratio
 #X is the array of the points while Y is the label of whether it's true or not
-X_train, X_test, y_train, y_test = train_test_split(nou, labels, test_size = 0.2, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 0.2, random_state=0)
 
 #print("Displaying data. Close window to continue")
 # Plot data
