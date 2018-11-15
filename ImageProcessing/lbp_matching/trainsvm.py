@@ -12,7 +12,7 @@ import cvutils
 import csv
 
 nou = []
-labels = [0]*9
+labels = [0]*9+[1]*9
 # ARGUMENTS
 parser = ap.ArgumentParser()
 parser.add_argument("-t", "--trainingSet", help="Path to Training Set", required="True")
