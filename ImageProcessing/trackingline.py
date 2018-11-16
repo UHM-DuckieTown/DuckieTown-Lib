@@ -26,13 +26,13 @@ global Position_errorI_v
 Position_errorI_v = 0
 global Position_totalError_v
 Position_totalError_v = 0
-POSITIONP = 0.15
-POSITIONI = 0.0001
-POSITIOND = 0.005
+POSITIONP = 0.1
+POSITIONI = 0.0000
+POSITIOND = 0.0005
 POSITIONF = 0
 def linetracking(raw):
     cv2.imshow('raw',raw)
-    raw = raw[250:480,0:480]
+    raw = raw[200:480,0:480]
     frame = cv2.GaussianBlur(raw, (5, 5), 0)
     Sum = 0
     numx = 0
@@ -64,7 +64,7 @@ def linetracking(raw):
     edges = cv2.Canny(mask, 50, 150, apertureSize=3)
     #road = edges[260:360, 0:480]
 
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,20, minLineLength= 1, maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,20, minLineLength= 10, maxLineGap=1)
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line[0]
