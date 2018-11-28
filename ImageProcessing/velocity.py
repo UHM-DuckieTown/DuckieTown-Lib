@@ -137,8 +137,8 @@ def velocityPid():
 	global right_target
 	left_target = trackingline.leftspeed
 	right_target = trackingline.rightspeed
-	print "Left Target",left_target
-	print "Right Target",right_target
+	#print "Left Target",left_target
+	#print "Right Target",right_target
         global L_errorP_v
         L_errorP_v = left_target - left_vel
         global L_errorI_v

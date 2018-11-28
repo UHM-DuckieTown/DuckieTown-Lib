@@ -80,7 +80,7 @@ def main():
         try:
                 while True:
                         time.sleep(0.1)
-                        print "looping"
+                        #print "looping"
 
         except KeyboardInterrupt:
                 print "done"
