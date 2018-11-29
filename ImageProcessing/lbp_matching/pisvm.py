@@ -30,7 +30,9 @@ for frame in camera.capture_continuous(raw, format='bgr', use_video_port=True):
     image= raw.array
     image= image[0:70,570:640]
     if(clf.predict([lbp(image)])==1):
-        print('stop')
+        print('found stop sign')
+    else:
+        print('miss')
     key = cv2.waitKey(1)
     cv2.imshow('nou',image)
     raw.truncate(0)
