@@ -16,9 +16,10 @@ def lbp(train_images, lbpset):
     #itterate through train images
     for train_image in train_images:
         #open image
-        im = cv2.imread(train_image)
+        im_gray = cv2.imread(train_image, 0)
+        #im = cv2.imread(train_image)
         #convert to grayscale image
-        im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        #im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         #set pts & radius
         radius = 1
         no_points = 8

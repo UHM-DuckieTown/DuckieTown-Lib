@@ -1,8 +1,9 @@
 from sklearn import svm
+import time
 import cv2
 from skimage.feature import local_binary_pattern
 import numpy as np
-from sklearn.externals import joblib
+from joblib import load
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 def lbp(test_image):
@@ -23,7 +24,7 @@ camera.resolution = (640, 480)
 camera.framerate = 20
 raw = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
-clf=joblib.load("clf_grid_Stop")
+clf=load("clf_grid_Stop")
 #camera.capture(raw, format="bgr")
 for frame in camera.capture_continuous(raw, format='bgr', use_video_port=True):
     image= raw.array
@@ -31,6 +32,7 @@ for frame in camera.capture_continuous(raw, format='bgr', use_video_port=True):
     if(clf.predict([lbp(image)])==1):
         print('stop')
     key = cv2.waitKey(1)
+    cv2.imshow('nou',image)
     raw.truncate(0)
     if key == ord('q'):
         break

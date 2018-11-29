@@ -6,7 +6,7 @@ import cv2
 from skimage.feature import local_binary_pattern
 from scipy.stats import itemfreq
 import numpy as np
-from sklearn.externals import joblib
+import joblib
 import argparse as ap
 import cvutils
 import csv
