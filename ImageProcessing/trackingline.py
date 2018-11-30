@@ -61,7 +61,7 @@ def detect_stop(hsv):
 	    else:
             	#m = (y2-y1)/(x2-x1)
 	    	
-		print "y2 = ",y2,"y1 = ",y1
+		#print "y2 = ",y2,"y1 = ",y1
             	if abs((y2-y1)) < 3:
                     stop = True
 		    print "Stop = ",stop
@@ -145,7 +145,7 @@ def position_controller(target, actual):
     Position_old_errorP_v = Position_errorP_v
     #global old_error
     #old_error = error
-    #print 'Error = ',error
+    print 'Error = ',Position_totalError_v
     if abs(Position_totalError_v) < 5:
         #do nothing
         return int(0)
@@ -180,24 +180,22 @@ def position_p():
        if rightspeed > 255:
            rightspeed = 255
 
-       elif rightspeed < 0:
+       if rightspeed < 0:
            rightspeed = 0
 
        if leftspeed > 255:
            leftspeed = 255
 
-       elif rightspeed < 0:
-           rightspeed = 0
+       if leftspeed < 0:
+           leftspeed = 0
        global stop
+       #print "RightspeedP = ",rightspeed 
        if stop == True:
 	   time.sleep(0.5)
-           leftspeed = 70
-	   rightspeed = 70
-           #leftMotor.run(Adafruit_MotorHAT.RELEASE)
-           #rightMotor.run(Adafruit_MotorHAT.RELEASE)
-       else:
-           leftspeed = ((leftspeed*0.004)-0.006)
-           rightspeed = ((rightspeed*0.004)-0.006)
+	   #leftspeed = ((leftspeed*0.004)-0.006)
+	   #rightspeed = ((rightspeed*0.004)-0.006)
+       leftspeed = ((leftspeed*0.004)-0.006)
+       rightspeed = ((rightspeed*0.004)-0.006)
        #print "Leftspeed Position:",leftspeed
        #print "Rightspeed Position:",rightspeed
        #velocity.velocityPid(leftspeed,rightspeed)

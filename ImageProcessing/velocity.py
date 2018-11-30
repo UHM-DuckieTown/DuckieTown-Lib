@@ -136,20 +136,24 @@ def getVelocity():
 def velocityPid():
     waiting_for_thread = 0
     while True:
-	    if trackingline.stop == True:
-	        #left_target = left_target - 30
-	        #right_target = right_target - 30
-	        if waiting_for_thread == 119:
-		        print "I entered that if statement"
-	    	    stopMotors()
-	    	    trackingline.stop = False
-                startMotors()    
-	        waiting_for_thread+=1
-	    global left_target
-	    global right_target
-	    if trackingline.stop == False:
- 	        left_target = trackingline.leftspeed
-	        right_target = trackingline.rightspeed
+	if trackingline.stop == True:
+	    if waiting_for_thread == 119:
+		print "I entered that if statement"
+	    	stopMotors()
+		time.sleep(1)
+	    	trackingline.stop = False
+                startMotors()
+		left_Motor.setSpeed(100)
+		right_Motor.setSpeed(100)
+		waiting_for_thread = 0
+	    waiting_for_thread+=1
+	global left_target
+	global right_target
+	if trackingline.stop == False:
+	    #left_Motor.setSpeed(100)
+	    #right_Motor.setSpeed(100)
+ 	    left_target = trackingline.leftspeed
+	    right_target = trackingline.rightspeed
 	#print "Left Target",left_target
 	#print "Right Target",right_target
 	#waiting_for_thread = 0
