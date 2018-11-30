@@ -48,7 +48,7 @@ def detect_stop(hsv):
     #road = edges[260:360, 0:480]
 
     lines = cv2.HoughLinesP(edges, 1, np.pi/180,100, minLineLength= 10 , maxLineGap=1)
-   
+
     #print "in detect_stop"
     #stop = False
     cv2.waitKey(20)
@@ -60,7 +60,7 @@ def detect_stop(hsv):
 	    	continue
 	    else:
             	#m = (y2-y1)/(x2-x1)
-	    	
+
 		#print "y2 = ",y2,"y1 = ",y1
             	if abs((y2-y1)) < 3:
                     stop = True
@@ -70,7 +70,7 @@ def detect_stop(hsv):
             	#else:
                  #   stop = False
     #print "Value of stop=",stop
-    return 
+    return
 
 def linetracking(raw):
     cv2.imshow('raw',raw)
@@ -171,31 +171,34 @@ def position_p():
 
        else:
            threshold = 430
-       global rightspeed
-       global leftspeed
-       rightspeed = int(100 + position_controller(threshold,avg))
-       leftspeed = int(100 - position_controller(threshold,avg))
-       #rightspeed = 100
-       #leftspeed = 100
-       if rightspeed > 255:
-           rightspeed = 255
-
-       if rightspeed < 0:
-           rightspeed = 0
-
-       if leftspeed > 255:
-           leftspeed = 255
-
-       if leftspeed < 0:
-           leftspeed = 0
        global stop
-       #print "RightspeedP = ",rightspeed 
        if stop == True:
 	   time.sleep(0.5)
-	   #leftspeed = ((leftspeed*0.004)-0.006)
-	   #rightspeed = ((rightspeed*0.004)-0.006)
-       leftspeed = ((leftspeed*0.004)-0.006)
-       rightspeed = ((rightspeed*0.004)-0.006)
+       else: 
+           global rightspeed
+           global leftspeed
+           rightspeed = int(100 + position_controller(threshold,avg))
+           leftspeed = int(100 - position_controller(threshold,avg))
+           #rightspeed = 100
+           #leftspeed = 100
+           if rightspeed > 255:
+               rightspeed = 255
+
+           if rightspeed < 0:
+               rightspeed = 0
+
+           if leftspeed > 255:
+               leftspeed = 255
+
+           if leftspeed < 0:
+               leftspeed = 0
+
+           #print "RightspeedP = ",rightspeed
+
+    	   #leftspeed = ((leftspeed*0.004)-0.006)
+    	   #rightspeed = ((rightspeed*0.004)-0.006)
+           leftspeed = ((leftspeed*0.004)-0.006)
+           rightspeed = ((rightspeed*0.004)-0.006)
        #print "Leftspeed Position:",leftspeed
        #print "Rightspeed Position:",rightspeed
        #velocity.velocityPid(leftspeed,rightspeed)
