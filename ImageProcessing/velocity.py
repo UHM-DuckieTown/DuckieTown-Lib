@@ -81,20 +81,22 @@ leftMotor = mh.getMotor(2)
 rightMotor = mh.getMotor(1)
 leftMotor.run(Adafruit_MotorHAT.FORWARD)
 rightMotor.run(Adafruit_MotorHAT.FORWARD)
-
+def startMotors():
+    leftMotor.run(Adafruit_MotorHAT.FORWARD)
+    rightMotor.run(Adafruit_MotorHAT.FORWARD)
 def stopMotors():
-        leftMotor.run(Adafruit_MotorHAT.RELEASE)
-        rightMotor.run(Adafruit_MotorHAT.RELEASE)
+    leftMotor.run(Adafruit_MotorHAT.RELEASE)
+    rightMotor.run(Adafruit_MotorHAT.RELEASE)
 
 def leftSensorCallback(channel):
-        global leftencoderticks
-        leftencoderticks += 1
-        #print "left encoder ticks:" + str(leftencoderticks)
+    global leftencoderticks
+    leftencoderticks += 1
+    #print "left encoder ticks:" + str(leftencoderticks)
 
 def rightSensorCallback(channel):
-        global rightencoderticks
-        rightencoderticks += 1
-        #print "right encoder ticks:" + str(rightencoderticks)
+    global rightencoderticks
+    rightencoderticks += 1
+    #print "right encoder ticks:" + str(rightencoderticks)
 
 
 def plotVelocity():
@@ -134,11 +136,20 @@ def getVelocity():
 def velocityPid():
     waiting_for_thread = 0
     while True:
-	global left_target
-	global right_target
-	if trackingline.stop == False:
- 	    left_target = trackingline.leftspeed
-	    right_target = trackingline.rightspeed
+	    if trackingline.stop == True:
+	        #left_target = left_target - 30
+	        #right_target = right_target - 30
+	        if waiting_for_thread == 119:
+		        print "I entered that if statement"
+	    	    stopMotors()
+	    	    trackingline.stop = False
+                startMotors()    
+	        waiting_for_thread+=1
+	    global left_target
+	    global right_target
+	    if trackingline.stop == False:
+ 	        left_target = trackingline.leftspeed
+	        right_target = trackingline.rightspeed
 	#print "Left Target",left_target
 	#print "Right Target",right_target
 	#waiting_for_thread = 0
@@ -204,15 +215,7 @@ def velocityPid():
         #print "Right Error Total: " + str(R_totalError_v)
         #print "Right Motor Speed: " + str(int(speedR))
         #print "Right Cm/Sec: " + str(right_vel)
-	if trackingline.stop == True:
-	    #left_target = left_target - 30
-	    #right_target = right_target - 30
-	    if waiting_for_thread == 119:
-		print "I entered that if statement"
-	    	stopMotors()
-	    	trackingline.stop = False
-		waiting_for_thread = 0
-	    waiting_for_thread+=1
+
 
         '''
         if len(samples) <= 5000:
