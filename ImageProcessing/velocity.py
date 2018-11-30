@@ -132,13 +132,16 @@ def getVelocity():
 
 
 def velocityPid():
+    waiting_for_thread = 0
     while True:
 	global left_target
 	global right_target
-	left_target = trackingline.leftspeed
-	right_target = trackingline.rightspeed
+	if trackingline.stop == False:
+ 	    left_target = trackingline.leftspeed
+	    right_target = trackingline.rightspeed
 	#print "Left Target",left_target
 	#print "Right Target",right_target
+	#waiting_for_thread = 0
         global L_errorP_v
         L_errorP_v = left_target - left_vel
         global L_errorI_v
@@ -201,6 +204,15 @@ def velocityPid():
         #print "Right Error Total: " + str(R_totalError_v)
         #print "Right Motor Speed: " + str(int(speedR))
         #print "Right Cm/Sec: " + str(right_vel)
+	if trackingline.stop == True:
+	    #left_target = left_target - 30
+	    #right_target = right_target - 30
+	    if waiting_for_thread == 119:
+		print "I entered that if statement"
+	    	stopMotors()
+	    	trackingline.stop = False
+		waiting_for_thread = 0
+	    waiting_for_thread+=1
 
         '''
         if len(samples) <= 5000:

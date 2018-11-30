@@ -26,6 +26,8 @@ global Position_errorI_v
 Position_errorI_v = 0
 global Position_totalError_v
 Position_totalError_v = 0
+global stop
+stop = False
 POSITIONP = 0.1
 POSITIONI = 0.0000
 POSITIOND = 0.0005
@@ -37,30 +39,38 @@ def detect_stop(hsv):
     #hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     #min_yellow = np.array([0, 64, 236])
     #max_yellow = np.array([32, 255, 255])
+    #hsv = hsv[50:280,0:480]
     upper = np.array([0, 0, 255])
     lower = np.array([0, 0, 255])
     mask1 = cv2.inRange(hsv, lower, upper)
+    cv2.imshow('mask', mask1)
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #road = edges[260:360, 0:480]
 
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,20, minLineLength= 200, maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,100, minLineLength= 10 , maxLineGap=1)
    
-    print "in detect_stop"
-    stop = False
+    #print "in detect_stop"
+    #stop = False
+    cv2.waitKey(20)
+    global stop
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line[0]
 	    if (x2-x1) == 0:
 	    	continue
-            m = (y2-y1)/(x2-x1)
-	    print "Slope=",m
-            if abs(m) < 0.5:
-                stop = True
-		return stop
-            else:
-                stop = False
+	    else:
+            	#m = (y2-y1)/(x2-x1)
+	    	
+		print "y2 = ",y2,"y1 = ",y1
+            	if abs((y2-y1)) < 3:
+                    stop = True
+		    print "Stop = ",stop
+		    #time.sleep(0.2)
+		    return
+            	#else:
+                 #   stop = False
     #print "Value of stop=",stop
-    return stop
+    return 
 
 def linetracking(raw):
     cv2.imshow('raw',raw)
@@ -111,7 +121,7 @@ def linetracking(raw):
     else:
         avg = old_avg
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
-    stop = detect_stop(hsv)
+    detect_stop(hsv)
     #stop = False
     #print 'Average = ', avg
     cv2.imshow('frame', frame)
@@ -119,7 +129,7 @@ def linetracking(raw):
     cv2.waitKey(20)
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
-    return yellow,avg,stop
+    return yellow,avg
 
 
 def position_controller(target, actual):
@@ -154,7 +164,7 @@ def position_p():
        image = capture.array
        raw = cv2.resize(image, (window_width, window_height))
 
-       yellow,avg,stop = linetracking(raw)
+       yellow,avg = linetracking(raw)
        #130 for yellow line, 450 for white
        if yellow:
            threshold = 105
@@ -178,10 +188,11 @@ def position_p():
 
        elif rightspeed < 0:
            rightspeed = 0
+       global stop
        if stop == True:
-           leftspeed = 0
-           rightspeed = 0
-	   time.sleep(3)
+	   time.sleep(0.5)
+           leftspeed = 70
+	   rightspeed = 70
            #leftMotor.run(Adafruit_MotorHAT.RELEASE)
            #rightMotor.run(Adafruit_MotorHAT.RELEASE)
        else:
