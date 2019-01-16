@@ -38,6 +38,14 @@ def on_message(client, userdata, msg):
     print 'on__message: '+ str(msg.payload)
     command = str(msg.payload)
 
+
+
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 20
+capture = PiRGBArray(camera, size=(640,480))
+time.sleep(0.1)
+
 def encode_string(image, topic, client):
     img_str = cv2.imencode('.jpg', image)[1].tostring()
     encoded_str = base64.b64encode(img_str)
@@ -51,11 +59,8 @@ def encode_string(image, topic, client):
     elif topic == DUCK2_TEXT:
         client.publish(DUCK2_FEED2, encoded_str, 0)
 
-camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 20
-capture = PiRGBArray(camera, size=(640,480))
-time.sleep(0.1)
+
+
 #'''
  #   window_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
   #  window_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -178,19 +183,24 @@ try:
                 print 'Raw'
 
             elif command == "2":
-                render = edges
+                #render = edges
+                render = raw
                 print 'Edges'
 
             elif command == "3":
-                render = frame
+                #render = frame
+                render = raw
                 print 'Masked Image'
 
             elif command == "4":
-                render = mask1
+                #render = mask1
+                render = raw
                 print 'Masked White'
 
             elif command == "5":
-                render = mask2
+                #render = mask2
+                render = raw
+                
                 print 'Masked Yellow'
 
             encode_string(render, topic, client)
@@ -243,3 +253,4 @@ except KeyboardInterrupt:
 finally:
     client.loop_stop()
 #cv2.destroyAllWindows()
+    
