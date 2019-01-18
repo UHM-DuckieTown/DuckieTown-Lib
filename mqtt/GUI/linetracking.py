@@ -160,38 +160,38 @@ try:
     if yellow:
 		threshold = 105
 
-	else:
-		threshold = 430
-    	#130 for yellow line, 450 for white
-        rightspeed = int(95 + position_controller(Kp,threshold,avg))
-        leftspeed = int(105 - position_controller(Kp,threshold,avg))
-        if rightspeed > 255:
-            rightspeed = 255
+    else:
+            threshold = 430
+    #130 for yellow line, 450 for white
+    rightspeed = int(95 + position_controller(Kp,threshold,avg))
+    leftspeed = int(105 - position_controller(Kp,threshold,avg))
+    if rightspeed > 255:
+        rightspeed = 255
 
-        elif rightspeed < 0:
-            rightspeed = 0
+    elif rightspeed < 0:
+        rightspeed = 0
 
-        if leftspeed > 255:
-            leftspeed = 255
+    if leftspeed > 255:
+        leftspeed = 255
 
-        elif rightspeed < 0:
-            rightspeed = 0
+    elif rightspeed < 0:
+        rightspeed = 0
 
-        print command
-        if command == 'stop':
-            leftMotor.run(Adafruit_MotorHAT.RELEASE)
-            rightMotor.run(Adafruit_MotorHAT.RELEASE)
+    print command
+    if command == 'stop':
+        leftMotor.run(Adafruit_MotorHAT.RELEASE)
+        rightMotor.run(Adafruit_MotorHAT.RELEASE)
 
-        else:
-            leftMotor.run(Adafruit_MotorHAT.FORWARD)
-            rightMotor.run(Adafruit_MotorHAT.FORWARD)
-            rightMotor.setSpeed(rightspeed)
-            leftMotor.setSpeed(leftspeed)
-
+    else:
+        leftMotor.run(Adafruit_MotorHAT.FORWARD)
+        rightMotor.run(Adafruit_MotorHAT.FORWARD)
         rightMotor.setSpeed(rightspeed)
         leftMotor.setSpeed(leftspeed)
-        print 'Rightspeed = ',rightspeed
-        capture.truncate(0)
+
+    rightMotor.setSpeed(rightspeed)
+    leftMotor.setSpeed(leftspeed)
+    print 'Rightspeed = ',rightspeed
+    capture.truncate(0)
 except KeyboardInterrupt:
 	leftMotor.run(Adafruit_MotorHAT.RELEASE)
 	rightMotor.run(Adafruit_MotorHAT.RELEASE)

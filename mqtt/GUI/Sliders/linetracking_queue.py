@@ -30,26 +30,29 @@ q = queue.Queue()
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
 
-    client.subscribe(MQTT_PATH3)
+    client.subscribe([(DUCK1_TEXT, 0), (DUCK2_TEXT, 0)])
 
 def on_message(client, userdata, msg):
     #print(msg.topic+" "+str(msg.payload))
     global command
-    print 'on__message: '+ str(msg.payload)
+    print (msg.topic+" "+str(msg.payload))
     command = str(msg.payload)
+    print command
+    q.put((msg.payload, str(msg.topic)))
 
-    def encode_string(image, topic, client):
-        img_str = cv2.imencode('.jpg', image)[1].tostring()
-        encoded_str = base64.b64encode(img_str)
 
-        if topic == DUCK1_FEED:
-            client.publish(DUCK1_FEED, encoded_str, 0)
-        elif topic == DUCK2_FEED:
-            client.publish(DUCK2_FEED, encoded_str, 0)
-        elif topic == DUCK1_TEXT:
-            client.publish(DUCK1_FEED2, encoded_str, 0)
-        elif topic == DUCK2_TEXT:
-            client.publish(DUCK2_FEED2, encoded_str, 0)
+def encode_string(image, topic, client):
+    img_str = cv2.imencode('.jpg', image)[1].tostring()
+    encoded_str = base64.b64encode(img_str)
+
+    if topic == DUCK1_FEED:
+        client.publish(DUCK1_FEED, encoded_str, 0)
+    elif topic == DUCK2_FEED:
+        client.publish(DUCK2_FEED, encoded_str, 0)
+    elif topic == DUCK1_TEXT:
+        client.publish(DUCK1_FEED2, encoded_str, 0)
+    elif topic == DUCK2_TEXT:
+        client.publish(DUCK2_FEED2, encoded_str, 0)
 
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -156,7 +159,7 @@ try:
         else:
             avg = old_avg
         cv2.circle(frame,(avg,300),2,(0,0,255),3)
-        print 'Average = ', avg
+        #print 'Average = ', avg
 
 #cv2.imshow('frame', frame)
         #cv2.imshow('edges', edges)
@@ -175,27 +178,23 @@ try:
                 print 'none'
 
             elif command == "1":
-                render = frame
+                render = raw
                 print 'Raw'
 
             elif command == "2":
-                #render = edges
-                render = frame
+                render = edges
                 print 'Edges'
 
             elif command == "3":
-                #render = frame
                 render = frame
                 print 'Masked Image'
 
             elif command == "4":
-                #render = mask1
-                render = frame
+                render = mask1
                 print 'Masked White'
 
             elif command == "5":
-                #render = mask2
-                render = frame
+                render = mask2
 
                 print 'Masked Yellow'
 
@@ -240,7 +239,7 @@ try:
 
         rightMotor.setSpeed(rightspeed)
         leftMotor.setSpeed(leftspeed)
-        print 'Rightspeed = ',rightspeed
+        #print 'Rightspeed = ',rightspeed
         capture.truncate(0)
 except KeyboardInterrupt:
     leftMotor.run(Adafruit_MotorHAT.RELEASE)
