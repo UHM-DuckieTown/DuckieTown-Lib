@@ -69,10 +69,12 @@ X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 
 #gamma_range = np.logspace(-9, 3, 13)
 #param_grid = dict(gamma=gamma_range, C=C_range)
 
-param_grid = {'C': [0.001, 0.01, 0.1, 0.5, 1], 'gamma': [5, 1, 0.1, 0.01, 0.001, 0.00001]}
+param_grid = {'C': [0.01, 0.1, 1, 5, 10], 'gamma': [5, 1, 0.1, 0.01, 0.001, 0.00001]}
 
 # Make grid search classifier
-clf_grid = GridSearchCV(svm.SVC(), param_grid, verbose=1)
+clf_grid = GridSearchCV(svm.SVC(probability=True), param_grid, verbose=1)
+
+#clf_grid.probability = True
 
 # Train the classifier
 clf_grid.fit(X_train, y_train)
