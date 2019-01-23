@@ -72,7 +72,7 @@ X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 
 param_grid = {'C': [0.01, 0.1, 1, 5, 10], 'gamma': [5, 1, 0.1, 0.01, 0.001, 0.00001]}
 
 # Make grid search classifier
-clf_grid = GridSearchCV(svm.SVC(probability=True), param_grid, verbose=1)
+clf_grid = GridSearchCV(svm.SVC(probability=True, kernel='linear'), param_grid, verbose=1)
 
 #clf_grid.probability = True
 
