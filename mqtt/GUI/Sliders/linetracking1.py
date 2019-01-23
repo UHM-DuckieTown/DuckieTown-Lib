@@ -6,7 +6,6 @@ import time
 import paho.mqtt.client as mqtt
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
-import Queue as queue
 #cap = cv2.VideoCapture('silent.mp4')
 #cap = cv2.VideoCapture('Video.MOV')
 #cap = cv2.VideoCapture('duckie_vid.mp4')
@@ -22,23 +21,28 @@ DUCK2_FEED = "duck2_feed"
 DUCK2_FEED2 = "duck2_feed2"
 DUCK2_TEXT = "duck2_text"
 
-global command
-command = " "
-
-q = queue.Queue()
+global command1
+command = "0"
+global command2
+command2 = "5"
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
 
-    client.subscribe(MQTT_PATH3)
+    client.subscribe([(DUCK1_TEXT,0),(DUCK2_TEXT,0)])
 
 def on_message(client, userdata, msg):
     #print(msg.topic+" "+str(msg.payload))
     global command
-    print (msg.topic+" "+str(msg.payload))
-    command = str(msg.payload)
-    print command
-    #q.put((msg.payload, str(msg.topic)))
+    global command2
+    #print (msg.topic+" "+str(msg.payload))
+    if int(msg.payload) <= 4:
+        command = msg.payload
+    if int(msg.payload) >= 5:
+        command2 = msg.payload
+    print str(msg.payload)
+    print'command' + ' '  + command
+    print'command2' + ' '  + command2
 
 def encode_string(image, topic, client):
     img_str = cv2.imencode('.jpg', image)[1].tostring()
@@ -48,12 +52,14 @@ def encode_string(image, topic, client):
         client.publish(DUCK1_FEED, encoded_str, 0)
     elif topic == DUCK2_FEED:
         client.publish(DUCK2_FEED, encoded_str, 0)
-    elif topic == DUCK1_TEXT:
+    elif topic == DUCK1_TEXT: 
         client.publish(DUCK1_FEED2, encoded_str, 0)
+        #print 'test1'
     elif topic == DUCK2_TEXT:
         client.publish(DUCK2_FEED2, encoded_str, 0)
+        #print 'test2'
 
-    print "In encode_string function"
+    #print "In encode_string function"
 
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -160,7 +166,7 @@ try:
         else:
             avg = old_avg
         cv2.circle(frame,(avg,300),2,(0,0,255),3)
-        print 'Average = ', avg
+        #print 'Average = ', avg
 
 #cv2.imshow('frame', frame)
         #cv2.imshow('edges', edges)
@@ -170,40 +176,33 @@ try:
 #cv2.imshow('overlay', overlay)
 
         encode_string(frame, DUCK1_FEED, client)
+        #encode_string(frame, DUCK1_TEXT, client)
         encode_string(frame, DUCK2_FEED, client)
 
-        if not q.empty():
-            command, topic = q.get()
-
-            if command == "0":
-                print 'none'
-
-            elif command == "1":
-                render = raw
-                print 'Raw'
-
-            elif command == "2":
-                #render = edges
-                render = edges
-                print 'Edges'
-
-            elif command == "3":
-                #render = frame
-                render = frame
-                print 'Masked Image'
-
-            elif command == "4":
-                #render = mask1
-                render = mask1
-                print 'Masked White'
-
-            elif command == "5":
-                #render = mask2
-                render = mask2
-                print 'Masked Yellow'
-
-            encode_string(render, topic, client)
-            print "video"
+        #global render
+        
+        if command == "0":
+            encode_string(raw, DUCK1_TEXT, client)
+        elif command == "1":
+            encode_string(edges, DUCK1_TEXT, client)
+        elif command == "2":
+            encode_string(frame, DUCK1_TEXT, client)
+        elif command == "3":
+            encode_string(mask1, DUCK1_TEXT, client)
+        else:
+            encode_string(mask2, DUCK1_TEXT, client)
+            
+        if command2 == "5":
+            encode_string(raw, DUCK2_TEXT, client)
+        elif command2 == "6":
+            encode_string(edges, DUCK2_TEXT, client)
+        elif command2 == "7":
+            encode_string(frame, DUCK2_TEXT, client)
+        elif command2 == "8":
+            encode_string(mask1, DUCK2_TEXT, client)
+        elif command2 == "9":
+            encode_string(mask2, DUCK2_TEXT, client)
+             
 
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
@@ -230,7 +229,7 @@ try:
         elif rightspeed < 0:
             rightspeed = 0
 
-        print command
+        #print command
         if command == 'stop':
             leftMotor.run(Adafruit_MotorHAT.RELEASE)
             rightMotor.run(Adafruit_MotorHAT.RELEASE)
@@ -243,7 +242,7 @@ try:
 
         rightMotor.setSpeed(rightspeed)
         leftMotor.setSpeed(leftspeed)
-        print 'Rightspeed = ',rightspeed
+        #print 'Rightspeed = ',rightspeed
         capture.truncate(0)
 except KeyboardInterrupt:
     leftMotor.run(Adafruit_MotorHAT.RELEASE)
