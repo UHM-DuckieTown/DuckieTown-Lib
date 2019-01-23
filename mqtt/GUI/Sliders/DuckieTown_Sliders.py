@@ -9,9 +9,9 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from DuckieTown_GUI import Ui_MainWindow
 
-MQTT_SERVER = "localhost"
+MQTT_SERVER = "192.168.0.100"
 
-DUCK1_FEED = "duck1_feed"
+DUCK1_FEED = "duck1_feed1"
 DUCK1_FEED2 = "duck1_feed2"
 DUCK1_TEXT = "duck1_text"
 
@@ -88,27 +88,31 @@ class MyApp(QMainWindow):
 
     def on_message_duck1(self, client, userdata, msg):
         nparr1 = np.fromstring(msg.payload.decode('base64'), np.uint8)
-        image1 = cv2.imdecode(nparr1, cv2.CV_LOAD_IMAGE_COLOR)
+        image1 = cv2.imdecode(nparr1, 1)
         convertToQtFormat1 = QImage(image1, image1.shape[1], image1.shape[0], image1.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
         self.client_message1.emit(convertToQtFormat1)
+        print "Recieved 1"
 
     def on_message_duck2(self, client, userdata, msg):
         nparr2 = np.fromstring(msg.payload.decode('base64'), np.uint8)
-        image2 = cv2.imdecode(nparr2, cv2.CV_LOAD_IMAGE_COLOR)
+        image2 = cv2.imdecode(nparr2, 1)
         convertToQtFormat2 = QImage(image2, image2.shape[1], image2.shape[0], image2.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
         self.client_message2.emit(convertToQtFormat2)
+        print "Recieved 2"
 
     def on_message_duck3(self, client, userdata, msg):
         nparr3 = np.fromstring(msg.payload.decode('base64'), np.uint8)
-        image3 = cv2.imdecode(nparr3, cv2.CV_LOAD_IMAGE_COLOR)
+        image3 = cv2.imdecode(nparr3, 1)
         convertToQtFormat3 = QImage(image3, image3.shape[1], image3.shape[0], image3.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
         self.client_message3.emit(convertToQtFormat3)
+        print "Recieved 3"
 
     def on_message_duck4(self, client, userdata, msg):
         nparr4 = np.fromstring(msg.payload.decode('base64'), np.uint8)
-        image4 = cv2.imdecode(nparr4, cv2.CV_LOAD_IMAGE_COLOR)
+        image4 = cv2.imdecode(nparr4, 1)
         convertToQtFormat4 = QImage(image4, image4.shape[1], image4.shape[0], image4.shape[1] * 3, QImage.Format_RGB888).rgbSwapped()
         self.client_message4.emit(convertToQtFormat4)
+        print "Recieved 4"
 
     def on_connect(self, client, userdata, flags, rc):
         print "Connected with result code "+str(rc)
@@ -137,10 +141,12 @@ class MyApp(QMainWindow):
     def Slider(self):
         value = str(self.ui.Duck1_Slider.value())
         self._client.publish(DUCK1_TEXT, value)
+        print "slider 1:" + str(self.ui.Duck1_Slider.value())
 
     def Slider2(self):
         value = str(self.ui.Duck2_Slider.value())
         self._client.publish(DUCK2_TEXT, value)
+        print "slider 2:" + str(self.ui.Duck2_Slider.value())
 
 
 if __name__ == "__main__":
