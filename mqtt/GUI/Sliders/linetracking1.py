@@ -11,38 +11,38 @@ from picamera.array import PiRGBArray
 #cap = cv2.VideoCapture('duckie_vid.mp4')
 #raw = cv2.imread('screen-shot.png');
 
-MQTT_SERVER = "192.168.0.100"
+#--------------------------- PyQT ---------------------------#
+MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
-DUCK1_FEED = "duck1_feed1"
+#Published-Topics
+DUCK1_FEED = "duck1_feed1" #Main Feed to show
 DUCK1_FEED2 = "duck1_feed2"
-DUCK1_TEXT = "duck1_text"
-
 DUCK2_FEED = "duck2_feed"
 DUCK2_FEED2 = "duck2_feed2"
+
+#Subscribed-Topics
+DUCK1_TEXT = "duck1_text"
 DUCK2_TEXT = "duck2_text"
 
-global command1
-command = "0"
-global command2
-command2 = "5"
+global duck1_slider_val
+duck1_slider_val = "0"
+global duck2_slider_val
+duck2_slider_val = "5"
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
-
     client.subscribe([(DUCK1_TEXT,0),(DUCK2_TEXT,0)])
 
 def on_message(client, userdata, msg):
-    #print(msg.topic+" "+str(msg.payload))
-    global command
-    global command2
-    #print (msg.topic+" "+str(msg.payload))
+    global duck1_slider_val
+    global duck2_slider_val
     if int(msg.payload) <= 4:
-        command = msg.payload
+        duck1_slider_val = msg.payload
     if int(msg.payload) >= 5:
-        command2 = msg.payload
+        duck2_slider_val = msg.payload
     print str(msg.payload)
-    print'command' + ' '  + command
-    print'command2' + ' '  + command2
+    print'duck1_slider_val' + ' '  + duck1_slider_val
+    print'duck2_slider_val' + ' '  + duck2_slider_val
 
 def encode_string(image, topic, client):
     img_str = cv2.imencode('.jpg', image)[1].tostring()
@@ -52,14 +52,11 @@ def encode_string(image, topic, client):
         client.publish(DUCK1_FEED, encoded_str, 0)
     elif topic == DUCK2_FEED:
         client.publish(DUCK2_FEED, encoded_str, 0)
-    elif topic == DUCK1_TEXT: 
+    elif topic == DUCK1_TEXT:
         client.publish(DUCK1_FEED2, encoded_str, 0)
-        #print 'test1'
     elif topic == DUCK2_TEXT:
         client.publish(DUCK2_FEED2, encoded_str, 0)
-        #print 'test2'
-
-    #print "In encode_string function"
+#--------------------------- PyQT ---------------------------#
 
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -100,11 +97,13 @@ def position_controller(kp, target, actual):
         adjustment = kp*error
         return int(adjustment)
 
+#--------------------------- PyQT ---------------------------#
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 client.connect(MQTT_SERVER, 1883, 60)
 client.loop_start()
+#--------------------------- PyQT ---------------------------#
 
 try:
     for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
@@ -116,7 +115,6 @@ try:
     #rows,cols,_ = raw.shape
     #rawrot = cv2.getRotationMatrix2D((cols/2,rows/2),90,1)
     #raw = cv2.warpAffine(raw,rawrot,(cols,rows))
-
 
     #finished = cv2.resize(raw, (window_width, window_height))
 #   ROI?
@@ -174,40 +172,35 @@ try:
 
 #overlay = cv2.line(frame,(int(window_width/2),0),(int(window_width/2), int(window_height)),(0,0,255),5)
 #cv2.imshow('overlay', overlay)
-
+#--------------------------- PyQT ---------------------------#
         encode_string(frame, DUCK1_FEED, client)
-        #encode_string(frame, DUCK1_TEXT, client)
         encode_string(frame, DUCK2_FEED, client)
 
-        #global render
-        
-        if command == "0":
+        if duck1_slider_val == "0":
             encode_string(raw, DUCK1_TEXT, client)
-        elif command == "1":
+        elif duck1_slider_val == "1":
             encode_string(edges, DUCK1_TEXT, client)
-        elif command == "2":
+        elif duck1_slider_val == "2":
             encode_string(frame, DUCK1_TEXT, client)
-        elif command == "3":
+        elif duck1_slider_val == "3":
             encode_string(mask1, DUCK1_TEXT, client)
         else:
             encode_string(mask2, DUCK1_TEXT, client)
-            
-        if command2 == "5":
+
+        if duck2_slider_val == "5":
             encode_string(raw, DUCK2_TEXT, client)
-        elif command2 == "6":
+        elif duck2_slider_val == "6":
             encode_string(edges, DUCK2_TEXT, client)
-        elif command2 == "7":
+        elif duck2_slider_val == "7":
             encode_string(frame, DUCK2_TEXT, client)
-        elif command2 == "8":
+        elif duck2_slider_val == "8":
             encode_string(mask1, DUCK2_TEXT, client)
-        elif command2 == "9":
+        else:
             encode_string(mask2, DUCK2_TEXT, client)
-             
+#--------------------------- PyQT ---------------------------#
 
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
-
-    #global command
 
         if yellow:
             threshold = 105
@@ -229,16 +222,15 @@ try:
         elif rightspeed < 0:
             rightspeed = 0
 
-        #print command
-        if command == 'stop':
-            leftMotor.run(Adafruit_MotorHAT.RELEASE)
-            rightMotor.run(Adafruit_MotorHAT.RELEASE)
-
-        else:
-            leftMotor.run(Adafruit_MotorHAT.FORWARD)
-            rightMotor.run(Adafruit_MotorHAT.FORWARD)
-            rightMotor.setSpeed(rightspeed)
-            leftMotor.setSpeed(leftspeed)
+        # if duck1_slider_val == 'stop':
+        #     leftMotor.run(Adafruit_MotorHAT.RELEASE)
+        #     rightMotor.run(Adafruit_MotorHAT.RELEASE)
+        #
+        # else:
+        #     leftMotor.run(Adafruit_MotorHAT.FORWARD)
+        #     rightMotor.run(Adafruit_MotorHAT.FORWARD)
+        #     rightMotor.setSpeed(rightspeed)
+        #     leftMotor.setSpeed(leftspeed)
 
         rightMotor.setSpeed(rightspeed)
         leftMotor.setSpeed(leftspeed)
