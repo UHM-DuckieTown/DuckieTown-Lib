@@ -9,7 +9,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from DuckieTown_GUI import Ui_MainWindow
 
-MQTT_SERVER = "192.168.0.100"
+MQTT_SERVER = "192.168.0.109"
 
 DUCK1_FEED = "duck1_feed1"
 DUCK1_FEED2 = "duck1_feed2"

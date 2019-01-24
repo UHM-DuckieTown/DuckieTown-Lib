@@ -15,7 +15,7 @@ from picamera.array import PiRGBArray
 MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
 #Published-Topics
-DUCK1_FEED = "duck1_feed1" #Main Feed to show
+DUCK1_FEED = "duck1_feed1" #Main Feed to show Line Tracker Image
 DUCK1_FEED2 = "duck1_feed2"
 DUCK2_FEED = "duck2_feed"
 DUCK2_FEED2 = "duck2_feed2"
