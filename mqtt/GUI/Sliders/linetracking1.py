@@ -18,7 +18,7 @@ MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 #Main Feeds to show Line Tracker Image
 DUCK1_FEED = "duck1_feed1"
 DUCK2_FEED = "duck2_feed"
-#Secondary Feeds to show
+#Secondary Feeds to show Raw, Edges, Line Tracker Image, White, and Yellow Mask
 DUCK1_FEED2 = "duck1_feed2"
 DUCK2_FEED2 = "duck2_feed2"
 
@@ -26,26 +26,51 @@ DUCK2_FEED2 = "duck2_feed2"
 DUCK1_TEXT = "duck1_text"
 DUCK2_TEXT = "duck2_text"
 
+#Images corresponding to slider value received
+D1_RAW = "0"
+D1_EDGES = "1"
+D1_FRAME = "2"
+D1_MASK1 = "3"
+D2_RAW = "0"
+D2_EDGES = "1"
+D2_FRAME = "2"
+D2_MASK1 = "3"
+
+#Initialization of feed selector
 global duck1_slider_val
-duck1_slider_val = "0"
 global duck2_slider_val
+duck1_slider_val = "0"
 duck2_slider_val = "5"
 
+#Function: on_connect
+# The callback for when the client receives a CONNACK response from the server.
+# Subscribes the client to one or more topics
+#----
+# client: the client instance for this callback
+# userdata: user data as set in Client()
+# flags: response flags sent by the broker
+#----
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     client.subscribe([(DUCK1_TEXT,0),(DUCK2_TEXT,0)])
 
+#Function on_message
+# The callback for when a PUBLISH message is received from the server.
+# Assign slider values fro receiving messages
 def on_message(client, userdata, msg):
     global duck1_slider_val
     global duck2_slider_val
-    if int(msg.payload) <= 4:
+# Determine duck slider value based on value received from publish message
+# Receives value of the sliders as a text string
+    if msg.topic == DUCK1_TEXT:
         duck1_slider_val = msg.payload
-    if int(msg.payload) >= 5:
+    else:
         duck2_slider_val = msg.payload
-    print str(msg.payload)
+    #print str(msg.payload)
     print'duck1_slider_val' + ' '  + duck1_slider_val
     print'duck2_slider_val' + ' '  + duck2_slider_val
 
+#Sends to broker as a text string
 def encode_string(image, topic, client):
     img_str = cv2.imencode('.jpg', image)[1].tostring()
     encoded_str = base64.b64encode(img_str)
@@ -178,24 +203,24 @@ try:
         encode_string(frame, DUCK1_FEED, client)
         encode_string(frame, DUCK2_FEED, client)
 
-        if duck1_slider_val == "0":
+        if duck1_slider_val == D1_RAW:
             encode_string(raw, DUCK1_TEXT, client)
-        elif duck1_slider_val == "1":
+        elif duck1_slider_val == D1_EDGES:
             encode_string(edges, DUCK1_TEXT, client)
-        elif duck1_slider_val == "2":
+        elif duck1_slider_val == D1_FRAME:
             encode_string(frame, DUCK1_TEXT, client)
-        elif duck1_slider_val == "3":
+        elif duck1_slider_val == D1_MASK1:
             encode_string(mask1, DUCK1_TEXT, client)
         else:
             encode_string(mask2, DUCK1_TEXT, client)
 
-        if duck2_slider_val == "5":
+        if duck2_slider_val == D2_RAW:
             encode_string(raw, DUCK2_TEXT, client)
-        elif duck2_slider_val == "6":
+        elif duck2_slider_val == D2_EDGES:
             encode_string(edges, DUCK2_TEXT, client)
-        elif duck2_slider_val == "7":
+        elif duck2_slider_val == D2_FRAME:
             encode_string(frame, DUCK2_TEXT, client)
-        elif duck2_slider_val == "8":
+        elif duck2_slider_val == D2_MASK1:
             encode_string(mask1, DUCK2_TEXT, client)
         else:
             encode_string(mask2, DUCK2_TEXT, client)
