@@ -141,10 +141,14 @@ def position_controller(kp, target, actual):
         return int(adjustment)
 
 #--------------------------- PyQT ---------------------------#
+# Create a client instance
 client = mqtt.Client()
-client.on_connect = on_connect
+client.on_connect =
+#Connects the client to a broker
 client.on_message = on_message
 client.connect(MQTT_SERVER, 1883, 60)
+#Runs a thread in the background to cal loop() automatically
+#Frees up main thread for other work
 client.loop_start()
 #--------------------------- PyQT ---------------------------#
 
@@ -216,9 +220,12 @@ try:
 #overlay = cv2.line(frame,(int(window_width/2),0),(int(window_width/2), int(window_height)),(0,0,255),5)
 #cv2.imshow('overlay', overlay)
 #--------------------------- PyQT ---------------------------#
+        #Calls encode_string to send given image to corresponding topic
         encode_string(frame, DUCK1_FEED, client)
         encode_string(frame, DUCK2_FEED, client)
 
+        #Dependent on duck1_slider_val
+        #Calls encode_string to send given image to corresponding topic
         if duck1_slider_val == D1_RAW:
             encode_string(raw, DUCK1_FEED2, client)
         elif duck1_slider_val == D1_EDGES:
@@ -230,6 +237,8 @@ try:
         else:
             encode_string(mask2, DUCK1_FEED2, client)
 
+        #Dependent on duck2_slider_val
+        #Calls encode_string to send given image to corresponding topic
         if duck2_slider_val == D2_RAW:
             encode_string(raw, DUCK2_FEED2, client)
         elif duck2_slider_val == D2_EDGES:
@@ -284,5 +293,6 @@ except KeyboardInterrupt:
     rightMotor.run(Adafruit_MotorHAT.RELEASE)
 
 finally:
+    #Stop Background thread
     client.loop_stop()
 #cv2.destroyAllWindows()
