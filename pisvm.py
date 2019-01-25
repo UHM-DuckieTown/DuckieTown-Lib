@@ -6,6 +6,7 @@ import numpy as np
 from joblib import load
 from picamera import PiCamera
 from picamera.array import PiRGBArray
+from color import getColor, contour
 def lbp(test_image):
 
     #convert to grayscale image
@@ -29,13 +30,15 @@ clf=load("clf_grid_Stop")
 for frame in camera.capture_continuous(raw, format='bgr', use_video_port=True):
     image= raw.array
     image= image[0:70,570:640]
-    #if(clf.predict([lbp(image)])==1):
-    #    print('found stop sign')
-    #else:
-    #    print('miss')
-    print clf.predict_proba([lbp(image)])
+    if(clf.predict_proba([lbp(image)])[0][1] > 0.85):
+        print('found stop sign')
+    else:
+        print('miss')
+#    print clf.predict_proba([lbp(image)])
     key = cv2.waitKey(1)
-    cv2.imshow('nou',image)
+    #cv2.imshow('nou',image)
+    #getColor(image)
+    contour(image)
     raw.truncate(0)
     if key == ord('q'):
         break
