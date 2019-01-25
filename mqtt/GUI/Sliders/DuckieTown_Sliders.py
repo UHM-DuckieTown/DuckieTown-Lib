@@ -50,6 +50,7 @@ class MyApp(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        #Create a client instance
         self._client = mqtt_client
         self.initUI()
         #Bind the SendMessage function to the enter key
@@ -65,7 +66,7 @@ class MyApp(QMainWindow):
         #Bind the Slider function to when the value of the Slider of Duck 2 is changed
         self.ui.Duck2_Slider.valueChanged.connect(self.Slider2)
 
-    #Python decorator for
+    #Python decorator to explicitly mark a Python method as being a Qt slot.
     @pyqtSlot(QImage)
     def setImage1(self, image1):
         self.ui.Duck1_Feed.setPixmap(QPixmap.fromImage(image1).scaled(447,309))
@@ -80,6 +81,7 @@ class MyApp(QMainWindow):
         self.ui.Duck2_Feed2.setPixmap(QPixmap.fromImage(image4).scaled(447,309))
 
     def initUI(self):
+        #Bind on_connect callback to client
         self._client.on_connect = self.on_connect
 
         self._client.on_message_duck1 = self.on_message_duck1
@@ -87,6 +89,7 @@ class MyApp(QMainWindow):
         self._client.on_message_duck3 = self.on_message_duck3
         self._client.on_message_duck4 = self.on_message_duck4
 
+        #Connecting signals to slots
         self.client_message1.connect(self.setImage1)
         self.client_message2.connect(self.setImage2)
         self.client_message3.connect(self.setImage3)
@@ -162,13 +165,16 @@ class MyApp(QMainWindow):
         #Emit a signal for the Slot
         self.client_message4.emit(convertToQtFormat4)
 
-    #Function for
+    #Function for when the broker responds to our connection request
     def on_connect(self, client, userdata, flags, rc):
         print "Connected with result code "+str(rc)
+        # Defines Callbacks that handle incoming messages for specific topics
+        # on_message_duck1 will be called when an message from DUCK1_FEED arrives
         client.message_callback_add(DUCK1_FEED, self.on_message_duck1)
         client.message_callback_add(DUCK1_FEED2, self.on_message_duck2)
         client.message_callback_add(DUCK2_FEED, self.on_message_duck3)
         client.message_callback_add(DUCK2_FEED2, self.on_message_duck4)
+        #Subscribes the client to Video Feeds
         client.subscribe([(DUCK1_FEED,0),(DUCK1_FEED2,0),(DUCK2_FEED,0),(DUCK2_FEED2,0)])
 
     #Function to send a message to the ducks
