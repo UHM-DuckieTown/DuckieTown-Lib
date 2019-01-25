@@ -12,7 +12,7 @@ from picamera.array import PiRGBArray
 #raw = cv2.imread('screen-shot.png');
 
 #--------------------------- PyQT ---------------------------#
-MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
+MQTT_SERVER = "192.168.0.109" #IP Address of Base Station
 
 #Published-Topics
 #Main Feeds to show Line Tracker Image
@@ -49,6 +49,7 @@ duck2_slider_val = "0"
 # client: the client instance for this callback
 # userdata: user data as set in Client()
 # flags: response flags sent by the broker
+# rc: connection result
 #----
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -56,11 +57,17 @@ def on_connect(client, userdata, flags, rc):
 
 #Function on_message
 # The callback for when a PUBLISH message is received from the server.
-# Assign slider values fro receiving messages
+# Assign slider values from receiving message topic
+#----
+# client: the client instance for this callback
+# userdata: user data as set in Client()
+# msg: instance of MQTTMessage
+#      Contains: Topic, Payload, QOS, Retain
+#----
 def on_message(client, userdata, msg):
     global duck1_slider_val
     global duck2_slider_val
-# Determine duck slider value based on value received from publish message
+#Assign duck slider value based on received message topic
 # Receives value of the sliders as a text string
     if msg.topic == DUCK1_TEXT:
         duck1_slider_val = msg.payload
@@ -70,18 +77,27 @@ def on_message(client, userdata, msg):
     print'duck1_slider_val' + ' '  + duck1_slider_val
     print'duck2_slider_val' + ' '  + duck2_slider_val
 
-#Sends to broker as a text string
+#Function encode_string
+#Encodes images to strings to be sent to given topics
+#----
+# image: OpenCV image
+# topic: topic string to which the image will be published to
+# client: the client instance for this callback
+#----
 def encode_string(image, topic, client):
+    #Converts image to string
     img_str = cv2.imencode('.jpg', image)[1].tostring()
+    #Converts string to only contain ascii values
     encoded_str = base64.b64encode(img_str)
 
+    #Sends image string to topic specified
     if topic == DUCK1_FEED:
         client.publish(DUCK1_FEED, encoded_str, 0)
     elif topic == DUCK2_FEED:
         client.publish(DUCK2_FEED, encoded_str, 0)
-    elif topic == DUCK1_TEXT:
+    elif topic == DUCK1_FEED2:
         client.publish(DUCK1_FEED2, encoded_str, 0)
-    elif topic == DUCK2_TEXT:
+    elif topic == DUCK2_FEED2:
         client.publish(DUCK2_FEED2, encoded_str, 0)
 #--------------------------- PyQT ---------------------------#
 
@@ -204,26 +220,26 @@ try:
         encode_string(frame, DUCK2_FEED, client)
 
         if duck1_slider_val == D1_RAW:
-            encode_string(raw, DUCK1_TEXT, client)
+            encode_string(raw, DUCK1_FEED2, client)
         elif duck1_slider_val == D1_EDGES:
-            encode_string(edges, DUCK1_TEXT, client)
+            encode_string(edges, DUCK1_FEED2, client)
         elif duck1_slider_val == D1_FRAME:
-            encode_string(frame, DUCK1_TEXT, client)
+            encode_string(frame, DUCK1_FEED2, client)
         elif duck1_slider_val == D1_MASK1:
-            encode_string(mask1, DUCK1_TEXT, client)
+            encode_string(mask1, DUCK1_FEED2, client)
         else:
-            encode_string(mask2, DUCK1_TEXT, client)
+            encode_string(mask2, DUCK1_FEED2, client)
 
         if duck2_slider_val == D2_RAW:
-            encode_string(raw, DUCK2_TEXT, client)
+            encode_string(raw, DUCK2_FEED2, client)
         elif duck2_slider_val == D2_EDGES:
-            encode_string(edges, DUCK2_TEXT, client)
+            encode_string(edges, DUCK2_FEED2, client)
         elif duck2_slider_val == D2_FRAME:
-            encode_string(frame, DUCK2_TEXT, client)
+            encode_string(frame, DUCK2_FEED2, client)
         elif duck2_slider_val == D2_MASK1:
-            encode_string(mask1, DUCK2_TEXT, client)
+            encode_string(mask1, DUCK2_FEED2, client)
         else:
-            encode_string(mask2, DUCK2_TEXT, client)
+            encode_string(mask2, DUCK2_FEED2, client)
 #--------------------------- PyQT ---------------------------#
 
         if cv2.waitKey(20) & 0xFF == ord('q'):
