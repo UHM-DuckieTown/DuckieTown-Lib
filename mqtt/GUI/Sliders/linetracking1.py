@@ -40,7 +40,7 @@ D2_MASK1 = "3"
 global duck1_slider_val
 global duck2_slider_val
 duck1_slider_val = "0"
-duck2_slider_val = "5"
+duck2_slider_val = "0"
 
 #Function: on_connect
 # The callback for when the client receives a CONNACK response from the server.
