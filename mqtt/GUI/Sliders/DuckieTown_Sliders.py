@@ -133,7 +133,7 @@ class MyApp(QMainWindow):
         self.client_message1.emit(convertToQtFormat1)
 
     #Function for when the encoded string is received from DUCK1_FEED1
-    def on_message_duck2(self, client, userdata, msg
+    def on_message_duck2(self, client, userdata, msg):
         #Decode the encoded string from a ascii-value string to an nparray in memory buffer using base64 decode
         nparr2 = np.fromstring(msg.payload.decode('base64'), np.uint8)
         #Decode the nparray from the memory buffer to an image using imdecode
