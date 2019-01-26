@@ -27,14 +27,10 @@ DUCK1_TEXT = "duck1_text"
 DUCK2_TEXT = "duck2_text"
 
 #Images corresponding to slider value received
-D1_RAW = "0"
-D1_EDGES = "1"
-D1_FRAME = "2"
-D1_MASK1 = "3"
-D2_RAW = "0"
-D2_EDGES = "1"
-D2_FRAME = "2"
-D2_MASK1 = "3"
+RAW = "0"
+EDGES = "1"
+FRAME = "2"
+MASK1 = "3"
 
 #Initialization of feed selector
 global duck1_slider_val
@@ -91,14 +87,7 @@ def encode_string(image, topic, client):
     encoded_str = base64.b64encode(img_str)
 
     #Sends image string to topic specified
-    if topic == DUCK1_FEED:
-        client.publish(DUCK1_FEED, encoded_str, 0)
-    elif topic == DUCK2_FEED:
-        client.publish(DUCK2_FEED, encoded_str, 0)
-    elif topic == DUCK1_FEED2:
-        client.publish(DUCK1_FEED2, encoded_str, 0)
-    elif topic == DUCK2_FEED2:
-        client.publish(DUCK2_FEED2, encoded_str, 0)
+    client.publish(topic, encoded_str, 0)
 #--------------------------- PyQT ---------------------------#
 
 camera = PiCamera()
@@ -143,7 +132,7 @@ def position_controller(kp, target, actual):
 #--------------------------- PyQT ---------------------------#
 # Create a client instance
 client = mqtt.Client()
-client.on_connect =
+client.on_connect = on_connect
 #Connects the client to a broker
 client.on_message = on_message
 client.connect(MQTT_SERVER, 1883, 60)
@@ -226,26 +215,26 @@ try:
 
         #Dependent on duck1_slider_val
         #Calls encode_string to send given image to corresponding topic
-        if duck1_slider_val == D1_RAW:
+        if duck1_slider_val == RAW:
             encode_string(raw, DUCK1_FEED2, client)
-        elif duck1_slider_val == D1_EDGES:
+        elif duck1_slider_val == EDGES:
             encode_string(edges, DUCK1_FEED2, client)
-        elif duck1_slider_val == D1_FRAME:
+        elif duck1_slider_val == FRAME:
             encode_string(frame, DUCK1_FEED2, client)
-        elif duck1_slider_val == D1_MASK1:
+        elif duck1_slider_val == MASK1:
             encode_string(mask1, DUCK1_FEED2, client)
         else:
             encode_string(mask2, DUCK1_FEED2, client)
 
         #Dependent on duck2_slider_val
         #Calls encode_string to send given image to corresponding topic
-        if duck2_slider_val == D2_RAW:
+        if duck2_slider_val == RAW:
             encode_string(raw, DUCK2_FEED2, client)
-        elif duck2_slider_val == D2_EDGES:
+        elif duck2_slider_val == EDGES:
             encode_string(edges, DUCK2_FEED2, client)
-        elif duck2_slider_val == D2_FRAME:
+        elif duck2_slider_val == FRAME:
             encode_string(frame, DUCK2_FEED2, client)
-        elif duck2_slider_val == D2_MASK1:
+        elif duck2_slider_val == MASK1:
             encode_string(mask1, DUCK2_FEED2, client)
         else:
             encode_string(mask2, DUCK2_FEED2, client)
@@ -256,7 +245,6 @@ try:
 
         if yellow:
             threshold = 105
-
         else:
             threshold = 430
         #130 for yellow line, 450 for white
