@@ -75,8 +75,8 @@ def detect_stop(mask1):
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	if abs((y2-y1)) < 3:
-                    stop = True
                     state = STOP
+                    stop = True
 		    print "Stop = ",stop
             #Exit Function once a stop is found
 		    return
@@ -232,6 +232,7 @@ def position_p():
                global stop
                if stop == True:
         	   time.sleep(0.5)
+                   break
                #If no stop was detected, make adjustments to the position based on
                #the error
                else:
