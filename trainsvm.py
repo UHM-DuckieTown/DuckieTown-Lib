@@ -64,12 +64,12 @@ lbp(posSet, lbpset)
 X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 0.2, random_state=0)
 
 # Parameter Grid
-#param_grid = {'C': [0.1, 1, 10, 100], 'gamma': [1, 0.1, 0.01, 0.001, 0.00001, 10]}
+#param_grid = {'C': [0.1, 1], 'gamma': [1, 0.1, 0.01, 0.001, 0.00001, 10]}
 #C_range = np.logspace(-2, 10, 13)
 #gamma_range = np.logspace(-9, 3, 13)
 #param_grid = dict(gamma=gamma_range, C=C_range)
 
-param_grid = {'C': [20, 30, 40], 'gamma': [20, 30, 40]}
+param_grid = {'C': [200, 3000, 40000], 'gamma': [200, 3000, 40000]}
 
 # Make grid search classifier
 clf_grid = GridSearchCV(svm.SVC(probability=True, kernel='poly'), param_grid, verbose=1)

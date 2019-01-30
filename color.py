@@ -19,7 +19,7 @@ def getColor(image):
         
         #cv2.imshow("images",np.hstack([image, output]))
 
-        contour(image)
+        #contour(image)
 
 def contour(image):
         image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
