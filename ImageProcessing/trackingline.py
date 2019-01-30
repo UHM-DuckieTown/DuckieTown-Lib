@@ -241,3 +241,7 @@ def position_p():
            leftspeed = ((leftspeed*0.004)-0.006)
            rightspeed = ((rightspeed*0.004)-0.006)
        capture.truncate(0)
+
+def right_turn():
+    leftspeed = 0.7
+    rightspeed = 0.5
