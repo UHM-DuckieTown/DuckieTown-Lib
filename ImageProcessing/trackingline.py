@@ -243,5 +243,7 @@ def position_p():
        capture.truncate(0)
 
 def right_turn():
+    global rightspeed
+    global leftspeed
     leftspeed = 0.7
     rightspeed = 0.5
