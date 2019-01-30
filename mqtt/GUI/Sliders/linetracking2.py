@@ -3,6 +3,7 @@ import cv2
 import base64
 from picamera import PiCamera
 import time
+import socket
 import paho.mqtt.client as mqtt
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
@@ -18,8 +19,10 @@ MQTT_SERVER = "192.168.0.109" #IP Address of Base Station
 #Main Feeds to show Line Tracker Image
 
 # TODO: Get IP Address of the Duck
-ip_duck =  str(socket.gethostbyname(socket.gethostname()))
-
+ip_duck = '';
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8",80))
+ip_duck = s.getsockname()[0]
 
 
 # TODO: String manipulations
@@ -31,7 +34,7 @@ DUCK1_FEED2 = ip_duck + "_feed2"
 
 #Subscribed-Topics
 # TODO: String manipulations
-DUCK1_TEXT = ip_duck + "_text1"
+DUCK1_TEXT = ip_duck + "_text"
 
 print DUCK1_FEED1
 print DUCK1_FEED2
@@ -219,13 +222,13 @@ try:
 
         #Dependent on duck1_slider_val
         #Calls encode_string to send given image to corresponding topic
-        if duck1_slider_val == RAW:
+        if duck_slider_val == RAW:
             encode_string(raw, DUCK1_FEED2, client)
-        elif duck1_slider_val == EDGES:
+        elif duck_slider_val == EDGES:
             encode_string(edges, DUCK1_FEED2, client)
-        elif duck1_slider_val == FRAME:
+        elif duck_slider_val == FRAME:
             encode_string(frame, DUCK1_FEED2, client)
-        elif duck1_slider_val == MASK1:
+        elif duck_slider_val == MASK1:
             encode_string(mask1, DUCK1_FEED2, client)
         else:
             encode_string(mask2, DUCK1_FEED2, client)
