@@ -156,16 +156,14 @@ def setMotorSpeed(motor):
     global L_old_errorP_v
 
     if motor == 1:
-        target = right_target
+        target = trackingline.rightspeed
         vel = right_vel
-        right_target = trackingline.rightspeed
-        errorI_v = RerrorI_v
+        errorI_v = R_errorI_v
         old_errorP_v = R_old_errorP_v
     else:
-        target = left_target
+        target = trackingline.leftspeed
         vel = left_vel
-        left_target = trackingline.leftspeed
-        errorI_v = LerrorI_v
+        errorI_v = L_errorI_v
         old_errorP_v = L_old_errorP_v
         #PID calculations
     errorP_v = target - vel
@@ -182,7 +180,7 @@ def setMotorSpeed(motor):
     else:
         speed = int(totalError_v)
     if motor == 1:
-        ]rightMotor.setSpeed(speed)
+        rightMotor.setSpeed(speed)
         R_old_errorP_v = old_errorP_v
         R_errorI_v = errorI_v
     else:
