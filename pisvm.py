@@ -21,14 +21,14 @@ def lbp(test_image):
     #add values to set
     return hist
 
-def stopSignDetect():
+def stopSignDetect(clf):
     if(clf.predict_proba([lbp(image)])[0][1] > 0.7):
         print('found stop sign')
     else:
         print('miss')
     #print clf.predict_proba([lbp(image)])[0][1] 
 
-if __name__ == "__main__":
+def runCamera():
     camera = PiCamera()
     camera.resolution = (640, 480)
     camera.framerate = 20
@@ -37,11 +37,14 @@ if __name__ == "__main__":
     clf=load("clf_grid_Stop")
     
     for _ in camera.capture_continuous(raw, format='bgr', use_video_port=True):
+        global image
         image = raw.array
+        global image
         image = image[0:70, 570:640]
-        stopSignDetect()
-        cv2.imshow('nou', image)
+        #stopSignDetect(clf)
+        #cv2.imshow('nou', image)
+        print 'camera running'
         key = cv2.waitKey(1)
         raw.truncate(0)
         if key == ord('q'):
-            break
+                os.kill(os.getppid(), signal.SIGKILL)
