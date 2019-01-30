@@ -1,12 +1,10 @@
 import time
-import datetime
 import RPi.GPIO as GPIO
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
-from threading import Thread
 import matplotlib.pyplot as plt
-import numpy as np
 import trackingline
 
+#initialize global variables to count encoder ticks
 global leftencoderticks
 leftencoderticks = 0
 global lastleftencoderticks
@@ -16,11 +14,13 @@ rightencoderticks = 0
 global lastrightencoderticks
 lastrightencoderticks = 0
 
+#initialize global variables for setting velocity
 global left_vel
 left_vel = 0
 global right_vel
 right_vel = 0
 
+#initialize global variables for pid controllers
 global L_errorP_v
 L_errorP_v = 0
 global L_old_errorP_v
@@ -44,11 +44,12 @@ R_errorI_v = 0
 global R_totalError_v
 R_totalError_v = 0
 
-global target_left
-target_left = []
-global target_right
-target_right = []
+global left_target
+left_target = 0
+global right_target
+right_target = 0
 
+#initialize values for pid constants
 LEFTP = 3
 LEFTI = 0.0001
 LEFTD = 0.005
@@ -59,6 +60,7 @@ RIGHTI = 0.0001
 RIGHTD= 0.005
 RIGHTF = 0
 
+#initialize global variables used for plotting debug
 global left_velocity
 left_velocity= []
 global right_velocity
@@ -67,27 +69,35 @@ global samples
 samples = []
 global t
 t = 0
+global target_left
+target_left = []
+global target_right
+target_right = []
 
-global left_target
-left_target = 0
-global right_target
-right_target = 0
 # Tell GPIO library to use GPIO references
 GPIO.setmode(GPIO.BCM)
 
-
+#initialize motor hat/motors
 mh = Adafruit_MotorHAT(addr=0x60)
 leftMotor = mh.getMotor(2)
 rightMotor = mh.getMotor(1)
+
+#set motor direction
 leftMotor.run(Adafruit_MotorHAT.FORWARD)
 rightMotor.run(Adafruit_MotorHAT.FORWARD)
+
+#function to set motors forward
 def startMotors():
     leftMotor.run(Adafruit_MotorHAT.FORWARD)
     rightMotor.run(Adafruit_MotorHAT.FORWARD)
+
+#function to stop motors
 def stopMotors():
     leftMotor.run(Adafruit_MotorHAT.RELEASE)
     rightMotor.run(Adafruit_MotorHAT.RELEASE)
 
+#functiosn feed into event detect in main 
+#iterates the encoder ticks by 1
 def leftSensorCallback(channel):
     global leftencoderticks
     leftencoderticks += 1
@@ -98,13 +108,19 @@ def rightSensorCallback(channel):
     rightencoderticks += 1
     #print "right encoder ticks:" + str(rightencoderticks)
 
-
+#uses matplotlib functions to plot velocity/targets 
 def plotVelocity():
+    #generate new window to display the plots
     plt.figure(1, figsize=(5,4))
+
+    #generate plot for velocity/time
     plt.plot(samples, left_velocity)
+    #generate plot for target / time
     plt.plot(samples, target_left)
+    #plot axis labels
     plt.xlabel('Time')
     plt.ylabel('Left Velocity')
+ 
     plt.figure(2, figsize=(5,4))
     plt.plot(samples, right_velocity)
     plt.plot(samples, target_right)
@@ -112,12 +128,14 @@ def plotVelocity():
     plt.ylabel('Right Velocity')
     plt.show()
 
+
 def getVelocity():
         #Ticks per wheel rev: 384 ticks
         #Wheel Diam: 6.5 cm
         #Final constant: 0.053
 
         while True:
+                #calculate ticks/sec and convert to cm/sec
                 global left_vel
                 left_vel = ((leftencoderticks - lastleftencoderticks) * 0.053)+0.005
                 global lastleftencoderticks
@@ -132,14 +150,19 @@ def getVelocity():
                 #print "Right Cm/Sec: " + str(right_vel)
                 time.sleep(0.01)
 
-
+#calculates error between current velocity and target velocity
+#and adjusts motor speeds based on pid constants
 def velocityPid():
     waiting_for_thread = 0
     while True:
+
+    #if stop line was found 
 	if trackingline.stop == True:
+        #waits for 100 iterations of the thread before stopping the motors for the stop sign
 	    if waiting_for_thread == 100:
 		print "I entered that if statement"
 	    	stopMotors()
+        #stops motors for 1 second 
 		time.sleep(1)
 	    	trackingline.stop = False
                 startMotors()
@@ -148,21 +171,16 @@ def velocityPid():
 		waiting_for_thread = 0
 	    waiting_for_thread+=1
 
+        #when no stop line is detected, resume normal operation
+        #set targets equal to the speed given through position controller
         else:
             global left_target
             global right_target
             left_target = trackingline.leftspeed
             right_target = trackingline.rightspeed
-	    #left_Motor.setSpeed(100)
-	    #right_Motor.setSpeed(100)
 
-	    #left_target = trackingline.leftspeed
-	    #right_target = trackingline.rightspeed
 
-	#print "Left Target",left_target
-	#print "Right Target",right_target
-	#waiting_for_thread = 0
-
+        #calculate error for each pid controller constant
         global L_errorP_v
         L_errorP_v = left_target - left_vel
         global L_errorI_v
@@ -174,13 +192,9 @@ def velocityPid():
         global L_old_errorP_v
         L_old_errorP_v = L_errorP_v
 
-        #if left_target_vel > 0:
-        #        if L_totalError_v > 1:
-        #                global L_totalError_v
-        #                L_totalError_v = 1
-        #        elif L_totalError_v < 0:
-        #                global L_totalError_v
-        #                L_totalError_v = 0
+        
+        #convert based on linear equation back to a motor speed value to 
+        #be fed into the motor hat function to set motor speed
         L_totalError_v = (L_totalError_v+0.006)/0.004
 	if L_totalError_v > 255:
             speedL = 255
@@ -188,13 +202,9 @@ def velocityPid():
             speedL = 0
         else:
             speedL = int(L_totalError_v)
-	#speedL = 100
         leftMotor.setSpeed(int(speedL))
-        #print "Left Error Total: " + str(L_totalError_v)
-        #print "Left Motor Speed: " + str(int(L_totalError_v + 100))
-        #print "Left Cm/Sec: " + str(left_vel)
 
-
+        #PID calculations
         global R_errorP_v
         R_errorP_v = right_target - right_vel
         global R_errorI_v
@@ -206,13 +216,6 @@ def velocityPid():
         global R_old_errorP_v
         R_old_errorP_v = R_errorP_v
 
-        #if right_target_vel > 0:
-        #        if R_totalError_v > 1:
-        #                global R_totalError_v
-        #                R_totalError_v = 1
-        #        elif R_totalError_v < 0:
-        #                global R_totalError_v
-        #                R_totalError_v = 0
 	R_totalError_v = (R_totalError_v+0.006)/0.004
         if R_totalError_v > 255:
             speedR = 255
@@ -220,11 +223,7 @@ def velocityPid():
             speedR = 0
         else:
             speedR = int(R_totalError_v)
-	#speedR = 100
         rightMotor.setSpeed(int(speedR))
-        #print "Right Error Total: " + str(R_totalError_v)
-        #print "Right Motor Speed: " + str(int(speedR))
-        #print "Right Cm/Sec: " + str(right_vel)
 
 
         '''
@@ -245,51 +244,17 @@ def velocityPid():
         '''
         time.sleep(0.001)
 
+#function for thread to count encoder ticks
 def getEncoderTicks():
         # Set Switch GPIO as input
         # Pull high by default
         GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        #event detect occurs when change in signal is detected
+        #set to detect both rising and falling edges of the signal
+        #when triggered, runs functions left/rightSensorCallback which
+        #iterate encoder ticks
         GPIO.add_event_detect(17, GPIO.BOTH, callback=leftSensorCallback)
         GPIO.add_event_detect(4, GPIO.BOTH, callback=rightSensorCallback)
 
 
-'''
-def main():
-        leftSensorCallback(4)
-	rightSensorCallback(17)
-
-        threads = []
-        encoder_polling = Thread(target = getVelocity)
-        vel_pid = Thread(target = velocityPid)
-
-        encoder_polling.setDaemon(True)
-        vel_pid.setDaemon(True)
-
-        threads.append(encoder_polling)
-        threads.append(vel_pid)
-
-        encoder_polling.start()
-        vel_pid.start()
-
-        #Max Speed: About 1.6 cm/s
-        global left_target_vel
-        left_target_vel = 0.3
-        global right_target_vel
-        right_target_vel = 0.3
-
-        try:
-                while True:
-                        #print "looping"
-                        time.sleep(1)
-        except KeyboardInterrupt:
-                print "done"
-                leftMotor.run(Adafruit_MotorHAT.RELEASE)
-                rightMotor.run(Adafruit_MotorHAT.RELEASE)
-	        GPIO.cleanup()
-		plotVelocity()
-
-
-if __name__=="__main__":
-        main()
-'''
