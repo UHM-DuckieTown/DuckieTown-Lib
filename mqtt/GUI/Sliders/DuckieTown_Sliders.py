@@ -8,8 +8,15 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QCheckBox, QLabel
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from DuckieTown_GUI import Ui_MainWindow
+import socket
 
-MQTT_SERVER = "192.168.0.109"
+MQTT_SERVER = "localhost"
+
+fast =  str(socket.gethostbyname(socket.gethostname()))
+print fast
+test1 = "_feed1"
+test = fast + test1
+print test
 
 DUCK1_FEED = "duck1_feed1"
 DUCK1_FEED2 = "duck1_feed2"

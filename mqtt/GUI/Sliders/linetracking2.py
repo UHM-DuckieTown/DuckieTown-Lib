@@ -18,17 +18,24 @@ MQTT_SERVER = "192.168.0.109" #IP Address of Base Station
 #Main Feeds to show Line Tracker Image
 
 # TODO: Get IP Address of the Duck
+ip_duck =  str(socket.gethostbyname(socket.gethostname()))
+
+
 
 # TODO: String manipulations
-DUCK_FEED1 = "duck1_feed1"
+DUCK1_FEED1 = ip_duck + "_feed1"
 
 #Secondary Feeds to show Raw, Edges, Line Tracker Image, White, and Yellow Mask
 # TODO: String manipulations
-DUCK_FEED2 = "duck1_feed2"
+DUCK1_FEED2 = ip_duck + "_feed2"
 
 #Subscribed-Topics
 # TODO: String manipulations
-DUCK_TEXT = "duck1_text"
+DUCK1_TEXT = ip_duck + "_text1"
+
+print DUCK1_FEED1
+print DUCK1_FEED2
+print DUCK1_TEXT
 
 #Images corresponding to slider value received
 RAW = "0"
@@ -66,8 +73,7 @@ def on_message(client, userdata, msg):
     global duck_slider_val
 #Assign duck slider value based on received message topic
 # Receives value of the sliders as a text string
-    if msg.topic == DUCK1_TEXT:
-        duck_slider_val = msg.payload
+    duck_slider_val = msg.payload
 
     #print str(msg.payload)
     print'duck_slider_val' + ' '  + duck_slider_val
@@ -209,8 +215,7 @@ try:
 #cv2.imshow('overlay', overlay)
 #--------------------------- PyQT ---------------------------#
         #Calls encode_string to send given image to corresponding topic
-        encode_string(frame, DUCK1_FEED, client)
-        encode_string(frame, DUCK2_FEED, client)
+        encode_string(frame, DUCK1_FEED1, client)
 
         #Dependent on duck1_slider_val
         #Calls encode_string to send given image to corresponding topic
