@@ -21,28 +21,28 @@ global right_vel
 right_vel = 0
 
 #initialize global variables for pid controllers
-global L_errorP_v
-L_errorP_v = 0
+#global L_errorP_v
+#L_errorP_v = 0
 global L_old_errorP_v
 L_old_errorP_v = 0
-global L_errorD_v
-L_errorD_v = 0
+#global L_errorD_v
+#L_errorD_v = 0
 global L_errorI_v
 L_errorI_v = 0
-global L_totalError_v
-L_totalError_v = 0
+#global L_totalError_v
+#L_totalError_v = 0
 
 
-global R_errorP_v
-R_errorP_v = 0
+#global R_errorP_v
+#R_errorP_v = 0
 global R_old_errorP_v
 R_old_errorP_v = 0
-global R_errorD_v
-R_errorD_v = 0
+#global R_errorD_v
+#R_errorD_v = 0
 global R_errorI_v
 R_errorI_v = 0
-global R_totalError_v
-R_totalError_v = 0
+#global R_totalError_v
+#R_totalError_v = 0
 
 global left_target
 left_target = 0
@@ -96,7 +96,7 @@ def stopMotors():
     leftMotor.run(Adafruit_MotorHAT.RELEASE)
     rightMotor.run(Adafruit_MotorHAT.RELEASE)
 
-#functiosn feed into event detect in main 
+#functiosn feed into event detect in main
 #iterates the encoder ticks by 1
 def leftSensorCallback(channel):
     global leftencoderticks
@@ -108,7 +108,7 @@ def rightSensorCallback(channel):
     rightencoderticks += 1
     #print "right encoder ticks:" + str(rightencoderticks)
 
-#uses matplotlib functions to plot velocity/targets 
+#uses matplotlib functions to plot velocity/targets
 def plotVelocity():
     #generate new window to display the plots
     plt.figure(1, figsize=(5,4))
@@ -120,7 +120,7 @@ def plotVelocity():
     #plot axis labels
     plt.xlabel('Time')
     plt.ylabel('Left Velocity')
- 
+
     plt.figure(2, figsize=(5,4))
     plt.plot(samples, right_velocity)
     plt.plot(samples, target_right)
@@ -149,20 +149,62 @@ def getVelocity():
                 #print "Left Cm/Sec: " + str(left_vel)
                 #print "Right Cm/Sec: " + str(right_vel)
                 time.sleep(0.01)
+def setMotorSpeed(motor):
+    global R_errorI_v
+    global L_errorI_v
+    global R_old_errorP_v
+    global L_old_errorP_v
+
+    if motor == 1:
+        target = right_target
+        vel = right_vel
+        right_target = trackingline.rightspeed
+        errorI_v = RerrorI_v
+        old_errorP_v = R_old_errorP_v
+    else:
+        target = left_target
+        vel = left_vel
+        left_target = trackingline.leftspeed
+        errorI_v = LerrorI_v
+        old_errorP_v = L_old_errorP_v
+        #PID calculations
+    errorP_v = target - vel
+    errorI_v = errorI_v + errorP_v
+    errorD_v = errorP_v - old_errorP_v
+    totalError_v = RIGHTP * errorP_v + RIGHTI * errorI_v + RIGHTD * errorD_v + RIGHTF
+    old_errorP_v = errorP_v
+
+    totalError_v = (totalError_v+0.006)/0.004
+    if totalError_v > 255:
+        speed = 255
+    elif totalError_v <0:
+        speed = 0
+    else:
+        speed = int(totalError_v)
+    if motor == 1:
+        ]rightMotor.setSpeed(speed)
+        R_old_errorP_v = old_errorP_v
+        R_errorI_v = errorI_v
+    else:
+        leftMotor.setSpeed(speed)
+        L_old_errorP_v = old_errorP_v
+        L_errorI_v = errorI_v
 
 #calculates error between current velocity and target velocity
 #and adjusts motor speeds based on pid constants
 def velocityPid():
     waiting_for_thread = 0
+    L_errorI_v = 0
+    R_errorI_v = 0
     while True:
 
-    #if stop line was found 
+    #if stop line was found
 	if trackingline.stop == True:
         #waits for 100 iterations of the thread before stopping the motors for the stop sign
 	    if waiting_for_thread == 100:
 		print "I entered that if statement"
 	    	stopMotors()
-        #stops motors for 1 second 
+        #stops motors for 1 second
 		time.sleep(1)
 	    	trackingline.stop = False
                 startMotors()
@@ -174,7 +216,9 @@ def velocityPid():
         #when no stop line is detected, resume normal operation
         #set targets equal to the speed given through position controller
         else:
-            global left_target
+            setMotorSpeed(1)
+            setMotorSpeed(0)
+            '''global left_target
             global right_target
             left_target = trackingline.leftspeed
             right_target = trackingline.rightspeed
@@ -192,8 +236,8 @@ def velocityPid():
         global L_old_errorP_v
         L_old_errorP_v = L_errorP_v
 
-        
-        #convert based on linear equation back to a motor speed value to 
+
+        #convert based on linear equation back to a motor speed value to
         #be fed into the motor hat function to set motor speed
         L_totalError_v = (L_totalError_v+0.006)/0.004
 	if L_totalError_v > 255:
@@ -223,7 +267,7 @@ def velocityPid():
             speedR = 0
         else:
             speedR = int(R_totalError_v)
-        rightMotor.setSpeed(int(speedR))
+        rightMotor.setSpeed(int(speedR))'''
 
 
         '''
@@ -256,5 +300,3 @@ def getEncoderTicks():
         #iterate encoder ticks
         GPIO.add_event_detect(17, GPIO.BOTH, callback=leftSensorCallback)
         GPIO.add_event_detect(4, GPIO.BOTH, callback=rightSensorCallback)
-
-

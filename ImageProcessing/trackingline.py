@@ -43,19 +43,13 @@ POSITIONF = 0
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
-def detect_stop(hsv):
-    #Threshold Values for a white line since the stop line is white
-    upper = np.array([0, 0, 255])
-    lower = np.array([0, 0, 255])
-    #Create an image that only includes pixels that are within
-    #the threshold range
-    mask1 = cv2.inRange(hsv, lower, upper)
+def detect_stop(mask1):
     cv2.imshow('mask', mask1)
     #Perform edge detection on the masked frame to find all edge points in image
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
     #in this case is the stop line
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,100, minLineLength= 10 , maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,100, minLineLength= 10, maxLineGap=1)
     cv2.waitKey(20)
     global stop
     #For every line discovered by Hough Transform
@@ -75,7 +69,6 @@ def detect_stop(hsv):
 		    print "Stop = ",stop
             #Exit Function once a stop is found
 		    return
-    return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw):
@@ -150,7 +143,7 @@ def linetracking(raw):
         avg = old_avg
     #Draw a point to show where the average x-value is
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
-    detect_stop(hsv)
+    detect_stop(mask1)
     cv2.imshow('frame', frame)
     cv2.imshow('edges', edges)
     cv2.waitKey(20)
