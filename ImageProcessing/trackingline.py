@@ -208,7 +208,7 @@ def position_p():
     elif state == RIGHTTURN:
         right_turn()
 
-    elif: state == LEFTTURN:
+    elif state == LEFTTURN:
         veloity.stopMotors()
 
     else:
