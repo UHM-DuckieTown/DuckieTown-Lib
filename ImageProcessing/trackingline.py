@@ -40,10 +40,20 @@ POSITIONP = 0.1
 POSITIONI = 0.0000
 POSITIOND = 0.0005
 POSITIONF = 0
+
+global state
+state = 1
+#state macros
+POSITIONCONTROLLER = 1
+STOP = 2
+RIGHTTURN = 3
+LEFTTURN = 4
+
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
 def detect_stop(mask1):
+    global state
     cv2.imshow('mask', mask1)
     #Perform edge detection on the masked frame to find all edge points in image
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
@@ -66,6 +76,7 @@ def detect_stop(mask1):
                 #line was found so anticipate stop
             	if abs((y2-y1)) < 3:
                     stop = True
+                    state = STOP
 		    print "Stop = ",stop
             #Exit Function once a stop is found
 		    return
@@ -177,66 +188,79 @@ def position_controller(target, actual):
         adjustment = Position_totalError_v
         return int(adjustment)
 
-def position_p():
-    window_width = 480
-    window_height = 360
-    global camera
-    global capture
-    #for each frame that is taken from the camera
-    for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
-       global capture
-       image = capture.array
-       #resize the image to make processing more manageable
-       raw = cv2.resize(image, (window_width, window_height))
-       #Find either the yellow or white line and what the average position
-       #of the Duck is
-       yellow,avg = linetracking(raw)
-       #130 for yellow line, 450 for white
-       #If tracking off the yellow line this is the target position to use
-       if yellow:
-           threshold = 105
-       #If tracking off the white line use this target position instead
-       else:
-           threshold = 430
-       global stop
-       if stop == True:
-	   time.sleep(0.5)
-       #If no stop was detected, make adjustments to the position based on
-       #the error
-       else:
-           global rightspeed
-           global leftspeed
-           #increase the right motor's speed and decrease the left motor's speed
-           #depending on the error in the position to correct the Duck
-           rightspeed = int(100 + position_controller(threshold,avg))
-           leftspeed = int(100 - position_controller(threshold,avg))
-           #rightspeed = 100
-           #leftspeed = 100
-           #Cap the Right and Left Motor speeds so that they do not go
-           #above 255 or less than 0
-           if rightspeed > 255:
-               rightspeed = 255
-
-           if rightspeed < 0:
-               rightspeed = 0
-
-           if leftspeed > 255:
-               leftspeed = 255
-
-           if leftspeed < 0:
-               leftspeed = 0
-
-
-    	   #leftspeed = ((leftspeed*0.004)-0.006)
-    	   #rightspeed = ((rightspeed*0.004)-0.006)
-           #Convert the left and right motor speed from 0-255 to a speed in
-           #cm/s since the velocity controller only takes in speeds in this unit
-           leftspeed = ((leftspeed*0.004)-0.006)
-           rightspeed = ((rightspeed*0.004)-0.006)
-       capture.truncate(0)
-
 def right_turn():
     global rightspeed
     global leftspeed
     leftspeed = 0.7
     rightspeed = 0.5
+
+def position_p():
+    window_width = 480
+    window_height = 360
+    global camera
+    global capture
+
+
+
+    if state == STOP:
+        velocity.stopMotors()
+
+    elif state == RIGHTTURN:
+        right_turn()
+
+    elif: state == LEFTTURN:
+        veloity.stopMotors()
+
+    else:
+        #for each frame that is taken from the camera
+        for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
+           global capture
+           image = capture.array
+           #resize the image to make processing more manageable
+           raw = cv2.resize(image, (window_width, window_height))
+           #Find either the yellow or white line and what the average position
+           #of the Duck is
+           yellow,avg = linetracking(raw)
+           #130 for yellow line, 450 for white
+           #If tracking off the yellow line this is the target position to use
+           if yellow:
+               threshold = 105
+           #If tracking off the white line use this target position instead
+           else:
+               threshold = 430
+           global stop
+           if stop == True:
+    	   time.sleep(0.5)
+           #If no stop was detected, make adjustments to the position based on
+           #the error
+           else:
+               global rightspeed
+               global leftspeed
+               #increase the right motor's speed and decrease the left motor's speed
+               #depending on the error in the position to correct the Duck
+               rightspeed = int(100 + position_controller(threshold,avg))
+               leftspeed = int(100 - position_controller(threshold,avg))
+               #rightspeed = 100
+               #leftspeed = 100
+               #Cap the Right and Left Motor speeds so that they do not go
+               #above 255 or less than 0
+               if rightspeed > 255:
+                   rightspeed = 255
+
+               if rightspeed < 0:
+                   rightspeed = 0
+
+               if leftspeed > 255:
+                   leftspeed = 255
+
+               if leftspeed < 0:
+                   leftspeed = 0
+
+
+        	   #leftspeed = ((leftspeed*0.004)-0.006)
+        	   #rightspeed = ((rightspeed*0.004)-0.006)
+               #Convert the left and right motor speed from 0-255 to a speed in
+               #cm/s since the velocity controller only takes in speeds in this unit
+               leftspeed = ((leftspeed*0.004)-0.006)
+               rightspeed = ((rightspeed*0.004)-0.006)
+           capture.truncate(0)
