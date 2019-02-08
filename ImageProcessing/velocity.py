@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 import matplotlib.pyplot as plt
 import trackingline
+import random #only using this to test states, remove later
 
 #initialize global variables to count encoder ticks
 global leftencoderticks
@@ -198,18 +199,32 @@ def velocityPid():
 
     #if stop line was found
 	if trackingline.stop == True:
+        global state
         #waits for 100 iterations of the thread before stopping the motors for the stop sign
-	    if waiting_for_thread == 100:
-		print "I entered that if statement"
-	    	stopMotors()
+	    #if waiting_for_thread == 100:
+		#print "I entered that if statement"
+	    #	stopMotors()
         #stops motors for 1 second
-		time.sleep(1)
-	    	trackingline.stop = False
-                startMotors()
+		#time.sleep(1)
+        currentencoderticks = rightencoderticks
+        if(rightencoderticks - currentencoderticks == 1152):
+            trackingline.stop = False
+            state = STOP
+            decision = randomn.randint(1,4)
+            if decision == 1:
+                state = RIGHTTURN
+            elif decision == 2:
+                state = LEFTTURN
+            elif decision == 3:
+                state = STRAIGHT
+            else:
+                state = POSITIONCONTROLLER
+
+                #startMotors()
 		#left_Motor.setSpeed(100)
 		#right_Motor.setSpeed(100)
-		waiting_for_thread = 0
-	    waiting_for_thread+=1
+		#waiting_for_thread = 0
+	    #waiting_for_thread+=1
 
         #when no stop line is detected, resume normal operation
         #set targets equal to the speed given through position controller

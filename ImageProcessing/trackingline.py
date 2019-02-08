@@ -48,6 +48,7 @@ POSITIONCONTROLLER = 1
 STOP = 2
 RIGHTTURN = 3
 LEFTTURN = 4
+STRAIGHT = 5
 
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
@@ -75,7 +76,7 @@ def detect_stop(mask1):
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	if abs((y2-y1)) < 3:
-                    state = STOP
+                    #state = STOP
                     stop = True
 		    print "Stop = ",stop
             #Exit Function once a stop is found
@@ -194,6 +195,18 @@ def right_turn():
     leftspeed = 0.7
     rightspeed = 0.5
 
+def left_turn():
+    global rightspeed
+    global leftspeed
+    leftspeed = 0.5
+    rightspeed = 0.7
+
+def go_straight():
+    global rightspeed
+    global leftspeed
+    leftspeed = 0.5
+    rightspeed = 0.5
+
 def position_p():
     window_width = 480
     window_height = 360
@@ -205,13 +218,16 @@ def position_p():
 
         if state == STOP:
             print "in state stop"
+            leftspeed = 0
+            rightspeed = 0
 
         elif state == RIGHTTURN:
             right_turn()
 
         elif state == LEFTTURN:
-            veloity.stopMotors()
-
+            left_turn()
+        elif state == STRAIGHT:
+            go_straight()
         else:
             #for each frame that is taken from the camera
             for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
