@@ -199,26 +199,27 @@ def velocityPid():
 
     #if stop line was found
 	if trackingline.stop == True:
-        global state
+        	global state
         #waits for 100 iterations of the thread before stopping the motors for the stop sign
 	    #if waiting_for_thread == 100:
 		#print "I entered that if statement"
 	    #	stopMotors()
         #stops motors for 1 second
 		#time.sleep(1)
-        currentencoderticks = rightencoderticks
-        if(rightencoderticks - currentencoderticks == 1152):
-            trackingline.stop = False
-            state = STOP
-            decision = randomn.randint(1,4)
-            if decision == 1:
-                state = RIGHTTURN
-            elif decision == 2:
-                state = LEFTTURN
-            elif decision == 3:
-                state = STRAIGHT
-            else:
-                state = POSITIONCONTROLLER
+		global rightencoderticks
+        	currentencoderticks = rightencoderticks
+        	if(rightencoderticks - currentencoderticks == 1152):
+            		trackingline.stop = False
+            		state = STOP
+            		decision = randomn.randint(1,4)
+            		if decision == 1:
+                		state = RIGHTTURN
+            		elif decision == 2:
+                		state = LEFTTURN
+            		elif decision == 3:
+                		state = STRAIGHT
+            		else:
+                		state = POSITIONCONTROLLER
 
                 #startMotors()
 		#left_Motor.setSpeed(100)
