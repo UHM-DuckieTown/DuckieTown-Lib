@@ -14,10 +14,11 @@ def stopSignDetect(image):
     :param numpy array image:  3d RGB numpy array
     :return: detected as 1, not detected as 0
     '''
-    if(clf.predict_proba([lbp(image)])[0][1] > 0.7):
-        return 1
+    conf = clf.predict_proba([lbp(image)])[0][1]
+    if (conf > 0.7):
+        return (1, conf)
     else:
-        return 0	
+        return (0, conf)	
 
 if __name__ == "__main__":
     OUTPUT_FILE = sys.argv[1] + '.csv'            # create unique filename
@@ -30,19 +31,21 @@ if __name__ == "__main__":
     clf = load("clf_grid_Stop")
     outfile = open(OUTPUT_FILE, 'a')
     csvfile = csv.writer(outfile)
-    csvfile.writerow(['filename', 'expected value', 'predicted value'])
+    csvfile.writerow(['filename', 'expected value', 'predicted value', 'true-pos conf'])
 
     predicted = []
+    confidence = []
     expected = [1 for _ in range(len(POS_DATASET))] + [0 for _ in range(len(NEG_DATASET))]
     
     for pic in itertools.chain(POS_DATASET, NEG_DATASET):
         image = Image.open(pic)				# open *.png with PIL
 	arr = np.array(image, dtype='uint8')            # convert *.png to 3d RGB numpy array
-        pred = stopSignDetect(arr)
+        pred, conf = stopSignDetect(arr)
         predicted.append(pred)
-        
-    for filename, exp, pred in zip(itertools.chain(POS_DATASET, NEG_DATASET), expected, predicted):
-        csvfile.writerow([filename, exp, pred])
+        confidence.append(conf)
+
+    for filename, exp, pred, conf in zip(itertools.chain(POS_DATASET, NEG_DATASET), expected, predicted, confidence):
+        csvfile.writerow([filename, exp, pred, conf])
     
     print "saved to: " + OUTPUT_FILE
     csvfile.writerow(["score", accuracy_score(expected, predicted)])        # print fraction of correctly classified samples

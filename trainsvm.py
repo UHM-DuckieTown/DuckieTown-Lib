@@ -62,7 +62,7 @@ lbp(posSet, lbpset)
 # test_size: split data to train and test on 80-20 ratio (default is 75-25)
 # random_state: decides split of which files to use for train and test; use 0 or any int for consistent RNG outcome sequence
 #X is the array of the points while Y is the label of whether it's true or not
-X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 0.2, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 0.3, random_state=0)
 
 # Parameter Grid
 #param_grid = {'C': [0.1, 1], 'gamma': [1, 0.1, 0.01, 0.001, 0.00001, 10]}
@@ -71,10 +71,11 @@ X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 
 #param_grid = dict(gamma=gamma_range, C=C_range)
 
 
-param_grid = {'C': [200, 3000, 40000], 'gamma': [200, 3000, 40000]}
+#param_grid = {'C': [200, 3000, 40000], 'gamma': [200, 3000, 40000]}
+param_grid = [{'kernel': ('linear', 'poly'), 'C': [1000], 'gamma': [1000, 10000, 100000]}]
 
 # Make grid search classifier
-clf_grid = GridSearchCV(svm.SVC(probability=True, kernel='poly'), param_grid, verbose=1)
+clf_grid = GridSearchCV(svm.SVC(probability=True), param_grid, verbose=1)
 
 #clf_grid.probability = True
 
