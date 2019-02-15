@@ -5,6 +5,7 @@ import time
 import velocity
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
+import random #remove this after states testing is done
 #Global variables for the right and left speed of motor
 global rightspeed
 rightspeed = 0
@@ -76,8 +77,9 @@ def detect_stop(mask1):
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
-            	if abs((y2-y1)) < 3:
-                    state = STOP
+            	if abs((y2-y1)/(x2-x1)) < 1:
+                    global state
+		    state = STOP
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
@@ -181,7 +183,7 @@ def position_controller(target, actual):
     global Position_old_errorP_v
     Position_old_errorP_v = Position_errorP_v
     #If our total error is less than 5, no adjustment is made
-    print 'Error = ',Position_totalError_v
+    #print 'Error = ',Position_totalError_v
     if abs(Position_totalError_v) < 5:
         #do nothing
         return int(0)
@@ -213,17 +215,20 @@ def position_p():
     window_height = 360
     global camera
     global capture
-
+    global state
 
     while(1):
 
         if state == STOP:
             print "in state stop"
-            velocity.resetEncoders()
+            #velocity.resetEncoders()
             if(velocity.rightencoderticks >= 1152):
-                leftspeed = 0
+                print "Encoder's reached the value"
+		leftspeed = 0
                 rightspeed = 0
-                decision = randomn.randint(1,4)
+                time.sleep(2)
+
+                decision = random.randint(1,4)
                 if decision == 1:
                     state = RIGHTTURN
                 elif decision == 2:
@@ -234,11 +239,16 @@ def position_p():
                     state = POSITIONCONTROLLER
         elif state == RIGHTTURN:
             right_turn()
+            print "in state rightturn"
 
         elif state == LEFTTURN:
             left_turn()
+            print "in state leftturn"
+
         elif state == STRAIGHT:
             go_straight()
+            print "in state straight"
+
         else:
             #for each frame that is taken from the camera
             for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
@@ -256,13 +266,14 @@ def position_p():
                #If tracking off the white line use this target position instead
                else:
                    threshold = 430
-               global stop
-               if stop == True:
-        	   time.sleep(0.5)
-                   break
-               #If no stop was detected, make adjustments to the position based on
-               #the error
-               else:
+               if state == STOP:
+			global rightspeed
+			global leftspeed
+			rightspeed = 0.5
+			leftspeed = 0.5
+			velocity.resetEncoders()
+			break
+	       else:
                    global rightspeed
                    global leftspeed
                    #increase the right motor's speed and decrease the left motor's speed

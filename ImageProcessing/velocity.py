@@ -3,7 +3,6 @@ import RPi.GPIO as GPIO
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 import matplotlib.pyplot as plt
 import trackingline
-import random #only using this to test states, remove later
 
 #initialize global variables to count encoder ticks
 global leftencoderticks
@@ -210,7 +209,9 @@ def velocityPid():
 	    #	stopMotors()
         #stops motors for 1 second
 		#time.sleep(1)
-	'''	global rightencoderticks
+
+	'''
+		global rightencoderticks
         	currentencoderticks = rightencoderticks
         	if(rightencoderticks - currentencoderticks == 1152):
             		trackingline.stop = False
@@ -225,6 +226,7 @@ def velocityPid():
             		else:
                 		state = POSITIONCONTROLLER
 '''
+
                 #startMotors()
 		#left_Motor.setSpeed(100)
 		#right_Motor.setSpeed(100)
@@ -235,7 +237,8 @@ def velocityPid():
         #set targets equal to the speed given through position controller
         setMotorSpeed(1)
         setMotorSpeed(0)
-            '''global left_target
+	'''
+            global left_target
             global right_target
             left_target = trackingline.leftspeed
             right_target = trackingline.rightspeed
@@ -284,10 +287,12 @@ def velocityPid():
             speedR = 0
         else:
             speedR = int(R_totalError_v)
-        rightMotor.setSpeed(int(speedR))'''
+        rightMotor.setSpeed(int(speedR))
+
+'''
 
 
-        '''
+	'''
         if len(samples) <= 5000:
             global left_velocity
             global right_velocity
@@ -302,7 +307,7 @@ def velocityPid():
             target_left.append(left_target_vel)
             target_right.append(right_target_vel)
 
-        '''
+'''
         time.sleep(0.001)
 
 #function for thread to count encoder ticks
