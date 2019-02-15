@@ -59,7 +59,8 @@ lbp(posSet, lbpset)
 
 # print lbpset
 
-# Split data to train and test on 80-20 ratio
+# test_size: split data to train and test on 80-20 ratio (default is 75-25)
+# random_state: decides split of which files to use for train and test; use 0 or any int for consistent RNG outcome sequence
 #X is the array of the points while Y is the label of whether it's true or not
 X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 0.2, random_state=0)
 
@@ -68,6 +69,7 @@ X_train, X_test, y_train, y_test = train_test_split(lbpset, labels, test_size = 
 #C_range = np.logspace(-2, 10, 13)
 #gamma_range = np.logspace(-9, 3, 13)
 #param_grid = dict(gamma=gamma_range, C=C_range)
+
 
 param_grid = {'C': [200, 3000, 40000], 'gamma': [200, 3000, 40000]}
 
