@@ -108,7 +108,11 @@ def rightSensorCallback(channel):
     global rightencoderticks
     rightencoderticks += 1
     #print "right encoder ticks:" + str(rightencoderticks)
-
+def resetEncoders():
+    global rightencoderticks
+    global leftencoderticks
+    rightencoderticks = 0
+    leftencoderticks = 0
 #uses matplotlib functions to plot velocity/targets
 def plotVelocity():
     #generate new window to display the plots
@@ -198,15 +202,15 @@ def velocityPid():
     while True:
 
     #if stop line was found
-	if trackingline.stop == True:
-        	global state
+	#if trackingline.stop == True:
+    #    	global state
         #waits for 100 iterations of the thread before stopping the motors for the stop sign
 	    #if waiting_for_thread == 100:
 		#print "I entered that if statement"
 	    #	stopMotors()
         #stops motors for 1 second
 		#time.sleep(1)
-		global rightencoderticks
+	'''	global rightencoderticks
         	currentencoderticks = rightencoderticks
         	if(rightencoderticks - currentencoderticks == 1152):
             		trackingline.stop = False
@@ -220,7 +224,7 @@ def velocityPid():
                 		state = STRAIGHT
             		else:
                 		state = POSITIONCONTROLLER
-
+'''
                 #startMotors()
 		#left_Motor.setSpeed(100)
 		#right_Motor.setSpeed(100)
@@ -229,9 +233,8 @@ def velocityPid():
 
         #when no stop line is detected, resume normal operation
         #set targets equal to the speed given through position controller
-        else:
-            setMotorSpeed(1)
-            setMotorSpeed(0)
+        setMotorSpeed(1)
+        setMotorSpeed(0)
             '''global left_target
             global right_target
             left_target = trackingline.leftspeed

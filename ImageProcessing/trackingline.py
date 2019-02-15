@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from picamera import PiCamera
 import time
+import velocity
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 #Global variables for the right and left speed of motor
@@ -33,8 +34,8 @@ Position_errorI_v = 0
 global Position_totalError_v
 Position_totalError_v = 0
 #Flag to check if the Duck is stopped
-global stop
-stop = False
+#global stop
+#stop = False
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
@@ -76,9 +77,9 @@ def detect_stop(mask1):
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	if abs((y2-y1)) < 3:
-                    #state = STOP
-                    stop = True
-		    print "Stop = ",stop
+                    state = STOP
+                    #stop = True
+		    #print "Stop = ",stop
             #Exit Function once a stop is found
 		    return
 #This function takes in the raw image from the camera and will
@@ -218,9 +219,19 @@ def position_p():
 
         if state == STOP:
             print "in state stop"
-            leftspeed = 0
-            rightspeed = 0
-
+            velocity.resetEncoders()
+            if(velocity.rightencoderticks >= 1152):
+                leftspeed = 0
+                rightspeed = 0
+                decision = randomn.randint(1,4)
+                if decision == 1:
+                    state = RIGHTTURN
+                elif decision == 2:
+                    state = LEFTTURN
+                elif decision == 3:
+                    state = STRAIGHT
+                else:
+                    state = POSITIONCONTROLLER
         elif state == RIGHTTURN:
             right_turn()
 
