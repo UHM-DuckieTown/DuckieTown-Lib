@@ -5,7 +5,7 @@ import velocity
 from threading import Thread
 import RPi.GPIO as GPIO
 import trackingline
-
+import mqtt
 #Added
 import paho.mqtt.client as mqtt
 import socket
