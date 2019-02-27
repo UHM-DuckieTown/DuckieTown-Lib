@@ -212,7 +212,7 @@ def go_straight():
     leftspeed = 0.5
     rightspeed = 0.5
 
-def position_p(client,DUCK1_FEED1):
+def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
     window_width = 480
     window_height = 360
     global camera
