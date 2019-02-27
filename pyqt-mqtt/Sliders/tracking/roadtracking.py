@@ -5,7 +5,7 @@ import velocity
 from threading import Thread
 import RPi.GPIO as GPIO
 import trackingline
-import mqtt
+import p_mqtt
 #Added
 import paho.mqtt.client as mqtt
 import socket
@@ -42,6 +42,17 @@ def main():
         print DUCK1_FEED2
         print DUCK1_TEXT
 
+        # Create a client instance
+        client = mqtt.Client()
+        client.on_connect = p_mqtt.on_connect
+        #Connects the client to a broker
+        client.on_message = p_mqtt.on_message
+        client.connect(MQTT_SERVER, 1883, 60)
+        #Runs a thread in the background to cal loop() automatically
+        #Frees up main thread for other work
+        client.loop_start()
+
+
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
 
@@ -57,7 +68,7 @@ def main():
         threads = []
 
         #initialize threads
-        position_adjust = Thread(target = trackingline.position_p)
+        position_adjust = Thread(target = trackingline.position_p(client,DUCK1_FEED1,DUCK1_FEED2))
         #position_adjust = Thread(target = trackingline.right_turn)
         encoder_polling = Thread(target = velocity.getVelocity)
         vel_pid = Thread(target = velocity.velocityPid)
@@ -77,15 +88,7 @@ def main():
         vel_pid.start()
         position_adjust.start()
 
-        # Create a client instance
-        client = mqtt.Client()
-        client.on_connect = on_connect
-        #Connects the client to a broker
-        client.on_message = on_message
-        client.connect(MQTT_SERVER, 1883, 60)
-        #Runs a thread in the background to cal loop() automatically
-        #Frees up main thread for other work
-        client.loop_start()
+
 
         try:
                 while True:

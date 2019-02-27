@@ -5,6 +5,7 @@ import time
 import velocity
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
+import p_mqtt
 import random #remove this after states testing is done
 #Global variables for the right and left speed of motor
 global rightspeed
@@ -210,7 +211,7 @@ def go_straight():
     leftspeed = 0.5
     rightspeed = 0.5
 
-def position_p():
+def position_p(client,DUCK1_FEED1):
     window_width = 480
     window_height = 360
     global camera
@@ -258,6 +259,9 @@ def position_p():
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
                #of the Duck is
+               
+               p_mqtt.encode_string(raw,DUCK1_FEED1,client)
+               
                yellow,avg = linetracking(raw)
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
