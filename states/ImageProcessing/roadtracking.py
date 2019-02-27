@@ -32,7 +32,7 @@ def main():
         threads = []
 
         #initialize threads
-        position_adjust = Thread(target = trackingline.position_p)
+        position_adjust = Thread(target = trackingline.position_p, args=(10,))
         #position_adjust = Thread(target = trackingline.right_turn)
         encoder_polling = Thread(target = velocity.getVelocity)
         vel_pid = Thread(target = velocity.velocityPid)

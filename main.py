@@ -1,13 +1,18 @@
 import sys
+sys.path.insert(0, 'states/ImageProcessing/')
 sys.path.insert(0, 'features/')
 from joblib import load
 from picamera import PiCamera
 from threading import Thread
+import trackingline
+import velocity
 import time
 import pisvm
 from picamera.array import PiRGBArray
 import Queue
 import cv2
+import RPi.GPIO as GPIO
+
 
 image = []
 
@@ -28,23 +33,44 @@ def runCamera(q):
 def main():
 
         #set threads that will be run
-        functions = [pisvm.stopSignDetect, runCamera]
+        cameraFunctions = []
+        cameraFunctions.append(pisvm.stopSignDetect)
+        cameraFunctions.append(runCamera)
+        cameraFunctions.append(trackingline.position_p)
+        
+        functions = []
+        functions.append(velocity.getVelocity)
+        functions.append(velocity.velocityPid)
+
+        #init sensors
+        velocity.leftSensorCallback(4)
+        velocity.rightSensorCallback(17)
+        velocity.getEncoderTicks()       
         q = Queue.Queue() 
         #init thread array
         threads = []
         
-        for proc in functions:
+        for proc in cameraFunctions:
             process = Thread(target = proc, args=(q,))
             
             #allow child threads to exit
             process.setDaemon(True)
             threads.append(process)
             process.start()
+        for proc in functions:
+                process = Thread(target = proc)
+                process.setDaemon(True)
+                threads.append(process)
+                process.start()
+
         try:
                 while True:
                         time.sleep(1)
         except KeyboardInterrupt:
                 print "exiting..."
+                GPIO.cleanup()
+                velocity.stopMotors()
+                cv2.destroyAllWindows()
 
 if __name__=="__main__":
         main()
