@@ -270,8 +270,9 @@ def position_p():
 
         else:
             #for each frame that is taken from the camera
+            global capture
+            capture.truncate(0)
             for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
-               global capture
                image = capture.array
                #resize the image to make processing more manageable
                raw = cv2.resize(image, (window_width, window_height))
