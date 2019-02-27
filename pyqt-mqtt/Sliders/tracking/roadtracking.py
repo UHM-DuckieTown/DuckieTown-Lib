@@ -8,6 +8,7 @@ import trackingline
 
 #Added
 import paho.mqtt.client as mqtt
+import socket
 
 
 #initialize encoders
