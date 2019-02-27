@@ -84,7 +84,7 @@ def detect_stop(mask1):
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
-            	if abs((y2-y1)/(x2-x1)) < 0.1:
+            	if abs((y2-y1)/(x2-x1)) < 0.01:
                     global state
 		    state = STOP
                     #stop = True
