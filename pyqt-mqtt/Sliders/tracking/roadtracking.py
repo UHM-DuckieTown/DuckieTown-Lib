@@ -77,6 +77,16 @@ def main():
         vel_pid.start()
         position_adjust.start()
 
+        # Create a client instance
+        client = mqtt.Client()
+        client.on_connect = on_connect
+        #Connects the client to a broker
+        client.on_message = on_message
+        client.connect(MQTT_SERVER, 1883, 60)
+        #Runs a thread in the background to cal loop() automatically
+        #Frees up main thread for other work
+        client.loop_start()
+
         try:
                 while True:
                         time.sleep(0.1)
@@ -90,6 +100,9 @@ def main():
                 #leftMotor.run(Adafruit_MotorHAT.RELEASE)
                 #rightMotor.run(Adafruit_MotorHAT.RELEASE)
 
+        finally:
+            #Stop Background thread
+            client.loop_stop()
 
 if __name__=="__main__":
         main()
