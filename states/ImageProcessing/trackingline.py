@@ -52,6 +52,13 @@ RIGHTTURN = 3
 LEFTTURN = 4
 STRAIGHT = 5
 
+RTURNRTICKS = 602
+RTURNLTICKS = 1279
+LTURNRTICKS = 1692
+LTURNLTICKS = 1222
+STRAIGHTTICKS = 1316
+
+
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
@@ -224,30 +231,42 @@ def position_p():
             #velocity.resetEncoders()
             if(velocity.rightencoderticks >= 1152):
                 print "Encoder's reached the value"
-		leftspeed = 0
+		        leftspeed = 0
                 rightspeed = 0
                 time.sleep(2)
+
+                velocity.resetEncoders()
 
                 decision = random.randint(1,4)
                 if decision == 1:
                     state = RIGHTTURN
+                    velocity.resetEncoders()
                 elif decision == 2:
                     state = LEFTTURN
+                    velocity.resetEncoders()
                 elif decision == 3:
                     state = STRAIGHT
+                    velocity.resetEncoders()
                 else:
                     state = POSITIONCONTROLLER
         elif state == RIGHTTURN:
             right_turn()
             print "in state rightturn"
+            if(velocity.rightencoderticks >= RTURNRTICKS or velocity.leftencoderticks >= RTURNLTICKS):
+                state = POSITIONCONTROLLER
+
 
         elif state == LEFTTURN:
             left_turn()
             print "in state leftturn"
+            if(velocity.rightencoderticks >= LTURNRTICKS or velocity.leftencoderticks >= LTURNLTICKS):
+                state = POSITIONCONTROLLER
 
         elif state == STRAIGHT:
             go_straight()
             print "in state straight"
+            if(velocity.rightencoderticks >= STRAIGHTTICKS or velocity.leftencoderticks >= STRAIGHTTICKS):
+                state = POSITIONCONTROLLER
 
         else:
             #for each frame that is taken from the camera
