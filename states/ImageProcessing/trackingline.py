@@ -84,7 +84,7 @@ def detect_stop(mask1):
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
-            	if abs((y2-y1)/(x2-x1)) < 1:
+            	if abs((y2-y1)/(x2-x1)) < 0.1:
                     global state
 		    state = STOP
                     #stop = True
@@ -202,20 +202,20 @@ def position_controller(target, actual):
 def right_turn():
     global rightspeed
     global leftspeed
-    leftspeed = 0.7
-    rightspeed = 0.5
+    leftspeed = 0.5
+    rightspeed = 0.3
 
 def left_turn():
     global rightspeed
     global leftspeed
-    leftspeed = 0.5
-    rightspeed = 0.7
+    leftspeed = 0.3
+    rightspeed = 0.5
 
 def go_straight():
     global rightspeed
     global leftspeed
-    leftspeed = 0.5
-    rightspeed = 0.5
+    leftspeed = 0.3
+    rightspeed = 0.3
 
 def position_p():
     window_width = 480
