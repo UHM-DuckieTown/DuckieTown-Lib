@@ -231,7 +231,7 @@ def position_p():
             #velocity.resetEncoders()
             if(velocity.rightencoderticks >= 1152):
                 print "Encoder's reached the value"
-        	leftspeed = 0
+		        leftspeed = 0
                 rightspeed = 0
                 time.sleep(2)
 
@@ -281,6 +281,7 @@ def position_p():
                yellow,avg = linetracking(raw)
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
+               print "in state positioncontrol"
                if yellow:
                    threshold = 105
                #If tracking off the white line use this target position instead
