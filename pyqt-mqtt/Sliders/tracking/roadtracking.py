@@ -6,16 +6,40 @@ from threading import Thread
 import RPi.GPIO as GPIO
 import trackingline
 
+#Added
+import paho.mqtt.client as mqtt
+
+
 #initialize encoders
 velocity.getEncoderTicks()
 
 time.sleep(0.1)
 
-
-
-
 def main():
 
+        MQTT_SERVER = "192.168.0.109" #IP Address of Base Station
+
+        # TODO: Get IP Address of the Duck
+        ip_duck = '';
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8",80))
+        ip_duck = s.getsockname()[0]
+
+
+        # TODO: String manipulations
+        DUCK1_FEED1 = ip_duck + "_feed1"
+
+        #Secondary Feeds to show Raw, Edges, Line Tracker Image, White, and Yellow Mask
+        # TODO: String manipulations
+        DUCK1_FEED2 = ip_duck + "_feed2"
+
+        #Subscribed-Topics
+        # TODO: String manipulations
+        DUCK1_TEXT = ip_duck + "_text"
+
+        print DUCK1_FEED1
+        print DUCK1_FEED2
+        print DUCK1_TEXT
 
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
