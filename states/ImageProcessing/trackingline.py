@@ -231,7 +231,7 @@ def position_p():
             #velocity.resetEncoders()
             if(velocity.rightencoderticks >= 1152):
                 print "Encoder's reached the value"
-		        leftspeed = 0
+	        leftspeed = 0
                 rightspeed = 0
                 time.sleep(2)
 
