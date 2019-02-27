@@ -227,6 +227,7 @@ def position_p():
     while(1):
 
         if state == STOP:
+            go_straight()
             print "in state stop"
             #velocity.resetEncoders()
             if(velocity.rightencoderticks >= 1152):
