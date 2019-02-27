@@ -87,7 +87,7 @@ def detect_stop(mask1):
 		    return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
-def linetracking(raw):
+def linetracking(raw,client,DUCK1_FEED2):
     cv2.imshow('raw',raw)
     #Minimize the region of interest to just the lower half of image
     #because that is where the road lines are
@@ -111,6 +111,7 @@ def linetracking(raw):
     #Ignore all pixels that aren't white to obtain a picture of only
     #the road lines
     mask1 = cv2.inRange(hsv, lower, upper)
+    p_mqtt.encode_string(mask1,DUCK1_FEED2,client)
     #cv2.imshow("white mask", mask1)
 
     #Ignore all pixels that aren't yellow to obtain a picture of only
@@ -259,10 +260,10 @@ def position_p(client,DUCK1_FEED1):
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
                #of the Duck is
-               
+
                p_mqtt.encode_string(raw,DUCK1_FEED1,client)
-               
-               yellow,avg = linetracking(raw)
+
+               yellow,avg = linetracking(raw,client,DUCK1_FEED2)
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
                if yellow:
