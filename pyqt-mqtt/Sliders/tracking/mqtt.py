@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import cv2
 import base64
-import np
+import numpy as np
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
