@@ -33,14 +33,14 @@ def runCamera(q):
 def main():
 
         #set threads that will be run
-        cameraFunctions = []
-        cameraFunctions.append(pisvm.stopSignDetect)
-        cameraFunctions.append(runCamera)
-        cameraFunctions.append(trackingline.position_p)
+        cameraFunctions = [pisvm.stopSignDetect,trackingline.position_p]
+        #cameraFunctions.append(pisvm.stopSignDetect)
+        #cameraFunctions.append(runCamera)
+        #cameraFunctions.append(trackingline.position_p)
         
-        functions = []
-        functions.append(velocity.getVelocity)
-        functions.append(velocity.velocityPid)
+        functions = [velocity.getVelocity, velocity.velocityPid]
+        #functions.append(velocity.getVelocity)
+        #functions.append(velocity.velocityPid)
 
         #init sensors
         velocity.leftSensorCallback(4)
@@ -52,8 +52,6 @@ def main():
         
         for proc in cameraFunctions:
             process = Thread(target = proc, args=(q,))
-            
-            #allow child threads to exit
             process.setDaemon(True)
             threads.append(process)
             process.start()

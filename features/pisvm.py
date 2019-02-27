@@ -21,9 +21,17 @@ def lbp(test_image):
     return hist
 
 def stopSignDetect(q):
+    #camera config
+    camera = PiCamera()
+    camera.resolution = (640,480)
+    camera.framerate = 20
+    raw = PiRGBArray(camera, size=(640,480))
+    time.sleep(0.1)
+
     clf = load("features/clf_grid_Stop")
-    while(1):
-        image = q.get()
+    for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
+        q.put(raw.array)
+        image = raw.array
         image = image[0:70,570:640]
         key = cv2.waitKey(1)
         cv2.imshow('stop sign detect',image)
@@ -32,3 +40,4 @@ def stopSignDetect(q):
         else:
                 print('miss')
 
+        raw.truncate(0)
