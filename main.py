@@ -14,7 +14,6 @@ import cv2
 import RPi.GPIO as GPIO
 
 
-image = []
 
 def runCamera(q):
         #camera config
@@ -33,12 +32,14 @@ def runCamera(q):
 def main():
 
         #set threads that will be run
-        cameraFunctions = [pisvm.stopSignDetect,trackingline.position_p]
-        #cameraFunctions.append(pisvm.stopSignDetect)
+        #cameraFunctions = [pisvm.stopSignDetect,trackingline.position_p]
+        cameraFunctions = []
+        cameraFunctions.append(pisvm.stopSignDetect)
         #cameraFunctions.append(runCamera)
         #cameraFunctions.append(trackingline.position_p)
         
-        functions = [velocity.getVelocity, velocity.velocityPid]
+        #functions = [velocity.getVelocity, velocity.velocityPid]
+        functions = []
         #functions.append(velocity.getVelocity)
         #functions.append(velocity.velocityPid)
 
@@ -49,23 +50,25 @@ def main():
         q = Queue.Queue() 
         #init thread array
         threads = []
-        
+        print "starting up...." 
         for proc in cameraFunctions:
+            print "{}".format(proc)
             process = Thread(target = proc, args=(q,))
             process.setDaemon(True)
             threads.append(process)
             process.start()
-        for proc in functions:
-                process = Thread(target = proc)
+        for p in functions:
+                process = Thread(target = p)
                 process.setDaemon(True)
                 threads.append(process)
                 process.start()
+        
 
         try:
                 while True:
                         time.sleep(1)
         except KeyboardInterrupt:
-                print "exiting..."
+                print "\nexiting..."
                 GPIO.cleanup()
                 velocity.stopMotors()
                 cv2.destroyAllWindows()
