@@ -9,6 +9,7 @@ import p_mqtt
 #Added
 import paho.mqtt.client as mqtt
 import socket
+import config
 
 
 #initialize encoders
@@ -18,29 +19,15 @@ time.sleep(0.1)
 
 def main():
 
-        MQTT_SERVER = "192.168.0.109" #IP Address of Base Station
+        MQTT_SERVER = "192.168.0.109" #IP Address of Base Station        
 
-        # TODO: Get IP Address of the Duck
-        ip_duck = '';
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8",80))
-        ip_duck = s.getsockname()[0]
-
-
-        # TODO: String manipulations
-        DUCK1_FEED1 = ip_duck + "_feed1"
-
-        #Secondary Feeds to show Raw, Edges, Line Tracker Image, White, and Yellow Mask
-        # TODO: String manipulations
-        DUCK1_FEED2 = ip_duck + "_feed2"
-
-        #Subscribed-Topics
-        # TODO: String manipulations
-        DUCK1_TEXT = ip_duck + "_text"
-
-        print DUCK1_FEED1
-        print DUCK1_FEED2
-        print DUCK1_TEXT
+        print config.duck1_feed1
+        print config.duck1_feed2
+        print config.duck1_text
+        
+        DUCK1_FEED1 = config.duck1_feed1
+        DUCK1_FEED2 = config.duck1_feed2
+        DUCK1_TEXT = config.duck1_text
 
         # Create a client instance
         client = mqtt.Client()
@@ -50,8 +37,7 @@ def main():
         client.connect(MQTT_SERVER, 1883, 60)
         #Runs a thread in the background to cal loop() automatically
         #Frees up main thread for other work
-        client.loop_start()
-
+        client.loop_start()        
 
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)

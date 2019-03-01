@@ -112,6 +112,7 @@ def linetracking(raw,client,DUCK1_FEED2):
     #the road lines
     mask1 = cv2.inRange(hsv, lower, upper)
     p_mqtt.encode_string(mask1,DUCK1_FEED2,client)
+    
     #cv2.imshow("white mask", mask1)
 
     #Ignore all pixels that aren't yellow to obtain a picture of only
