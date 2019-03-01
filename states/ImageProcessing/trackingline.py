@@ -238,7 +238,8 @@ def position_p():
 
                 velocity.resetEncoders()
 
-                decision = random.randint(1,4)
+                #decision = random.randint(1,4)
+                decision = 3
                 if decision == 1:
                     state = RIGHTTURN
                     velocity.resetEncoders()
