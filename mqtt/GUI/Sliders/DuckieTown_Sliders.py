@@ -10,7 +10,7 @@ from PyQt5.QtCore import *
 from DuckieTown_GUI import Ui_MainWindow
 import socket
 
-MQTT_SERVER = "localhost"
+MQTT_SERVER = "192.168.0.109"
 
 
 
@@ -19,7 +19,7 @@ DUCK1_FEED2 = "192.168.0.69_feed2"
 DUCK1_TEXT = "192.168.0.69_text"
 
 DUCK2_FEED = "192.168.0.70_feed1"
-DUCK2_FEED2 = "192.168.0.70_feed1"
+DUCK2_FEED2 = "192.168.0.70_feed2"
 DUCK2_TEXT = "192.168.0.70_text"
 
 class MyApp(QMainWindow):
