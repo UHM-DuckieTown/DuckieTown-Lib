@@ -30,6 +30,7 @@ Position_totalError_v = 0
 #Flag to check if the Duck is stopped
 #global stop
 #stop = False
+global image
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
@@ -265,7 +266,8 @@ def position_p(q):
 
         else:
             #for each frame that is taken from the camera
-            while True:   
+            while True: 
+               global image
                image = q.get()
                #resize the image to make processing more manageable
                raw = cv2.resize(image, (window_width, window_height))
@@ -317,4 +319,3 @@ def position_p(q):
                    #cm/s since the velocity controller only takes in speeds in this unit
                    leftspeed = ((leftspeed*0.004)-0.006)
                    rightspeed = ((rightspeed*0.004)-0.006)
-               capture.truncate(0)
