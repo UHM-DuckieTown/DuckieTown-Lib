@@ -72,45 +72,6 @@ def main():
             p.daemon = True
             p.start()
             print "started {}, {}".format(func, p.pid)
-        '''
-        for func in functions:
-            p = multiprocessing.Process(target=func)
-            jobs.append(p)
-            p.daemon = True
-            p.start()
-            print "started {}, {}".format(func, p.pid)
-        
-        '''
-        '''
-        #set threads that will be run
-        #cameraFunctions = [pisvm.stopSignDetect,trackingline.position_p]
-        cameraFunctions = []
-        #cameraFunctions.append(pisvm.stopSignDetect)
-        cameraFunctions.append(runCamera)
-        cameraFunctions.append(trackingline.position_p)
-        
-        #functions = [velocity.getVelocity, velocity.velocityPid]
-        functions = []
-        #functions.append(velocity.getVelocity)
-        #functions.append(velocity.velocityPid)
-        
-        
-        #init thread array
-        threads = []
-        print "starting up...." 
-        for proc in cameraFunctions:
-            print "{}".format(proc)
-            process = Thread(target = proc, args=(q,))
-            process.setDaemon(True)
-            threads.append(process)
-            process.start()
-        
-        for p in functions:
-                process = Thread(target = p)
-                process.setDaemon(True)
-                threads.append(process)
-                process.start()
-        '''
 
         try:
                 while True:
