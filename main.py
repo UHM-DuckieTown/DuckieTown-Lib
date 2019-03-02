@@ -13,6 +13,7 @@ import Queue
 import cv2
 import RPi.GPIO as GPIO
 import multiprocessing
+import slidingwindow
 
 
 def runCamera(q):
@@ -63,8 +64,11 @@ def main():
 
         print "starting up..."    
         jobs = []
-        cameraFunctions = [runCamera,pisvm.stopSignDetect, runRoadTracking]
-        #functions = [velocity.getVelocity, velocity.velocityPid]
+        cameraFunctions = []
+        cameraFunctions.append(runCamera)
+        #cameraFunctions.append(runRoadTracking)
+        cameraFunctions.append(slidingwindow.img_proc)
+
 
         for func in cameraFunctions:
             p = multiprocessing.Process(target=func, args=(q,))
