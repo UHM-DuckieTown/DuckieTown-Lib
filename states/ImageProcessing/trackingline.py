@@ -12,14 +12,14 @@ rightspeed = 0
 global leftspeed
 leftspeed = 0
 #Global variable for camera object
-#global camera
-#camera = PiCamera()
+global camera
+camera = PiCamera()
 #Set resolution and framerate of camera
-#camera.resolution = (640, 480)
-#camera.framerate = 20
+camera.resolution = (640, 480)
+camera.framerate = 20
 #Images are read in as Numpy Arrays
-#global capture
-#capture = PiRGBArray(camera, size=(640,480))
+global capture
+capture = PiRGBArray(camera, size=(640,480))
 #A sleep was recommended here to let the camera "warm up"
 time.sleep(0.1)
 #Defining variables to hold proportional error in position,
@@ -40,7 +40,7 @@ Position_totalError_v = 0
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
-POSITIOND = 0.0005
+POSITIOND = 0.1
 POSITIONF = 0
 
 global state
@@ -52,6 +52,13 @@ RIGHTTURN = 3
 LEFTTURN = 4
 STRAIGHT = 5
 
+RTURNRTICKS = 602
+RTURNLTICKS = 1279
+LTURNRTICKS = 1692
+LTURNLTICKS = 1222
+STRAIGHTTICKS = 1316
+
+
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
@@ -62,7 +69,7 @@ def detect_stop(mask1):
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
     #in this case is the stop line
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,100, minLineLength= 10, maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,180, minLineLength= 100, maxLineGap=1)
     cv2.waitKey(20)
     global stop
     #For every line discovered by Hough Transform
@@ -77,7 +84,7 @@ def detect_stop(mask1):
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
-            	if abs((y2-y1)/(x2-x1)) < 1:
+            	if abs((y2-y1)/(x2-x1)) < 0.01:
                     global state
 		    state = STOP
                     #stop = True
@@ -195,63 +202,80 @@ def position_controller(target, actual):
 def right_turn():
     global rightspeed
     global leftspeed
-    leftspeed = 0.7
-    rightspeed = 0.5
+    leftspeed = 0.44
+    rightspeed = 0.3
 
 def left_turn():
     global rightspeed
     global leftspeed
-    leftspeed = 0.5
-    rightspeed = 0.7
+    leftspeed = 0.3
+    rightspeed = 0.42
 
 def go_straight():
     global rightspeed
     global leftspeed
-    leftspeed = 0.5
-    rightspeed = 0.5
+    leftspeed = 0.4
+    rightspeed = 0.4
 
-def position_p(q):
+def position_p():
     window_width = 480
     window_height = 360
+    global camera
+    global capture
     global state
 
     while(1):
 
         if state == STOP:
+            go_straight()
             print "in state stop"
             #velocity.resetEncoders()
-            if(velocity.rightencoderticks >= 1152):
+            if(velocity.rightencoderticks >= 800):
                 print "Encoder's reached the value"
-		leftspeed = 0
+	        leftspeed = 0
                 rightspeed = 0
                 time.sleep(2)
 
-                decision = random.randint(1,4)
+                velocity.resetEncoders()
+
+                #decision = random.randint(1,4)
+                decision = 4
                 if decision == 1:
                     state = RIGHTTURN
+                    velocity.resetEncoders()
                 elif decision == 2:
                     state = LEFTTURN
+                    velocity.resetEncoders()
                 elif decision == 3:
                     state = STRAIGHT
+                    velocity.resetEncoders()
                 else:
                     state = POSITIONCONTROLLER
         elif state == RIGHTTURN:
             right_turn()
             print "in state rightturn"
+            if(velocity.rightencoderticks >= RTURNRTICKS or velocity.leftencoderticks >= RTURNLTICKS):
+                state = POSITIONCONTROLLER
+
 
         elif state == LEFTTURN:
             left_turn()
             print "in state leftturn"
+            if(velocity.rightencoderticks >= LTURNRTICKS or velocity.leftencoderticks >= LTURNLTICKS):
+                state = POSITIONCONTROLLER
 
         elif state == STRAIGHT:
             go_straight()
             print "in state straight"
+            if(velocity.rightencoderticks >= STRAIGHTTICKS or velocity.leftencoderticks >= STRAIGHTTICKS):
+                state = POSITIONCONTROLLER
 
         else:
             #for each frame that is taken from the camera
-            while True:
-               
-               image = q.get()
+            global capture
+            capture.truncate(0)
+            for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
+               image = capture.array
                #resize the image to make processing more manageable
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
@@ -259,6 +283,7 @@ def position_p(q):
                yellow,avg = linetracking(raw)
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
+               print "in state positioncontrol"
                if yellow:
                    threshold = 105
                #If tracking off the white line use this target position instead
@@ -301,3 +326,4 @@ def position_p(q):
                    #cm/s since the velocity controller only takes in speeds in this unit
                    leftspeed = ((leftspeed*0.004)-0.006)
                    rightspeed = ((rightspeed*0.004)-0.006)
+               capture.truncate(0)
