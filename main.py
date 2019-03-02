@@ -28,24 +28,43 @@ def runCamera(q):
                 q.put(raw.array)
                 raw.truncate(0)
 
-def main():
-        #init sensors
+def runRoadTracking(q):
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
+        time.sleep(0.1)
+        print "starting up..."    
+        jobs = []
+        cameraFunctions = [trackingline.position_p]
+        functions = [velocity.getVelocity, velocity.velocityPid]
+
+        for func in cameraFunctions:
+            p = Thread(target=func, args=(q,))
+            jobs.append(p)
+            p.daemon = True
+            p.start()
+            print "started {}".format(func)
+
+        for func in functions:
+            p = Thread(target=func)
+            jobs.append(p)
+            p.daemon = True
+            p.start()
+            print "started {}".format(func)
+        
+        for job in jobs:
+                job.join()
+
+        
+def main():
+        #init sensors
         #q = Queue.Queue() 
         q = multiprocessing.Queue()
 
         print "starting up..."    
         jobs = []
-        cameraFunctions = [runCamera, pisvm.stopSignDetect, trackingline.position_p]
-        functions = [velocity.getVelocity, velocity.velocityPid]
-        #p1 = multiprocessing.Process(target=pisvm.stopSignDetect, args=(q,))
-        #jobs.append(p1)
-        #p2 = multiprocessing.Process(target=runCamera, args=(q,))
-        #jobs.append(p2)
-        #p3 = multiprocessing.Process(target=trackingline.position_p, args=(q,))
-        #jobs.append(p3)
+        cameraFunctions = [runCamera,pisvm.stopSignDetect, runRoadTracking]
+        #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
             p = multiprocessing.Process(target=func, args=(q,))
@@ -53,7 +72,7 @@ def main():
             p.daemon = True
             p.start()
             print "started {}, {}".format(func, p.pid)
-
+        '''
         for func in functions:
             p = multiprocessing.Process(target=func)
             jobs.append(p)
@@ -61,7 +80,7 @@ def main():
             p.start()
             print "started {}, {}".format(func, p.pid)
         
-
+        '''
         '''
         #set threads that will be run
         #cameraFunctions = [pisvm.stopSignDetect,trackingline.position_p]
