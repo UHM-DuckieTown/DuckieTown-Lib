@@ -40,7 +40,7 @@ Position_totalError_v = 0
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
-POSITIOND = 0.0005
+POSITIOND = 0.1
 POSITIONF = 0
 
 global state
@@ -69,7 +69,7 @@ def detect_stop(mask1):
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
     #in this case is the stop line
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,100, minLineLength= 10, maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,180, minLineLength= 100, maxLineGap=1)
     cv2.waitKey(20)
     global stop
     #For every line discovered by Hough Transform
@@ -202,20 +202,20 @@ def position_controller(target, actual):
 def right_turn():
     global rightspeed
     global leftspeed
-    leftspeed = 0.5
+    leftspeed = 0.44
     rightspeed = 0.3
 
 def left_turn():
     global rightspeed
     global leftspeed
     leftspeed = 0.3
-    rightspeed = 0.5
+    rightspeed = 0.42
 
 def go_straight():
     global rightspeed
     global leftspeed
-    leftspeed = 0.3
-    rightspeed = 0.3
+    leftspeed = 0.4
+    rightspeed = 0.4
 
 def position_p():
     window_width = 480
@@ -230,7 +230,7 @@ def position_p():
             go_straight()
             print "in state stop"
             #velocity.resetEncoders()
-            if(velocity.rightencoderticks >= 1152):
+            if(velocity.rightencoderticks >= 800):
                 print "Encoder's reached the value"
 	        leftspeed = 0
                 rightspeed = 0
@@ -239,7 +239,7 @@ def position_p():
                 velocity.resetEncoders()
 
                 #decision = random.randint(1,4)
-                decision = 3
+                decision = 4
                 if decision == 1:
                     state = RIGHTTURN
                     velocity.resetEncoders()
