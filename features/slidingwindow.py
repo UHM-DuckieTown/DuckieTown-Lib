@@ -19,22 +19,22 @@ def img_proc(q):
 
         while True:
                 image = q.get()
-                cv2.imshow("uncropped", image)
+                #cv2.imshow("uncropped", image)
                 image = image[0:240, 320:640, :]
                 (winW, winH) = (70, 70)
-       
-                for (x, y, window) in sliding_window(image, stepSize=18, windowSize=(winW, winH)):
+                start_time = time.time() 
+                for (x, y, window) in sliding_window(image, stepSize=35, windowSize=(winW, winH)):
                         if window.shape[0] != winH or window.shape[1] != winW:
                                 continue
 
-                        clone = image.copy()
+                        #clone = image.copy()
                         hit = stopSignDetect(image[y:y+winH, x:x+winW, :])
                         if(hit):
                                 print "found stop sign"
-                                cv2.waitKey(0)
-                        cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
-                        cv2.imshow('Window', clone)
+                                #cv2.waitKey(0)
+                        #cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
+                        #cv2.imshow('Window', clone)
         
-                        cv2.waitKey(1)
-                        time.sleep(0.025)
-       
+                        #cv2.waitKey(1)
+                        #time.sleep(0.025)
+                print("---- image processed in {} seconds".format(time.time()-start_time))
