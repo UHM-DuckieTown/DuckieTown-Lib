@@ -19,7 +19,7 @@ time.sleep(0.1)
 
 def main():
 
-        MQTT_SERVER = "192.168.0.109" #IP Address of Base Station        
+        MQTT_SERVER = "192.168.0.100" #IP Address of Base Station        
 
         print config.duck1_feed1
         print config.duck1_feed2

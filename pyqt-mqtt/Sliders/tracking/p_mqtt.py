@@ -7,6 +7,7 @@ import config
 import Queue
 
 q = Queue.Queue()
+q.put("start")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -21,7 +22,7 @@ def on_message(client, userdata, msg):
     # Receives value of the sliders as a text string
     duck_slider_val = msg.payload
     q.put(duck_slider_val)
-    print q.qsize()
+    #print q.qsize()
     #print str(msg.payload)
     print'duck_slider_val' + ' '  + duck_slider_val
     

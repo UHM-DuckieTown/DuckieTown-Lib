@@ -111,7 +111,7 @@ def linetracking(raw,client,DUCK1_FEED2):
     #Ignore all pixels that aren't white to obtain a picture of only
     #the road lines
     mask1 = cv2.inRange(hsv, lower, upper)
-    p_mqtt.encode_string(mask1,DUCK1_FEED2,client)
+    #p_mqtt.encode_string(mask1,DUCK1_FEED2,client)
     
     #cv2.imshow("white mask", mask1)
 
@@ -167,6 +167,64 @@ def linetracking(raw,client,DUCK1_FEED2):
     cv2.waitKey(20)
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
+    print "before get"
+    
+    global render
+    global old_render
+    global old_slider
+    
+    if not p_mqtt.q.empty():
+        slider= p_mqtt.q.get()
+        print "Slider " + slider
+        print "if q is not empty"
+        
+        #raw
+        if slider == "start":
+            render = raw
+            old_slider = "0"
+        
+        elif slider == "0":
+            render = frame
+            old_slider = slider
+        #edges
+        elif slider == "1":
+            render = edges
+            old_slider = slider
+            
+        #masked image
+        elif slider == "2":
+            render = masked_img
+            old_slider = slider
+
+        #white mask
+        elif slider == "3":
+            render = mask1
+            old_slider = slider
+            
+        #yellow mask
+        elif slider == "4":
+            render = mask2
+            old_slider = slider
+            
+    else:
+        print "queue is empty"
+        print "Olde Slider" + str(old_slider)
+        if old_slider == "0":
+            render = frame;
+        if old_slider == "1":
+            render = edges;
+        if old_slider == "2":
+            render = masked_img;
+        if old_slider == "3":
+            render = mask1;
+        if old_slider == "4":
+            render = mask2;
+    
+    p_mqtt.encode_string(render,DUCK1_FEED2,client)
+    print "encoding"
+    
+    
+    
     return yellow,avg
 
 
@@ -265,6 +323,7 @@ def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
                p_mqtt.encode_string(raw,DUCK1_FEED1,client)
 
                yellow,avg = linetracking(raw,client,DUCK1_FEED2)
+               print "After lietracking call"
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
                if yellow:
