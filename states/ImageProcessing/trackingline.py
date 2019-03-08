@@ -85,7 +85,7 @@ def detect_stop(mask1):
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
-		    return
+	                    return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw):
@@ -264,12 +264,16 @@ def position_p(q):
             print "in state straight"
             if(velocity.rightencoderticks >= STRAIGHTTICKS or velocity.leftencoderticks >= STRAIGHTTICKS):
                 state = POSITIONCONTROLLER
-
         else:
             #for each frame that is taken from the camera
+            #Just for Timing Purposes
+            start = 0
             while True:
                global image
+	       print time.time()-start
+	       start = time.time()
                image = q.get()
+	       print "Got Next Image"
                #resize the image to make processing more manageable
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
