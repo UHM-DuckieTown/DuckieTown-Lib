@@ -12,16 +12,9 @@ rightspeed = 0
 global leftspeed
 leftspeed = 0
 #Global variable for camera object
-global camera
-camera = PiCamera()
 #Set resolution and framerate of camera
-camera.resolution = (640, 480)
-camera.framerate = 20
 #Images are read in as Numpy Arrays
-global capture
-capture = PiRGBArray(camera, size=(640,480))
 #A sleep was recommended here to let the camera "warm up"
-time.sleep(0.1)
 #Defining variables to hold proportional error in position,
 #change in error in position and sum of error in position
 global Position_errorP_v
@@ -37,6 +30,7 @@ Position_totalError_v = 0
 #Flag to check if the Duck is stopped
 #global stop
 #stop = False
+global image
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
@@ -85,12 +79,13 @@ def detect_stop(mask1):
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	if abs((y2-y1)/(x2-x1)) < 0.01:
-                    global state
-		    state = STOP
+                        if y2 < 200:
+                            global state
+                            state = STOP
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
-		    return
+	                    return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw):
@@ -217,7 +212,7 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p():
+def position_p(q):
     window_width = 480
     window_height = 360
     global camera
@@ -225,7 +220,7 @@ def position_p():
     global state
 
     while(1):
-	start = 0
+
         if state == STOP:
             go_straight()
             print "in state stop"
@@ -269,15 +264,16 @@ def position_p():
             print "in state straight"
             if(velocity.rightencoderticks >= STRAIGHTTICKS or velocity.leftencoderticks >= STRAIGHTTICKS):
                 state = POSITIONCONTROLLER
-
         else:
             #for each frame that is taken from the camera
-            global capture
-            capture.truncate(0)
-            for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
-               image = capture.array
-	       print time.time() - start
+            #Just for Timing Purposes
+            start = 0
+            while True:
+               global image
+	       print time.time()-start
 	       start = time.time()
+               image = q.get()
+	       print "Got Next Image"
                #resize the image to make processing more manageable
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
@@ -328,4 +324,3 @@ def position_p():
                    #cm/s since the velocity controller only takes in speeds in this unit
                    leftspeed = ((leftspeed*0.004)-0.006)
                    rightspeed = ((rightspeed*0.004)-0.006)
-               capture.truncate(0)
