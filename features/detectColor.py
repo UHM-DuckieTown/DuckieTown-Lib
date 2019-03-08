@@ -9,7 +9,7 @@ import imutils
 
 def find_shape(image):
     # convert color scheme
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
     image_blur = cv2.GaussianBlur(image, (7,7), 0)
     
@@ -25,13 +25,15 @@ def find_shape(image):
     _, contours, _ = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
     print "num contours detected: {}".format(len(contours))
-    c= max(contours, key = cv2.contourArea)
-
-    min_y, min_x, _ = image_blur_hsv.shape
-    max_x = max_y = 0
-    (x,y,w,h) = cv2.boundingRect(c)
     
-    cv2.rectangle(image, (x,y), (x+w,y+h), (255, 0, 0), 2)  
+    if contours:
+        c= max(contours, key = cv2.contourArea)
+    
+        min_y, min_x, _ = image_blur_hsv.shape
+        max_x = max_y = 0
+        (x,y,w,h) = cv2.boundingRect(c)
+    
+        cv2.rectangle(image, (x,y), (x+w,y+h), (255, 0, 0), 2)  
         
     # show the output image
     cv2.imshow("Image", image)
@@ -39,6 +41,6 @@ def find_shape(image):
     
     return image
 
-image = cv2.imread('shapetest1.png')
+image = cv2.imread('dataset/positives/stopsign_47.png')
 result = find_shape(image)
 cv2.waitKey(0)
