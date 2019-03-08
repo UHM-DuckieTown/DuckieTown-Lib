@@ -266,7 +266,7 @@ def position_p(q):
 
         else:
             #for each frame that is taken from the camera
-            while True: 
+            while True:
                global image
                image = q.get()
                #resize the image to make processing more manageable
