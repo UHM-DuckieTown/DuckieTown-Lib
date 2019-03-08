@@ -2,7 +2,7 @@ import time
 import RPi.GPIO as GPIO
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 import matplotlib.pyplot as plt
-import trackingline
+import trackingline2
 
 #initialize global variables to count encoder ticks
 global leftencoderticks

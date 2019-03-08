@@ -13,7 +13,7 @@ import config
 
 
 #initialize encoders
-velocity.getEncoderTicks()
+velocity2.getEncoderTicks()
 
 time.sleep(0.1)
 
@@ -39,14 +39,14 @@ def main():
         #Frees up main thread for other work
         client.loop_start()
 
-        velocity.leftSensorCallback(4)
-        velocity.rightSensorCallback(17)
+        velocity2.leftSensorCallback(4)
+        velocity2.rightSensorCallback(17)
 
         #debug prints
             #left_target_vel = 0.3
             #right_target_vel = 0.3
-            #left_target_vel = ((trackingline.leftspeed*0.004) - 0.006)
-            #right_target_vel = ((trackingline.rightspeed*0.004) - 0.006)
+            #left_target_vel = ((trackingline2.leftspeed*0.004) - 0.006)
+            #right_target_vel = ((trackingline2.rightspeed*0.004) - 0.006)
             #print "Position Left Vel:",left_target_vel
     	    #print "Position Right Vel:",right_target_vel
 
@@ -54,10 +54,10 @@ def main():
         threads = []
 
         #initialize threads
-        position_adjust = Thread(target = trackingline.position_p(client,DUCK1_FEED1,DUCK1_FEED2))
-        #position_adjust = Thread(target = trackingline.right_turn)
-        encoder_polling = Thread(target = velocity.getVelocity)
-        vel_pid = Thread(target = velocity.velocityPid)
+        position_adjust = Thread(target = trackingline2.position_p(client,DUCK1_FEED1,DUCK1_FEED2))
+        #position_adjust = Thread(target = trackingline2.right_turn)
+        encoder_polling = Thread(target = velocity2.getVelocity)
+        vel_pid = Thread(target = velocity2.velocityPid)
 
         #initalize threads as a daemon thread
         #these threads are automatically terminated when the normal threads are terminated
@@ -84,7 +84,7 @@ def main():
         except KeyboardInterrupt:
                 print "done"
                 GPIO.cleanup()
-                velocity.stopMotors()
+                velocity2.stopMotors()
                 cv2.destroyAllWindows()
                 #leftMotor.run(Adafruit_MotorHAT.RELEASE)
                 #rightMotor.run(Adafruit_MotorHAT.RELEASE)
