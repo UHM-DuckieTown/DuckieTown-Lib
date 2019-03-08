@@ -4,7 +4,7 @@ from PIL import Image
 import os
 import time
 from pisvm import stopSignDetect
-
+import detectColor
 
 def sliding_window(image, stepSize, windowSize):
         for y in range(0, image.shape[0], stepSize):
@@ -21,6 +21,7 @@ def img_proc(q):
                 image = q.get()
                 #cv2.imshow("uncropped", image)
                 image = image[0:240, 320:640, :]
+                image = detectColor.find_shape(image)
                 (winW, winH) = (70, 70)
                 start_time = time.time() 
                 for (x, y, window) in sliding_window(image, stepSize=35, windowSize=(winW, winH)):

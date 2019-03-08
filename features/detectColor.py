@@ -18,7 +18,7 @@ def find_shape(image):
 
     # filter by color range
     # filter out black
-    lower = np.array([100,50,50])
+    lower = np.array([70,40,50])
     upper = np.array([130,255,255])
     mask = cv2.inRange(image_blur_hsv, lower, upper)
 
@@ -33,7 +33,8 @@ def find_shape(image):
         max_x = max_y = 0
         (x,y,w,h) = cv2.boundingRect(c)
     
-        cv2.rectangle(image, (x,y), (x+w,y+h), (255, 0, 0), 2)  
+        cv2.rectangle(image, (x,y), (x+w,y+h), (255, 0, 0), 2)
+        image = image[y:y+h, x:x+w]
         
     # show the output image
     cv2.imshow("Image", image)
@@ -41,6 +42,6 @@ def find_shape(image):
     
     return image
 
-image = cv2.imread('dataset/positives/stopsign_47.png')
+image = cv2.imread('dataset/fullsize_0.png')
 result = find_shape(image)
 cv2.waitKey(0)
