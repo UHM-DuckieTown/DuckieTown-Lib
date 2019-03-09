@@ -21,21 +21,23 @@ def img_proc(q):
                 image = q.get()
                 #cv2.imshow("uncropped", image)
                 image = image[0:240, 320:640, :]
-                image = detectColor.find_shape(image)
+                candidates = detectColor.find_shape(image)
                 (winW, winH) = (70, 70)
-                start_time = time.time() 
-                for (x, y, window) in sliding_window(image, stepSize=35, windowSize=(winW, winH)):
-                        if window.shape[0] != winH or window.shape[1] != winW:
-                                continue
-
-                        #clone = image.copy()
-                        hit = stopSignDetect(image[y:y+winH, x:x+winW, :])
-                        if(hit):
-                                print "found stop sign"
-                                #cv2.waitKey(0)
-                        #cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
-                        #cv2.imshow('Window', clone)
-        
-                        #cv2.waitKey(1)
-                        #time.sleep(0.025)
-                print("---- image processed in {} seconds".format(time.time()-start_time))
+                start_time = time.time()
+                for img in candidates:
+                    for (x, y, window) in sliding_window(img, stepSize=35, windowSize=(winW, winH)):
+                            if window.shape[0] != winH or window.shape[1] != winW:
+                                    continue
+                            hit = stopSignDetect(img[y:y+winH, x:x+winW, :])
+                            if(hit):
+                                    print "found stop sign"
+                                    #cv2.waitKey(0)
+                            '''
+                            #use to show sliding window
+                            clone = image.copy()
+                            cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
+                            cv2.imshow('Window', clone)
+                            cv2.waitKey(1)
+                            time.sleep(0.025)
+                            '''
+                    print("---- image processed in {} seconds".format(time.time()-start_time))

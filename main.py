@@ -26,7 +26,8 @@ def runCamera(q):
         time.sleep(0.1)
 
         for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
-                q.put(raw.array)
+                if q.qsize() < 3:
+                    q.put(raw.array)
                 raw.truncate(0)
 
 def runRoadTracking(q):
