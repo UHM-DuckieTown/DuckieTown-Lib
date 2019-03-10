@@ -5,7 +5,7 @@ from joblib import load
 from picamera import PiCamera
 from threading import Thread
 import trackingline2
-import velocity
+import velocity2
 import time
 import pisvm
 from picamera.array import PiRGBArray
