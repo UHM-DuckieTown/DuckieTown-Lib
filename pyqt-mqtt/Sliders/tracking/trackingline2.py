@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from picamera import PiCamera
 import time
-import velocity
+import velocity2
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 import p_mqtt
@@ -112,7 +112,7 @@ def linetracking(raw,client,DUCK1_FEED2):
     #the road lines
     mask1 = cv2.inRange(hsv, lower, upper)
     #p_mqtt.encode_string(mask1,DUCK1_FEED2,client)
-    
+
     #cv2.imshow("white mask", mask1)
 
     #Ignore all pixels that aren't yellow to obtain a picture of only
@@ -168,21 +168,21 @@ def linetracking(raw,client,DUCK1_FEED2):
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
     print "before get"
-    
+
     global render
     global old_render
     global old_slider
-    
+
     if not p_mqtt.q.empty():
         slider= p_mqtt.q.get()
         print "Slider " + slider
         print "if q is not empty"
-        
+
         #raw
         if slider == "start":
             render = raw
             old_slider = "0"
-        
+
         elif slider == "0":
             render = frame
             old_slider = slider
@@ -190,7 +190,7 @@ def linetracking(raw,client,DUCK1_FEED2):
         elif slider == "1":
             render = edges
             old_slider = slider
-            
+
         #masked image
         elif slider == "2":
             render = masked_img
@@ -200,12 +200,12 @@ def linetracking(raw,client,DUCK1_FEED2):
         elif slider == "3":
             render = mask1
             old_slider = slider
-            
+
         #yellow mask
         elif slider == "4":
             render = mask2
             old_slider = slider
-            
+
     else:
         print "queue is empty"
         print "Olde Slider" + str(old_slider)
@@ -219,12 +219,12 @@ def linetracking(raw,client,DUCK1_FEED2):
             render = mask1;
         if old_slider == "4":
             render = mask2;
-    
+
     p_mqtt.encode_string(render,DUCK1_FEED2,client)
     print "encoding"
-    
-    
-    
+
+
+
     return yellow,avg
 
 

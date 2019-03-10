@@ -1,10 +1,10 @@
 import time
 import cv2
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
-import velocity
+import velocity2
 from threading import Thread
 import RPi.GPIO as GPIO
-import trackingline
+import trackingline2
 import p_mqtt
 #Added
 import paho.mqtt.client as mqtt
@@ -19,12 +19,12 @@ time.sleep(0.1)
 
 def main():
 
-        MQTT_SERVER = "192.168.0.100" #IP Address of Base Station        
+        MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
         print config.duck1_feed1
         print config.duck1_feed2
         print config.duck1_text
-        
+
         DUCK1_FEED1 = config.duck1_feed1
         DUCK1_FEED2 = config.duck1_feed2
         DUCK1_TEXT = config.duck1_text
@@ -37,7 +37,7 @@ def main():
         client.connect(MQTT_SERVER, 1883, 60)
         #Runs a thread in the background to cal loop() automatically
         #Frees up main thread for other work
-        client.loop_start()        
+        client.loop_start()
 
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
