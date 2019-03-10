@@ -4,7 +4,7 @@ sys.path.insert(0, 'features/')
 from joblib import load
 from picamera import PiCamera
 from threading import Thread
-import trackingline
+import trackingline2
 import velocity
 import time
 import pisvm
@@ -13,6 +13,12 @@ import Queue
 import cv2
 import RPi.GPIO as GPIO
 import multiprocessing
+
+#Imports for MQTT
+#import socket
+import paho.mqtt.client as mqtt
+import config
+import p_mqtt
 
 
 def runCamera(q):
@@ -33,9 +39,9 @@ def runRoadTracking(q):
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
         time.sleep(0.1)
-        print "starting up..."    
+        print "starting up..."
         jobs = []
-        cameraFunctions = [trackingline.position_p]
+        cameraFunctions = [trackingline2.position_p(client, DUCK1_FEED1,DUCK1_FEED2)]
         functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
@@ -51,17 +57,38 @@ def runRoadTracking(q):
             p.daemon = True
             p.start()
             print "started {}".format(func)
-        
+
         for job in jobs:
                 job.join()
 
-        
+
 def main():
         #init sensors
-        #q = Queue.Queue() 
+        #q = Queue.Queue()
+
+        MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
+
+        print config.duck1_feed1
+        print config.duck1_feed2
+        print config.duck1_text
+
+        DUCK1_FEED1 = config.duck1_feed1
+        DUCK1_FEED2 = config.duck1_feed2
+        DUCK1_TEXT = config.duck1_text
+
+        # Create a client instance
+        client = mqtt.Client()
+        client.on_connect = p_mqtt.on_connect
+        #Connects the client to a broker
+        client.on_message = p_mqtt.on_message
+        client.connect(MQTT_SERVER, 1883, 60)
+        #Runs a thread in the background to cal loop() automatically
+        #Frees up main thread for other work
+        client.loop_start()
+
         q = multiprocessing.Queue()
 
-        print "starting up..."    
+        print "starting up..."
         jobs = []
         cameraFunctions = [runCamera,pisvm.stopSignDetect, runRoadTracking]
         #functions = [velocity.getVelocity, velocity.velocityPid]
@@ -81,6 +108,6 @@ def main():
                 GPIO.cleanup()
                 velocity.stopMotors()
                 cv2.destroyAllWindows()
-        
+
 if __name__=="__main__":
         main()
