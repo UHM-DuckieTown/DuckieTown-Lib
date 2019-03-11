@@ -31,7 +31,7 @@ def on_message_slider(client, userdata, msg):
     #print str(msg.payload)
     print'duck_slider_val' + ' '  + duck_slider_val
 
-ef on_message_text(client, userdata, msg):
+def on_message_text(client, userdata, msg):
     global duck_text
     #Assign duck slider value based on received message topic
     # Receives value of the sliders as a text string
