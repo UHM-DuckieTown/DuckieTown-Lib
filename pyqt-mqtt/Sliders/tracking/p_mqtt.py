@@ -11,16 +11,6 @@ q.put("start")
 
 p = Queue.Queue()
 
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-    DUCK1_TEXT = config.duck1_text
-    DUCK1_SLIDER = config.duck1_slider
-    client.message_callback_add(DUCK1_TEXT, self.on_message_text)
-    client.message_callback_add(DUCK1_SLIDER, self.on_message_slider)
-    client.subscribe([(DUCK1_TEXT,0),(DUCK1_SLIDER,0)])
-    #client.subscribe([('192.168.0.69_text',0)])
-
-
 def on_message_slider(client, userdata, msg):
     global duck_slider_val
     print "in slider message"
@@ -42,6 +32,15 @@ def on_message_text(client, userdata, msg):
     #print q.qsize()
     #print str(msg.payload)
     print'duck_text' + ' '  + duck_text
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    DUCK1_TEXT = config.duck1_text
+    DUCK1_SLIDER = config.duck1_slider
+    client.message_callback_add(DUCK1_TEXT, self.on_message_text)
+    client.message_callback_add(DUCK1_SLIDER, self.on_message_slider)
+    client.subscribe([(DUCK1_TEXT,0),(DUCK1_SLIDER,0)])
+    #client.subscribe([('192.168.0.69_text',0)])
 
 def encode_string(image, topic, client):
     #Converts image to string
