@@ -167,7 +167,7 @@ def linetracking(raw,client,DUCK1_FEED2):
     cv2.waitKey(20)
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
-    print "before get"
+    #print "before get"
 
     global render
     global old_render
@@ -175,8 +175,8 @@ def linetracking(raw,client,DUCK1_FEED2):
 
     if not p_mqtt.q.empty():
         slider= p_mqtt.q.get()
-        print "Slider " + slider
-        print "if q is not empty"
+        #print "Slider " + slider
+        #print "if q is not empty"
 
         #raw
         if slider == "start":
@@ -207,8 +207,8 @@ def linetracking(raw,client,DUCK1_FEED2):
             old_slider = slider
 
     else:
-        print "queue is empty"
-        print "Olde Slider" + str(old_slider)
+        #print "queue is empty"
+        #print "Olde Slider" + str(old_slider)
         if old_slider == "0":
             render = frame;
         if old_slider == "1":
@@ -221,7 +221,7 @@ def linetracking(raw,client,DUCK1_FEED2):
             render = mask2;
 
     p_mqtt.encode_string(render,DUCK1_FEED2,client)
-    print "encoding"
+    #print "encoding"
 
 
 
@@ -323,7 +323,7 @@ def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
                p_mqtt.encode_string(raw,DUCK1_FEED1,client)
 
                yellow,avg = linetracking(raw,client,DUCK1_FEED2)
-               print "After lietracking call"
+               #print "After lietracking call"
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
                if yellow:
