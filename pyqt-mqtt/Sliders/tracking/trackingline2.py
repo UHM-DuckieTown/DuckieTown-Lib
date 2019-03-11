@@ -283,7 +283,7 @@ def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
         if state == STOP:
             print "in state stop"
             #velocity.resetEncoders()
-            if(velocity.rightencoderticks >= 1152):
+            if(velocity2.rightencoderticks >= 1152):
                 print "Encoder's reached the value"
 		leftspeed = 0
                 rightspeed = 0
@@ -336,7 +336,7 @@ def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
 			global leftspeed
 			rightspeed = 0.5
 			leftspeed = 0.5
-			velocity.resetEncoders()
+			velocity2.resetEncoders()
 			break
 	       else:
                    global rightspeed
