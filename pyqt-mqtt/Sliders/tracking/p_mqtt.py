@@ -35,7 +35,7 @@ ef on_message_text(client, userdata, msg):
     global duck_text
     #Assign duck slider value based on received message topic
     # Receives value of the sliders as a text string
-    duck_slider_val = msg.payload
+    duck_text = msg.payload
     p.put(duck_text)
     #print q.qsize()
     #print str(msg.payload)
