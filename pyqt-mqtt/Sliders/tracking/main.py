@@ -110,6 +110,8 @@ def main():
                 GPIO.cleanup()
                 velocity2.stopMotors()
                 cv2.destroyAllWindows()
+        finally:
+            client.loop_stop()
 
 if __name__=="__main__":
         main()
