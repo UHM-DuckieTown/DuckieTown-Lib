@@ -29,6 +29,7 @@ Position_totalError_v = 0
 #Flag to check if the Duck is stopped
 #global stop
 #stop = False
+global image
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
