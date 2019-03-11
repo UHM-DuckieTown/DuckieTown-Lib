@@ -12,14 +12,14 @@ import socket
 
 MQTT_SERVER = "localhost"
 
-
-
 DUCK1_FEED = "192.168.0.69_feed1"
 DUCK1_FEED2 = "192.168.0.69_feed2"
+DUCK1_SLIDER = "192.168.0.69_slider"
 DUCK1_TEXT = "192.168.0.69_text"
 
 DUCK2_FEED = "192.168.0.70_feed1"
 DUCK2_FEED2 = "192.168.0.70_feed2"
+DUCK2_SLIDER = "192.168.0.70_slider"
 DUCK2_TEXT = "192.168.0.70_text"
 
 class MyApp(QMainWindow):
@@ -143,12 +143,12 @@ class MyApp(QMainWindow):
 
     def Slider(self):
         value = str(self.ui.Duck1_Slider.value())
-        self._client.publish(DUCK1_TEXT, value)
+        self._client.publish(DUCK1_SLIDER, value)
         print "slider 1:" + str(self.ui.Duck1_Slider.value())
 
     def Slider2(self):
         value = str(self.ui.Duck2_Slider.value())
-        self._client.publish(DUCK2_TEXT, value)
+        self._client.publish(DUCK2_SLIDER, value)
         print "slider 2:" + str(self.ui.Duck2_Slider.value())
 
 

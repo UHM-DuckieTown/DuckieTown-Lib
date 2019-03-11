@@ -75,6 +75,7 @@ def main():
         DUCK1_FEED1 = config.duck1_feed1
         DUCK1_FEED2 = config.duck1_feed2
         DUCK1_TEXT = config.duck1_text
+        DUCK1_SLIDER = config.duck1_slider
 
         # Create a client instance
         client = mqtt.Client()
