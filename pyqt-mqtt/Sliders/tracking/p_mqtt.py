@@ -37,8 +37,8 @@ def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     DUCK1_TEXT = config.duck1_text
     DUCK1_SLIDER = config.duck1_slider
-    client.message_callback_add(DUCK1_TEXT, self.on_message_text)
-    client.message_callback_add(DUCK1_SLIDER, self.on_message_slider)
+    client.message_callback_add(DUCK1_TEXT, on_message_text)
+    client.message_callback_add(DUCK1_SLIDER, on_message_slider)
     client.subscribe([(DUCK1_TEXT,0),(DUCK1_SLIDER,0)])
     #client.subscribe([('192.168.0.69_text',0)])
 
