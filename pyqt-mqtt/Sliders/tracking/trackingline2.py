@@ -269,6 +269,8 @@ def position_p(q,client,DUCK1_FEED1,DUCK1_FEED2):
     global capture
     global state
 
+    print DUCK1_FEED1
+
     while(1):
 
         if state == STOP:
