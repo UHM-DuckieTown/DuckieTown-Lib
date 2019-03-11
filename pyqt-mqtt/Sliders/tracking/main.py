@@ -42,6 +42,7 @@ def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
         print "starting up..."
         jobs = []
         cameraFunctions = [trackingline2.position_p(client, DUCK1_FEED1,DUCK1_FEED2)]
+        print "after camera function"
         functions = [velocity2.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
