@@ -35,14 +35,14 @@ def runCamera(q):
                 raw.truncate(0)
 
 def runRoadTracking(q):
-        velocity.leftSensorCallback(4)
-        velocity.rightSensorCallback(17)
-        velocity.getEncoderTicks()
+        velocity2.leftSensorCallback(4)
+        velocity2.rightSensorCallback(17)
+        velocity2.getEncoderTicks()
         time.sleep(0.1)
         print "starting up..."
         jobs = []
         cameraFunctions = [trackingline2.position_p(client, DUCK1_FEED1,DUCK1_FEED2)]
-        functions = [velocity.getVelocity, velocity.velocityPid]
+        functions = [velocity2.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
             p = Thread(target=func, args=(q,))
@@ -106,7 +106,7 @@ def main():
         except KeyboardInterrupt:
                 print "\nexiting..."
                 GPIO.cleanup()
-                velocity.stopMotors()
+                velocity2.stopMotors()
                 cv2.destroyAllWindows()
 
 if __name__=="__main__":
