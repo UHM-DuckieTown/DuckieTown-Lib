@@ -9,6 +9,8 @@ import Queue
 q = Queue.Queue()
 q.put("start")
 
+p = Queue.Queue()
+
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     DUCK1_TEXT = config.duck1_text
@@ -29,6 +31,15 @@ def on_message_slider(client, userdata, msg):
     #print str(msg.payload)
     print'duck_slider_val' + ' '  + duck_slider_val
 
+ef on_message_text(client, userdata, msg):
+    global duck_text
+    #Assign duck slider value based on received message topic
+    # Receives value of the sliders as a text string
+    duck_slider_val = msg.payload
+    p.put(duck_text)
+    #print q.qsize()
+    #print str(msg.payload)
+    print'duck_text' + ' '  + duck_text
 
 def encode_string(image, topic, client):
     #Converts image to string
