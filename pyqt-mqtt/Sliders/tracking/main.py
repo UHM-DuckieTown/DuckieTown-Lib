@@ -41,12 +41,12 @@ def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
         time.sleep(0.1)
         print "starting up..."
         jobs = []
-        cameraFunctions = [trackingline2.position_p(client, DUCK1_FEED1,DUCK1_FEED2)]
+        cameraFunctions = [trackingline2.position_p]
         functions = [velocity2.getVelocity, velocity.velocityPid]
         print "after camera function"
 
         for func in cameraFunctions:
-            p = Thread(target=func, args=(q,))
+            p = Thread(target=func, args=(q,client, DUCK1_FEED1,DUCK1_FEED2))
             jobs.append(p)
             p.daemon = True
             p.start()
@@ -93,7 +93,7 @@ def main():
 
         print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera,pisvm.stopSignDetect, runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2)]
+        cameraFunctions = [runCamera,pisvm.stopSignDetect]
         #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
@@ -102,6 +102,13 @@ def main():
             p.daemon = True
             p.start()
             print "started {}, {}".format(func, p.pid)
+
+        p = multiprocessing.Process(target=runRoadTracking, args=(q,client, DUCK1_FEED1,DUCK1_FEED2))
+        jobs.append(p)
+        p.daemon = True
+        p.start()
+        print "started {}, {}".format(func, p.pid)
+
 
         try:
                 while True:
