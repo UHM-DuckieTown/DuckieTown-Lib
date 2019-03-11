@@ -13,7 +13,6 @@ p = Queue.Queue()
 
 def on_message_slider(client, userdata, msg):
     global duck_slider_val
-    print "in slider message"
     #Assign duck slider value based on received message topic
     # Receives value of the sliders as a text string
     duck_slider_val = msg.payload
@@ -24,14 +23,14 @@ def on_message_slider(client, userdata, msg):
 
 def on_message_text(client, userdata, msg):
     global duck_text
-    print "in text message"
     #Assign duck slider value based on received message topic
     # Receives value of the sliders as a text string
     duck_text = msg.payload
     p.put(duck_text)
     #print q.qsize()
     #print str(msg.payload)
-    print'duck_text' + ' '  + duck_text
+    print 'In direction Queue' + ' '  + duck_text
+    print 'Queue size: '+ str(p.qsize())
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
