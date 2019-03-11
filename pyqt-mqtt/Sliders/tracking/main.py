@@ -1,6 +1,6 @@
 import sys
-sys.path.insert(0, 'states/ImageProcessing/')
-sys.path.insert(0, 'features/')
+sys.path.insert(0, '../../states/ImageProcessing/')
+sys.path.insert(0, '../../features/')
 from joblib import load
 from picamera import PiCamera
 from threading import Thread
@@ -42,8 +42,8 @@ def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
         print "starting up..."
         jobs = []
         cameraFunctions = [trackingline2.position_p(client, DUCK1_FEED1,DUCK1_FEED2)]
-        print "after camera function"
         functions = [velocity2.getVelocity, velocity.velocityPid]
+        print "after camera function"
 
         for func in cameraFunctions:
             p = Thread(target=func, args=(q,))
