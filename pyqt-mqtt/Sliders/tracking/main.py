@@ -34,7 +34,7 @@ def runCamera(q):
                 q.put(raw.array)
                 raw.truncate(0)
 
-def runRoadTracking(q):
+def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
         velocity2.leftSensorCallback(4)
         velocity2.rightSensorCallback(17)
         velocity2.getEncoderTicks()
@@ -90,7 +90,7 @@ def main():
 
         print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera,pisvm.stopSignDetect, runRoadTracking]
+        cameraFunctions = [runCamera,pisvm.stopSignDetect, runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2)]
         #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
