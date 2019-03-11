@@ -13,16 +13,7 @@ rightspeed = 0
 global leftspeed
 leftspeed = 0
 #Global variable for camera object
-global camera
-camera = PiCamera()
-#Set resolution and framerate of camera
-camera.resolution = (640, 480)
-camera.framerate = 20
-#Images are read in as Numpy Arrays
-global capture
-capture = PiRGBArray(camera, size=(640,480))
-#A sleep was recommended here to let the camera "warm up"
-time.sleep(0.1)
+
 #Defining variables to hold proportional error in position,
 #change in error in position and sum of error in position
 global Position_errorP_v
@@ -271,7 +262,7 @@ def go_straight():
     leftspeed = 0.5
     rightspeed = 0.5
 
-def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
+def position_p(q,client,DUCK1_FEED1,DUCK1_FEED2):
     window_width = 480
     window_height = 360
     global camera
@@ -281,7 +272,7 @@ def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
     while(1):
 
         if state == STOP:
-            print "in state stop"
+            #print "in state stop"
             #velocity.resetEncoders()
             if(velocity2.rightencoderticks >= 1152):
                 print "Encoder's reached the value"
@@ -300,27 +291,28 @@ def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
                     state = POSITIONCONTROLLER
         elif state == RIGHTTURN:
             right_turn()
-            print "in state rightturn"
+            #print "in state rightturn"
 
         elif state == LEFTTURN:
             left_turn()
-            print "in state leftturn"
+            #print "in state leftturn"
 
         elif state == STRAIGHT:
             go_straight()
-            print "in state straight"
+            #print "in state straight"
 
         else:
             #for each frame that is taken from the camera
-            for frame in camera.capture_continuous(capture, format='bgr', use_video_port=True):
-               global capture
-               image = capture.array
+            while True:
+               global image
+               image = q.get()
                #resize the image to make processing more manageable
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
                #of the Duck is
 
                p_mqtt.encode_string(raw,DUCK1_FEED1,client)
+               print "sending"
 
                yellow,avg = linetracking(raw,client,DUCK1_FEED2)
                #print "After lietracking call"
@@ -368,4 +360,3 @@ def position_p(client,DUCK1_FEED1,DUCK1_FEED2):
                    #cm/s since the velocity controller only takes in speeds in this unit
                    leftspeed = ((leftspeed*0.004)-0.006)
                    rightspeed = ((rightspeed*0.004)-0.006)
-               capture.truncate(0)

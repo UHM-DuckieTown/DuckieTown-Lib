@@ -160,12 +160,12 @@ def setMotorSpeed(motor):
     global L_old_errorP_v
 
     if motor == 1:
-        target = trackingline.rightspeed
+        target = trackingline2.rightspeed
         vel = right_vel
         errorI_v = R_errorI_v
         old_errorP_v = R_old_errorP_v
     else:
-        target = trackingline.leftspeed
+        target = trackingline2.leftspeed
         vel = left_vel
         errorI_v = L_errorI_v
         old_errorP_v = L_old_errorP_v
@@ -214,7 +214,7 @@ def velocityPid():
 		global rightencoderticks
         	currentencoderticks = rightencoderticks
         	if(rightencoderticks - currentencoderticks == 1152):
-            		trackingline.stop = False
+            		trackingline2.stop = False
             		state = STOP
             		decision = randomn.randint(1,4)
             		if decision == 1:

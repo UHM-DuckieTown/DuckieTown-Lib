@@ -28,7 +28,8 @@ def stopSignDetect(q):
     #raw = PiRGBArray(camera, size=(640,480))
     #time.sleep(0.1)
 
-    clf = load("../../features/clf_grid_Stop")
+    #clf = load("../../features/clf_grid_Stop")
+    clf = load("features/clf_grid_Stop")
  #   for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
         #q.put(raw.array)
         #image = raw.array

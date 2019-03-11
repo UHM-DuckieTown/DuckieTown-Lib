@@ -42,7 +42,7 @@ def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
         print "starting up..."
         jobs = []
         cameraFunctions = [trackingline2.position_p]
-        functions = [velocity2.getVelocity, velocity.velocityPid]
+        functions = [velocity2.getVelocity, velocity2.velocityPid]
         print "after camera function"
 
         for func in cameraFunctions:
@@ -93,7 +93,8 @@ def main():
 
         print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera,pisvm.stopSignDetect]
+##        cameraFunctions = [runCamera,pisvm.stopSignDetect]
+        cameraFunctions = [runCamera]
         #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
@@ -107,7 +108,7 @@ def main():
         jobs.append(p)
         p.daemon = True
         p.start()
-        print "started {}, {}".format(func, p.pid)
+        print "started {}, {}".format(p, p.pid)
 
 
         try:
