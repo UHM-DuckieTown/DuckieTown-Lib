@@ -59,6 +59,7 @@ STRAIGHTTICKS = 1316
 def detect_stop(mask1):
     global state
     cv2.imshow('Stop Line Detection', mask1)
+    mask = mask1[0:280, 50:280];
     #Perform edge detection on the masked frame to find all edge points in image
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
@@ -82,12 +83,13 @@ def detect_stop(mask1):
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
-            	if abs((y2-y1)/(x2-x1)) < 0.01:
-                        if y2 < 150:
+            	#if abs((y2-y1)/(x2-x1)) < 0.01:
+                if np.all(cv2.bitwise_not(mask)) == False:
+                       # if y2 < 150:
                             global state
                             state = STOP
-                        else:
-                            print "stop line too far"
+                        #else:
+                           # print "stop line too far"
 
                     #stop = True
 		    #print "Stop = ",stop
