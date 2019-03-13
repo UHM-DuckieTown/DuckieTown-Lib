@@ -58,18 +58,22 @@ STRAIGHTTICKS = 1316
 #the stop flag is set which stops the Duck.
 def detect_stop(mask1):
     global state
-    cv2.imshow('mask', mask1)
+    cv2.imshow('Stop Line Detection', mask1)
     #Perform edge detection on the masked frame to find all edge points in image
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
     #in this case is the stop line
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,180, minLineLength= 100, maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,150, minLineLength= 50, maxLineGap=1)
     cv2.waitKey(20)
     global stop
     #For every line discovered by Hough Transform
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line[0]
+            cv2.line(mask1, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.circle(mask1, (x1, y1),2,(255,0,0),3)
+            cv2.circle(mask1,(x2,y2),2,(255,0,0),3)
+
         #Ignore the line if it leads to an undefined slope
 	    if (x2-x1) == 0:
 	    	continue
@@ -79,9 +83,12 @@ def detect_stop(mask1):
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	if abs((y2-y1)/(x2-x1)) < 0.01:
-                        if y2 < 200:
+                        if y2 < 250:
                             global state
                             state = STOP
+                        else:
+                            print "stop line too far"
+
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
@@ -104,7 +111,7 @@ def linetracking(raw):
     #Convert the color of the frame to HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     #The threshold values for yellow since road line is yellow
-    min_yellow = np.array([0, 64, 236])
+    min_yellow = np.array([0, 64, 216])
     max_yellow = np.array([32, 255, 255])
     #The threshold values for white since the outer roadlines are white
     upper = np.array([0, 0, 255])
@@ -283,10 +290,10 @@ def position_p(q):
                #If tracking off the yellow line this is the target position to use
                print "in state positioncontrol"
                if yellow:
-                   threshold = 105
+                   threshold = 75
                #If tracking off the white line use this target position instead
                else:
-                   threshold = 430
+                   threshold = 405
                if state == STOP:
 			global rightspeed
 			global leftspeed
