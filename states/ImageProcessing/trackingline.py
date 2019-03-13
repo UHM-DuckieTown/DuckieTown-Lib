@@ -63,7 +63,7 @@ def detect_stop(mask1):
     edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
     #in this case is the stop line
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,150, minLineLength= 50, maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/2,50, minLineLength= 10, maxLineGap=1)
     cv2.waitKey(20)
     global stop
     #For every line discovered by Hough Transform
@@ -83,7 +83,7 @@ def detect_stop(mask1):
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	if abs((y2-y1)/(x2-x1)) < 0.01:
-                        if y2 < 250:
+                        if y2 < 150:
                             global state
                             state = STOP
                         else:
@@ -229,30 +229,30 @@ def position_p(q):
     while(1):
 
         if state == STOP:
-            go_straight()
+           # go_straight()
             print "in state stop"
             #velocity.resetEncoders()
-            if(velocity.rightencoderticks >= 800):
-                print "Encoder's reached the value"
-	        leftspeed = 0
-                rightspeed = 0
-                time.sleep(2)
+           # if(velocity.rightencoderticks >= 800):
+            #    print "Encoder's reached the value"
+            leftspeed = 0
+            rightspeed = 0
+            time.sleep(2)
 
-                velocity.resetEncoders()
+            velocity.resetEncoders()
 
                 #decision = random.randint(1,4)
-                decision = 4
-                if decision == 1:
-                    state = RIGHTTURN
-                    velocity.resetEncoders()
-                elif decision == 2:
-                    state = LEFTTURN
-                    velocity.resetEncoders()
-                elif decision == 3:
-                    state = STRAIGHT
-                    velocity.resetEncoders()
-                else:
-                    state = POSITIONCONTROLLER
+            decision = 4
+            if decision == 1:
+                state = RIGHTTURN
+                velocity.resetEncoders()
+            elif decision == 2:
+                state = LEFTTURN
+                velocity.resetEncoders()
+            elif decision == 3:
+                state = STRAIGHT
+                velocity.resetEncoders()
+            else:
+                state = POSITIONCONTROLLER
         elif state == RIGHTTURN:
             right_turn()
             print "in state rightturn"
