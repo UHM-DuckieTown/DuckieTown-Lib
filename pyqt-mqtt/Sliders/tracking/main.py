@@ -34,7 +34,7 @@ def runCamera(q):
                 q.put(raw.array)
                 raw.truncate(0)
 
-def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
+def runRoadTracking(q):
         velocity2.leftSensorCallback(4)
         velocity2.rightSensorCallback(17)
         velocity2.getEncoderTicks()
@@ -46,7 +46,7 @@ def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
         print "after camera function"
 
         for func in cameraFunctions:
-            p = Thread(target=func, args=(q,client, DUCK1_FEED1,DUCK1_FEED2))
+            p = Thread(target=func, args=(q))
             jobs.append(p)
             p.daemon = True
             p.start()
@@ -65,29 +65,6 @@ def runRoadTracking(q,client, DUCK1_FEED1,DUCK1_FEED2 ):
 
 def main():
         #init sensors
-        #q = Queue.Queue()
-
-        MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
-
-        print config.duck1_feed1
-        print config.duck1_feed2
-        print config.duck1_text
-
-        DUCK1_FEED1 = config.duck1_feed1
-        DUCK1_FEED2 = config.duck1_feed2
-        DUCK1_TEXT = config.duck1_text
-        DUCK1_SLIDER = config.duck1_slider
-
-        # Create a client instance
-        client = mqtt.Client()
-        client.on_connect = p_mqtt.on_connect
-        #Connects the client to a broker
-        client.on_message_slider = p_mqtt.on_message_slider
-        client.on_message_text = p_mqtt.on_message_text
-        client.connect(MQTT_SERVER, 1883, 60)
-        #Runs a thread in the background to cal loop() automatically
-        #Frees up main thread for other work
-        client.loop_start()
 
         q = multiprocessing.Queue()
 
@@ -104,7 +81,7 @@ def main():
             p.start()
             print "started {}, {}".format(func, p.pid)
 
-        p = multiprocessing.Process(target=runRoadTracking, args=(q,client, DUCK1_FEED1,DUCK1_FEED2))
+        p = multiprocessing.Process(target=runRoadTracking, args=(q))
         jobs.append(p)
         p.daemon = True
         p.start()

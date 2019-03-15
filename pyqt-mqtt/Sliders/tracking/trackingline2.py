@@ -6,6 +6,7 @@ import velocity2
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 import p_mqtt
+import config
 import random #remove this after states testing is done
 #Global variables for the right and left speed of motor
 global rightspeed
@@ -29,7 +30,6 @@ Position_totalError_v = 0
 #Flag to check if the Duck is stopped
 #global stop
 #stop = False
-global image
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
@@ -44,6 +44,8 @@ STOP = 2
 RIGHTTURN = 3
 LEFTTURN = 4
 STRAIGHT = 5
+
+.
 
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
@@ -263,103 +265,129 @@ def go_straight():
     leftspeed = 0.5
     rightspeed = 0.5
 
-def position_p(q,client,DUCK1_FEED1,DUCK1_FEED2):
+def position_p(q):
     window_width = 480
     window_height = 360
     global camera
     global capture
     global state
 
-    print DUCK1_FEED1
+    #q = Queue.Queue()
 
-    while(1):
+    MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
-        if state == STOP:
-            #print "in state stop"
-            #velocity.resetEncoders()
-            if(velocity2.rightencoderticks >= 1152):
-                print "Encoder's reached the value"
-		leftspeed = 0
-                rightspeed = 0
-                time.sleep(2)
+    print config.duck1_feed1
+    print config.duck1_feed2
+    print config.duck1_text
 
-                decision = random.randint(1,4)
-                if decision == 1:
-                    state = RIGHTTURN
-                elif decision == 2:
-                    state = LEFTTURN
-                elif decision == 3:
-                    state = STRAIGHT
-                else:
-                    state = POSITIONCONTROLLER
-        elif state == RIGHTTURN:
-            right_turn()
-            #print "in state rightturn"
+    DUCK1_FEED1 = config.duck1_feed1
+    DUCK1_FEED2 = config.duck1_feed2
+    DUCK1_TEXT = config.duck1_text
+    DUCK1_SLIDER = config.duck1_slider
 
-        elif state == LEFTTURN:
-            left_turn()
-            #print "in state leftturn"
+    # Create a client instance
+    client = mqtt.Client()
+    client.on_connect = p_mqtt.on_connect
+    #Connects the client to a broker
+    client.on_message_slider = p_mqtt.on_message_slider
+    client.on_message_text = p_mqtt.on_message_text
+    client.connect(MQTT_SERVER, 1883, 60)
+    #Runs a thread in the background to cal loop() automatically
+    #Frees up main thread for other work
+    client.loop_start()
 
-        elif state == STRAIGHT:
-            go_straight()
-            #print "in state straight"
+    try:
+        while(1):
 
-        else:
-            #for each frame that is taken from the camera
-            while True:
-               global image
-               image = q.get()
-               #resize the image to make processing more manageable
-               raw = cv2.resize(image, (window_width, window_height))
-               #Find either the yellow or white line and what the average position
-               #of the Duck is
+            if state == STOP:
+                #print "in state stop"
+                #velocity.resetEncoders()
+                if(velocity2.rightencoderticks >= 1152):
+                    print "Encoder's reached the value"
+    		leftspeed = 0
+                    rightspeed = 0
+                    time.sleep(2)
 
-               p_mqtt.encode_string(raw,DUCK1_FEED1,client)
-               print "sending"
+                    decision = random.randint(1,4)
+                    if decision == 1:
+                        state = RIGHTTURN
+                    elif decision == 2:
+                        state = LEFTTURN
+                    elif decision == 3:
+                        state = STRAIGHT
+                    else:
+                        state = POSITIONCONTROLLER
+            elif state == RIGHTTURN:
+                right_turn()
+                #print "in state rightturn"
 
-               yellow,avg = linetracking(raw,client,DUCK1_FEED2)
-               #print "After lietracking call"
-               #130 for yellow line, 450 for white
-               #If tracking off the yellow line this is the target position to use
-               if yellow:
-                   threshold = 105
-               #If tracking off the white line use this target position instead
-               else:
-                   threshold = 430
-               if state == STOP:
-			global rightspeed
-			global leftspeed
-			rightspeed = 0.5
-			leftspeed = 0.5
-			velocity2.resetEncoders()
-			break
-	       else:
-                   global rightspeed
-                   global leftspeed
-                   #increase the right motor's speed and decrease the left motor's speed
-                   #depending on the error in the position to correct the Duck
-                   rightspeed = int(100 + position_controller(threshold,avg))
-                   leftspeed = int(100 - position_controller(threshold,avg))
-                   #rightspeed = 100
-                   #leftspeed = 100
-                   #Cap the Right and Left Motor speeds so that they do not go
-                   #above 255 or less than 0
-                   if rightspeed > 255:
-                       rightspeed = 255
+            elif state == LEFTTURN:
+                left_turn()
+                #print "in state leftturn"
 
-                   if rightspeed < 0:
-                       rightspeed = 0
+            elif state == STRAIGHT:
+                go_straight()
+                #print "in state straight"
 
-                   if leftspeed > 255:
-                       leftspeed = 255
+            else:
+                #for each frame that is taken from the camera
+                while True:
+                   global image
+                   image = q.get()
+                   #resize the image to make processing more manageable
+                   raw = cv2.resize(image, (window_width, window_height))
+                   #Find either the yellow or white line and what the average position
+                   #of the Duck is
 
-                   if leftspeed < 0:
-                       leftspeed = 0
+                   p_mqtt.encode_string(raw,DUCK1_FEED1,client)
+                   print "sending"
+
+                   yellow,avg = linetracking(raw,client,DUCK1_FEED2)
+                   #print "After lietracking call"
+                   #130 for yellow line, 450 for white
+                   #If tracking off the yellow line this is the target position to use
+                   if yellow:
+                       threshold = 105
+                   #If tracking off the white line use this target position instead
+                   else:
+                       threshold = 430
+                   if state == STOP:
+    			global rightspeed
+    			global leftspeed
+    			rightspeed = 0.5
+    			leftspeed = 0.5
+    			velocity2.resetEncoders()
+    			break
+    	       else:
+                       global rightspeed
+                       global leftspeed
+                       #increase the right motor's speed and decrease the left motor's speed
+                       #depending on the error in the position to correct the Duck
+                       rightspeed = int(100 + position_controller(threshold,avg))
+                       leftspeed = int(100 - position_controller(threshold,avg))
+                       #rightspeed = 100
+                       #leftspeed = 100
+                       #Cap the Right and Left Motor speeds so that they do not go
+                       #above 255 or less than 0
+                       if rightspeed > 255:
+                           rightspeed = 255
+
+                       if rightspeed < 0:
+                           rightspeed = 0
+
+                       if leftspeed > 255:
+                           leftspeed = 255
+
+                       if leftspeed < 0:
+                           leftspeed = 0
 
 
-            	   #leftspeed = ((leftspeed*0.004)-0.006)
-            	   #rightspeed = ((rightspeed*0.004)-0.006)
-                   #Convert the left and right motor speed from 0-255 to a speed in
-                   #cm/s since the velocity controller only takes in speeds in this unit
-                   leftspeed = ((leftspeed*0.004)-0.006)
-                   rightspeed = ((rightspeed*0.004)-0.006)
+                	   #leftspeed = ((leftspeed*0.004)-0.006)
+                	   #rightspeed = ((rightspeed*0.004)-0.006)
+                       #Convert the left and right motor speed from 0-255 to a speed in
+                       #cm/s since the velocity controller only takes in speeds in this unit
+                       leftspeed = ((leftspeed*0.004)-0.006)
+                       rightspeed = ((rightspeed*0.004)-0.006)
+
+    finally:
+        client.loop_stop()
