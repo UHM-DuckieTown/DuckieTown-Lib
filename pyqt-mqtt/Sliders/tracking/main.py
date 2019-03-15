@@ -46,7 +46,7 @@ def runRoadTracking(q):
         print "after camera function"
 
         for func in cameraFunctions:
-            p = Thread(target=func, args=(q))
+            p = Thread(target=func, args=(q,))
             jobs.append(p)
             p.daemon = True
             p.start()
@@ -81,7 +81,7 @@ def main():
             p.start()
             print "started {}, {}".format(func, p.pid)
 
-        p = multiprocessing.Process(target=runRoadTracking, args=(q))
+        p = multiprocessing.Process(target=runRoadTracking, args=(q,))
         jobs.append(p)
         p.daemon = True
         p.start()
@@ -96,8 +96,7 @@ def main():
                 GPIO.cleanup()
                 velocity2.stopMotors()
                 cv2.destroyAllWindows()
-        finally:
-            client.loop_stop()
+
 
 if __name__=="__main__":
         main()

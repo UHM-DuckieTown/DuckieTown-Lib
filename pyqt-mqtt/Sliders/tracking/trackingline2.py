@@ -6,6 +6,7 @@ import velocity2
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 from picamera.array import PiRGBArray
 import p_mqtt
+import paho.mqtt.client as mqtt
 import config
 import random #remove this after states testing is done
 #Global variables for the right and left speed of motor
@@ -45,7 +46,6 @@ RIGHTTURN = 3
 LEFTTURN = 4
 STRAIGHT = 5
 
-.
 
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
@@ -304,7 +304,7 @@ def position_p(q):
                 #velocity.resetEncoders()
                 if(velocity2.rightencoderticks >= 1152):
                     print "Encoder's reached the value"
-    		leftspeed = 0
+                    leftspeed = 0
                     rightspeed = 0
                     time.sleep(2)
 
@@ -358,7 +358,7 @@ def position_p(q):
     			leftspeed = 0.5
     			velocity2.resetEncoders()
     			break
-    	       else:
+                   else:
                        global rightspeed
                        global leftspeed
                        #increase the right motor's speed and decrease the left motor's speed
