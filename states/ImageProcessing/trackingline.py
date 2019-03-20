@@ -60,41 +60,47 @@ def detect_stop(mask1):
     global state
     cv2.imshow('Stop Line Detection', mask1)
     mask = mask1[0:280, 50:280];
+    _,contours,_ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     #Perform edge detection on the masked frame to find all edge points in image
-    edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
+    #edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
     #in this case is the stop line
-    lines = cv2.HoughLinesP(edges, 1, np.pi/2,50, minLineLength= 10, maxLineGap=1)
+    #lines = cv2.HoughLinesP(edges, 1, np.pi/2,50, minLineLength= 10, maxLineGap=1)
     cv2.waitKey(20)
     global stop
+    for c in contours:
+        Moments = cv2.moments(c)
+        cX = int(M["m10"]/M["m00"])
+        cY = int(M["m01"]/M["m00"])
     #For every line discovered by Hough Transform
-    if lines is not None:
-        for line in lines:
-            x1, y1, x2, y2 = line[0]
-            cv2.line(mask1, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.circle(mask1, (x1, y1),2,(255,0,0),3)
-            cv2.circle(mask1,(x2,y2),2,(255,0,0),3)
+    #if lines is not None:
+        #for line in lines:
+        #    x1, y1, x2, y2 = line[0]
+        #    cv2.line(mask1, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        #    cv2.circle(mask1, (x1, y1),2,(255,0,0),3)
+        #    cv2.circle(mask1,(x2,y2),2,(255,0,0),3)
 
         #Ignore the line if it leads to an undefined slope
-	    if (x2-x1) == 0:
-	    	continue
-	    else:
+	    #if (x2-x1) == 0:
+	    #	continue
+	    #else:
             	#m = (y2-y1)/(x2-x1)
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	#if abs((y2-y1)/(x2-x1)) < 0.01:
-                if np.all(cv2.bitwise_not(mask)) == False:
+        if np.all(cv2.bitwise_not(mask)) == False:
+                if cY < 150:
                        # if y2 < 150:
-                            global state
-                            state = STOP
+                       global state
+                       state = STOP
                         #else:
                            # print "stop line too far"
 
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
-	                    return
+	                   return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw):
