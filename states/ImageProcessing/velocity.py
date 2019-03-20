@@ -170,27 +170,34 @@ def setMotorSpeed(motor):
         errorI_v = L_errorI_v
         old_errorP_v = L_old_errorP_v
         #PID calculations
-    errorP_v = target - vel
-    errorI_v = errorI_v + errorP_v
-    errorD_v = errorP_v - old_errorP_v
-    totalError_v = RIGHTP * errorP_v + RIGHTI * errorI_v + RIGHTD * errorD_v + RIGHTF
-    old_errorP_v = errorP_v
 
-    totalError_v = (totalError_v+0.006)/0.004
-    if totalError_v > 255:
-        speed = 255
-    elif totalError_v <0:
-        speed = 0
+    if target == 0:
+        if motor == 1:
+            rightMotor.setSpeed(0)
+        else:
+            leftMotor.setSpeed(0)
     else:
-        speed = int(totalError_v)
-    if motor == 1:
-        rightMotor.setSpeed(speed)
-        R_old_errorP_v = old_errorP_v
-        R_errorI_v = errorI_v
-    else:
-        leftMotor.setSpeed(speed)
-        L_old_errorP_v = old_errorP_v
-        L_errorI_v = errorI_v
+        errorP_v = target - vel
+        errorI_v = errorI_v + errorP_v
+        errorD_v = errorP_v - old_errorP_v
+        totalError_v = RIGHTP * errorP_v + RIGHTI * errorI_v + RIGHTD * errorD_v + RIGHTF
+        old_errorP_v = errorP_v
+
+        totalError_v = (totalError_v+0.006)/0.004
+        if totalError_v > 255:
+            speed = 255
+        elif totalError_v <0:
+            speed = 0
+        else:
+            speed = int(totalError_v)
+        if motor == 1:
+            rightMotor.setSpeed(speed)
+            R_old_errorP_v = old_errorP_v
+            R_errorI_v = errorI_v
+        else:
+            leftMotor.setSpeed(speed)
+            L_old_errorP_v = old_errorP_v
+            L_errorI_v = errorI_v
 
 #calculates error between current velocity and target velocity
 #and adjusts motor speeds based on pid constants
