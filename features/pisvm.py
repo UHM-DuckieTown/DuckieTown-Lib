@@ -20,7 +20,7 @@ def lbp(test_image):
     #add values to set
     return hist
 
-def stopSignDetect(q):
+def stopSignDetect(q, flag):
     #camera config
     #camera = PiCamera()
     #camera.resolution = (640,480)
@@ -39,7 +39,9 @@ def stopSignDetect(q):
         cv2.imshow('stop sign detect',image)
         if(clf.predict_proba([lbp(image)])[0][1] > 0.7):
             print('found stop sign')
+            flag.put(1)
         else:
             print('miss')
+            flag.put(0)
 
         #raw.truncate(0)

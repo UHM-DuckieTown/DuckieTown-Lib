@@ -56,8 +56,10 @@ STRAIGHTTICKS = 1316
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
-def detect_stop(mask1):
+def detect_stop(mask1, stopsign):
     global state
+    if stopsign:
+        print "Flag is true"
     #cv2.imshow('Stop Line Detection', mask1)
     mask = mask1[0:280, 0:180];
     cv2.imshow('Stop Line Detection', mask)
@@ -104,7 +106,7 @@ def detect_stop(mask1):
                  return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
-def linetracking(raw):
+def linetracking(raw, stopsign):
     cv2.imshow('raw',raw)
     #Minimize the region of interest to just the lower half of image
     #because that is where the road lines are
@@ -124,7 +126,7 @@ def linetracking(raw):
     max_yellow = np.array([32, 255, 255])
     #The threshold values for white since the outer roadlines are white
     upper = np.array([0, 0, 255])
-    lower = np.array([0, 0, 225])
+    lower = np.array([0, 0, 191])
     #Ignore all pixels that aren't white to obtain a picture of only
     #the road lines
     mask1 = cv2.inRange(hsv, lower, upper)
@@ -176,7 +178,7 @@ def linetracking(raw):
         avg = old_avg
     #Draw a point to show where the average x-value is
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
-    detect_stop(mask1)
+    detect_stop(mask1, flag.get())
     cv2.imshow('frame', frame)
     cv2.imshow('edges', edges)
     cv2.waitKey(20)
@@ -228,7 +230,7 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p(q):
+def position_p(q, flag):
     window_width = 480
     window_height = 360
     global camera
@@ -294,7 +296,7 @@ def position_p(q):
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
                #of the Duck is
-               yellow,avg = linetracking(raw)
+               yellow,avg = linetracking(raw, flag.get())
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
                print "in state positioncontrol"
