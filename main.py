@@ -26,8 +26,11 @@ def runCamera(q, flag):
         time.sleep(0.1)
 
         for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
-                q.put(raw.array)
-                raw.truncate(0)
+            #cv2.imshow("live feed", raw.array)
+            #cv2.waitKey(20)
+            q.put(raw.array)
+            raw.truncate(0)
+            #print q.qsize()
 
 def runRoadTracking(q, flag):
         velocity.leftSensorCallback(4)

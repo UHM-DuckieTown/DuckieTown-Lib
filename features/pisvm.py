@@ -24,13 +24,13 @@ def stopSignDetect(img, flag):
     clf = load("features/clf_grid_Stop")
     #cv2.imshow('stop sign detect',img)
     if(clf.predict_proba([lbp(img)])[0][1] > 0.7):
-        # print('found stop sign')
+        print('found stop sign')
         # cv2.imshow('stop sign detect',img)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
         flag.put(1)
         return 1
     else:
-        #print('miss')
+        print('miss')
         flag.put(0)
         return 0

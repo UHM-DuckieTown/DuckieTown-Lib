@@ -107,6 +107,7 @@ def detect_stop(mask1, stopsign):
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw, stopsign):
+    print "in linetracking"
     cv2.imshow('raw',raw)
     #Minimize the region of interest to just the lower half of image
     #because that is where the road lines are
@@ -178,7 +179,7 @@ def linetracking(raw, stopsign):
         avg = old_avg
     #Draw a point to show where the average x-value is
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
-    detect_stop(mask1, flag.get())
+    detect_stop(mask1, stopsign)
     cv2.imshow('frame', frame)
     cv2.imshow('edges', edges)
     cv2.waitKey(20)
@@ -287,58 +288,62 @@ def position_p(q, flag):
             #Just for Timing Purposes
             start = 0
             while True:
-               global image
-	       print time.time()-start
-	       start = time.time()
-               image = q.get()
-	       print "Got Next Image"
-               #resize the image to make processing more manageable
-               raw = cv2.resize(image, (window_width, window_height))
-               #Find either the yellow or white line and what the average position
-               #of the Duck is
-               yellow,avg = linetracking(raw, flag.get())
-               #130 for yellow line, 450 for white
-               #If tracking off the yellow line this is the target position to use
-               print "in state positioncontrol"
-               if yellow:
-                   threshold = 75
-               #If tracking off the white line use this target position instead
-               else:
-                   threshold = 405
-               if state == STOP:
-			global rightspeed
-			global leftspeed
-			rightspeed = 0.5
-			leftspeed = 0.5
-			velocity.resetEncoders()
-			break
-	       else:
-                   global rightspeed
-                   global leftspeed
-                   #increase the right motor's speed and decrease the left motor's speed
-                   #depending on the error in the position to correct the Duck
-                   rightspeed = int(100 + position_controller(threshold,avg))
-                   leftspeed = int(100 - position_controller(threshold,avg))
-                   #rightspeed = 100
-                   #leftspeed = 100
-                   #Cap the Right and Left Motor speeds so that they do not go
-                   #above 255 or less than 0
-                   if rightspeed > 255:
-                       rightspeed = 255
+                global image
+	            #print time.time()-start
+	            #start = time.time()
+                image = q.get()
+                print "Got Next Image"
+                #resize the image to make processing more manageable
+                raw = cv2.resize(image, (window_width, window_height))
+                #Find either the yellow or white line and what the average position
+                #of the Duck is
+                
+                #testing purpose, controls stop sign detection
+                flag.put(1)
+                
+                yellow,avg = linetracking(raw, flag.get())
+                #130 for yellow line, 450 for white
+                #If tracking off the yellow line this is the target position to use
+                print "in state positioncontrol"
+                if yellow:
+                    threshold = 75
+                #If tracking off the white line use this target position instead
+                else:
+                    threshold = 405
+                if state == STOP:
+			        global rightspeed
+			        global leftspeed
+			        rightspeed = 0.5
+			        leftspeed = 0.5
+			        velocity.resetEncoders()
+			        break
+                else:
+                    global rightspeed
+                    global leftspeed
+                    #increase the right motor's speed and decrease the left motor's speed
+                    #depending on the error in the position to correct the Duck
+                    rightspeed = int(100 + position_controller(threshold,avg))
+                    leftspeed = int(100 - position_controller(threshold,avg))
+                    #rightspeed = 100
+                    #leftspeed = 100
+                    #Cap the Right and Left Motor speeds so that they do not go
+                    #above 255 or less than 0
+                    if rightspeed > 255:
+                        rightspeed = 255
 
-                   if rightspeed < 0:
-                       rightspeed = 0
+                    if rightspeed < 0:
+                        rightspeed = 0
 
-                   if leftspeed > 255:
-                       leftspeed = 255
+                    if leftspeed > 255:
+                        leftspeed = 255
 
-                   if leftspeed < 0:
-                       leftspeed = 0
+                    if leftspeed < 0:
+                        leftspeed = 0
 
 
-            	   #leftspeed = ((leftspeed*0.004)-0.006)
-            	   #rightspeed = ((rightspeed*0.004)-0.006)
-                   #Convert the left and right motor speed from 0-255 to a speed in
-                   #cm/s since the velocity controller only takes in speeds in this unit
-                   leftspeed = ((leftspeed*0.004)-0.006)
-                   rightspeed = ((rightspeed*0.004)-0.006)
+            	    #leftspeed = ((leftspeed*0.004)-0.006)
+            	    #rightspeed = ((rightspeed*0.004)-0.006)
+                    #Convert the left and right motor speed from 0-255 to a speed in
+                    #cm/s since the velocity controller only takes in speeds in this unit
+                    leftspeed = ((leftspeed*0.004)-0.006)
+                    rightspeed = ((rightspeed*0.004)-0.006)

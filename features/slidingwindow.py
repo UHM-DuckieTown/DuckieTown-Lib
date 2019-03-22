@@ -33,10 +33,9 @@ def img_proc(q, flag):
                     print "found stop sign"
                     #cv2.waitKey(0)
                 #use to show sliding window
-
-                clone = image.copy()
-                cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
-                cv2.imshow('Window', clone)
-                cv2.waitKey(1)
-                time.sleep(0.025)
-        print("---- image processed in {} seconds".format(time.time()-start_time))
+                #clone = image.copy()
+                #cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
+                #cv2.imshow('Window', clone)
+                #cv2.waitKey(1)
+                #time.sleep(0.025)
+        #print("---- image processed in {} seconds".format(time.time()-start_time))
