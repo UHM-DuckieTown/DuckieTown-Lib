@@ -13,6 +13,7 @@ import Queue
 import cv2
 import RPi.GPIO as GPIO
 import multiprocessing
+import slidingwindow
 
 
 def runCamera(q, flag):
@@ -33,7 +34,7 @@ def runRoadTracking(q, flag):
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
         time.sleep(0.1)
-        print "starting up..."    
+        print "starting up..."
         jobs = []
         cameraFunctions = [trackingline.position_p]
         functions = [velocity.getVelocity, velocity.velocityPid]
@@ -51,20 +52,20 @@ def runRoadTracking(q, flag):
             p.daemon = True
             p.start()
             print "started {}".format(func)
-        
+
         for job in jobs:
                 job.join()
 
-        
+
 def main():
         #init sensors
-        #q = Queue.Queue() 
+        #q = Queue.Queue()
         q = multiprocessing.Queue()
         flag = multiprocessing.Queue()
 
-        print "starting up..."    
+        print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera,pisvm.stopSignDetect, runRoadTracking]
+        cameraFunctions = [runCamera, slidingwindow.img_proc, runRoadTracking]
         #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
@@ -82,6 +83,6 @@ def main():
                 GPIO.cleanup()
                 velocity.stopMotors()
                 cv2.destroyAllWindows()
-        
+
 if __name__=="__main__":
         main()
