@@ -56,38 +56,57 @@ STRAIGHTTICKS = 1316
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
-def detect_stop(mask1):
+def detect_stop(mask1, stopsign):
     global state
-    cv2.imshow('mask', mask1)
+    if stopsign:
+        print "Flag is true"
+    #cv2.imshow('Stop Line Detection', mask1)
+    mask = mask1[0:280, 0:180];
+    cv2.imshow('Stop Line Detection', mask)
+    #_,contours,_ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     #Perform edge detection on the masked frame to find all edge points in image
-    edges = cv2.Canny(mask1, 50, 150, apertureSize=3)
+    edges = cv2.Canny(mask, 50, 150, apertureSize=3)
     #Use Hough Transform to find all lines in an image. The line of interest
     #in this case is the stop line
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,180, minLineLength= 100, maxLineGap=1)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,10, minLineLength= 10, maxLineGap=1)
     cv2.waitKey(20)
     global stop
+    #for c in contours:
+     #   Moments = cv2.moments(c)
+     #  cX = int(Moments["m10"]/Moments["m00"])        
+     #   cY = int(Moments["m01"]/Moments["m00"])
     #For every line discovered by Hough Transform
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line[0]
+            cv2.line(mask, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.circle(mask, (x1, y1),2,(255,0,0),3)
+            cv2.circle(mask,(x2,y2),2,(255,0,0),3)
+
         #Ignore the line if it leads to an undefined slope
-	    if (x2-x1) == 0:
-	    	continue
-	    else:
+	    #if (x2-x1) == 0:
+	    #	continue
+	    #else:
             	#m = (y2-y1)/(x2-x1)
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
-            	if abs((y2-y1)/(x2-x1)) < 0.01:
-                    global state
-		    state = STOP
+            	#if abs((y2-y1)/(x2-x1)) < 0.01:
+            if np.all(cv2.bitwise_not(mask)) == False:
+                #if cY < 150:
+                 #if y2 < 350:
+                 global state
+                 state = STOP
+                 #else:
+                    #print "stop line too far"
+
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
-		    return
+                 return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
-def linetracking(raw):
+def linetracking(raw, stopsign):
     cv2.imshow('raw',raw)
     #Minimize the region of interest to just the lower half of image
     #because that is where the road lines are
@@ -103,11 +122,11 @@ def linetracking(raw):
     #Convert the color of the frame to HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     #The threshold values for yellow since road line is yellow
-    min_yellow = np.array([0, 64, 236])
+    min_yellow = np.array([0, 64, 216])
     max_yellow = np.array([32, 255, 255])
     #The threshold values for white since the outer roadlines are white
     upper = np.array([0, 0, 255])
-    lower = np.array([0, 0, 255])
+    lower = np.array([0, 0, 191])
     #Ignore all pixels that aren't white to obtain a picture of only
     #the road lines
     mask1 = cv2.inRange(hsv, lower, upper)
@@ -159,7 +178,7 @@ def linetracking(raw):
         avg = old_avg
     #Draw a point to show where the average x-value is
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
-    detect_stop(mask1)
+    detect_stop(mask1, flag.get())
     cv2.imshow('frame', frame)
     cv2.imshow('edges', edges)
     cv2.waitKey(20)
@@ -211,7 +230,7 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p(q):
+def position_p(q, flag):
     window_width = 480
     window_height = 360
     global camera
@@ -221,30 +240,30 @@ def position_p(q):
     while(1):
 
         if state == STOP:
-            go_straight()
+           # go_straight()
             print "in state stop"
             #velocity.resetEncoders()
-            if(velocity.rightencoderticks >= 800):
-                print "Encoder's reached the value"
-	        leftspeed = 0
-                rightspeed = 0
-                time.sleep(2)
+           # if(velocity.rightencoderticks >= 800):
+            #    print "Encoder's reached the value"
+            leftspeed = 0
+            rightspeed = 0
+            time.sleep(2)
 
-                velocity.resetEncoders()
+            velocity.resetEncoders()
 
                 #decision = random.randint(1,4)
-                decision = 4
-                if decision == 1:
-                    state = RIGHTTURN
-                    velocity.resetEncoders()
-                elif decision == 2:
-                    state = LEFTTURN
-                    velocity.resetEncoders()
-                elif decision == 3:
-                    state = STRAIGHT
-                    velocity.resetEncoders()
-                else:
-                    state = POSITIONCONTROLLER
+            decision = 4
+            if decision == 1:
+                state = RIGHTTURN
+                velocity.resetEncoders()
+            elif decision == 2:
+                state = LEFTTURN
+                velocity.resetEncoders()
+            elif decision == 3:
+                state = STRAIGHT
+                velocity.resetEncoders()
+            else:
+                state = POSITIONCONTROLLER
         elif state == RIGHTTURN:
             right_turn()
             print "in state rightturn"
@@ -263,25 +282,29 @@ def position_p(q):
             print "in state straight"
             if(velocity.rightencoderticks >= STRAIGHTTICKS or velocity.leftencoderticks >= STRAIGHTTICKS):
                 state = POSITIONCONTROLLER
-
         else:
             #for each frame that is taken from the camera
+            #Just for Timing Purposes
+            start = 0
             while True:
                global image
+	       print time.time()-start
+	       start = time.time()
                image = q.get()
+	       print "Got Next Image"
                #resize the image to make processing more manageable
                raw = cv2.resize(image, (window_width, window_height))
                #Find either the yellow or white line and what the average position
                #of the Duck is
-               yellow,avg = linetracking(raw)
+               yellow,avg = linetracking(raw, flag.get())
                #130 for yellow line, 450 for white
                #If tracking off the yellow line this is the target position to use
                print "in state positioncontrol"
                if yellow:
-                   threshold = 105
+                   threshold = 75
                #If tracking off the white line use this target position instead
                else:
-                   threshold = 430
+                   threshold = 405
                if state == STOP:
 			global rightspeed
 			global leftspeed
