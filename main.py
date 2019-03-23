@@ -28,7 +28,8 @@ def runCamera(q, flag):
         for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
             #cv2.imshow("live feed", raw.array)
             #cv2.waitKey(20)
-            q.put(raw.array)
+            if q.qsize() < 5:
+                q.put(raw.array)
             raw.truncate(0)
             #print q.qsize()
 
@@ -68,8 +69,7 @@ def main():
 
         print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera, slidingwindow.img_proc, runRoadTracking]
-        #functions = [velocity.getVelocity, velocity.velocityPid]
+        cameraFunctions = [runCamera, slidingwindow.img_proc]
 
         for func in cameraFunctions:
             p = multiprocessing.Process(target=func, args=(q,flag,))
