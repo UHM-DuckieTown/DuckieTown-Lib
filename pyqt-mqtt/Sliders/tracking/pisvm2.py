@@ -6,6 +6,9 @@ import numpy as np
 from joblib import load
 from picamera import PiCamera
 from picamera.array import PiRGBArray
+import sys
+sys.path.insert(0, '../../features/')
+
 
 def lbp(test_image):
     #convert to grayscale image

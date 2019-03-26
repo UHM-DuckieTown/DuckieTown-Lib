@@ -217,8 +217,6 @@ def linetracking(raw,client,DUCK1_FEED2):
     p_mqtt.encode_string(render,DUCK1_FEED2,client)
     #print "encoding"
 
-
-
     return yellow,avg
 
 
@@ -340,8 +338,7 @@ def position_p(q):
                    #of the Duck is
 
                    p_mqtt.encode_string(raw,DUCK1_FEED1,client)
-                   print "sending"
-
+                   #client = "test"
                    yellow,avg = linetracking(raw,client,DUCK1_FEED2)
                    #print "After lietracking call"
                    #130 for yellow line, 450 for white
@@ -390,4 +387,5 @@ def position_p(q):
                        rightspeed = ((rightspeed*0.004)-0.006)
 
     finally:
-        client.loop_stop()
+        print("pau")
+        #client.loop_stop()

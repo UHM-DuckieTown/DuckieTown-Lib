@@ -1,6 +1,6 @@
 import sys
-sys.path.insert(0, '../../states/ImageProcessing/')
-sys.path.insert(0, '../../features/')
+#sys.path.insert(0, '../../states/ImageProcessing/')
+sys.path.insert(0, '/home/pi/DuckieTown-Lib/features')
 from joblib import load
 from picamera import PiCamera
 from threading import Thread
@@ -70,8 +70,8 @@ def main():
 
         print "starting up..."
         jobs = []
-##        cameraFunctions = [runCamera,pisvm.stopSignDetect]
-        cameraFunctions = [runCamera]
+        cameraFunctions = [runCamera,pisvm.stopSignDetect]
+        #cameraFunctions = [runCamera]
         #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
