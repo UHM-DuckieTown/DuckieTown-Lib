@@ -25,7 +25,7 @@ def on_message(client, userdata, msg):
     #print q.qsize()
     #print str(msg.payload)
     print'duck_slider_val' + ' '  + duck_slider_val
-    
+
 
 def encode_string(image, topic, client):
     #Converts image to string
@@ -35,3 +35,33 @@ def encode_string(image, topic, client):
 
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
+
+def paho_client():
+    MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
+
+    print config.duck1_feed1
+    print config.duck1_feed2
+    print config.duck1_text
+
+    DUCK1_FEED1 = config.duck1_feed1
+    DUCK1_FEED2 = config.duck1_feed2
+    DUCK1_TEXT = config.duck1_text
+    DUCK1_SLIDER = config.duck1_slider
+
+    # Create a client instance
+    client = mqtt.Client()
+    client.on_connect = p_mqtt.on_connect
+    #Connects the client to a broker
+    client.on_message_slider = p_mqtt.on_message_slider
+    client.on_message_text = p_mqtt.on_message_text
+    client.connect(MQTT_SERVER, 1883, 60)
+    #Runs a thread in the background to cal loop() automatically
+    #Frees up main thread for other work
+    client.loop_start()
+
+    try:
+        while(1):
+            time.sleep(1)
+    finally:
+        print("pau")
+        client.loop_stop()

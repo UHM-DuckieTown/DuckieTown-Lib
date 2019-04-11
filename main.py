@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, 'states/ImageProcessing/')
 sys.path.insert(0, 'features/')
+sys.path.insert(0, 'pyqt-mqtt/')
 from joblib import load
 from picamera import PiCamera
 from threading import Thread
@@ -14,6 +15,7 @@ import cv2
 import RPi.GPIO as GPIO
 import multiprocessing
 import slidingwindow
+import p_mqtt
 
 
 def runCamera(q, flag):
@@ -60,7 +62,8 @@ def runRoadTracking(q, flag):
                 job.join()
 
 def paho(q, flag):
-        print "In paho"
+        p_mqtt.paho_client()
+
 
 def main():
         #init sensors
