@@ -59,6 +59,8 @@ def runRoadTracking(q, flag):
         for job in jobs:
                 job.join()
 
+def paho(q, flag):
+        print "In paho"
 
 def main():
         #init sensors
@@ -68,7 +70,10 @@ def main():
 
         print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera, slidingwindow.img_proc, runRoadTracking]
+        #Old
+        #cameraFunctions = [runCamera, slidingwindow.img_proc, runRoadTracking]
+
+        cameraFunctions = [runCamera, slidingwindow.img_proc, runRoadTracking, paho]
         #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
