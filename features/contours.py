@@ -9,30 +9,38 @@ import imutils
 def find_red(image):
     min = 900     # contour has to have at least 30x30 px area
     max = 1000000000
-    #cv2.imshow("image", image)
-    image_blur = cv2.medianBlur(image, 21)
-    #cv2.imshow("image_blur", image_blur)
+    cv2.imshow("image", image)
+    image_blur = cv2.medianBlur(image, 15)
+    cv2.imshow("image_blur", image_blur)
     #cv2.waitKey(0)
 
     #hsv - sepparates color from brightness
-    image_blur_hsv = cv2.cvtColor(image_blur, cv2.COLOR_RGB2HSV)
+    image_blur_hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
-    #filter by color range
-    #filter out black
-    lower = np.array([0,100,100])
-    upper = np.array([20,255,255])
+    #lower mask (0-10)
+    lower = np.array([110,50,50])
+    upper = np.array([130,255,255])
     mask = cv2.inRange(image_blur_hsv, lower, upper)
+
+    #upper mask (170-180)
+    #lower = np.array([170,50,50])
+    #upper = np.array([180,255,255])
+    #mask1 = cv2.inRange(image_blur_hsv, lower, upper)
+    
+    #join mask
+    #mask = mask0+mask1
+    cv2.imshow("red mask", mask)
     return crop_bounding_box(image, mask, min, max)
 
 def find_bright_spots(image):
-    min = 50
-    max = 250
+    min = 30
+    max = 350
     #https://www.pyimagesearch.com/2016/10/31/detecting-multiple-bright-spots-in-an-image-with-python-and-opencv/
     #to detect brightest regions in an image convert image to grayscale and smoothing
     #cv2.imshow("original", image)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.medianBlur(gray, 11)
-    cv2.imshow("blurred", blurred)
+    #cv2.imshow("blurred", blurred)
     '''
     reveal brightest region by applying threshold
     - any pixel p >= 200 is set to 255 (white)
@@ -43,7 +51,7 @@ def find_bright_spots(image):
     #perform erosions and dilations to remove small blobs of noise from threshold image
     #filtered = cv2.erode(filtered, None, iterations=2)
     filtered = cv2.dilate(filtered, None, iterations=2)
-    cv2.imshow("filtered", filtered)
+    #cv2.imshow("filtered", filtered)
     cv2.waitKey(20)
     return crop_bounding_box(image, filtered, min, max)
 
@@ -60,7 +68,6 @@ def crop_bounding_box(original, filtered, min, max):
         clone = original.copy()
         cv2.rectangle(clone, (x,y), (x+w,y+h), (255,0,0), 2)
         cv2.imshow("bounding box", clone)
-        cv2.waitKey(0)
     return candidates
 '''
 #test run

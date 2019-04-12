@@ -21,7 +21,7 @@ def lbp(test_image):
     return hist
 
 def detect(img, flag):
-    ss_threshold = 0.7
+    ss_threshold = 0.55
     tl_threshold = 0.6
     ss_hit = 0
     tl_hit = 0

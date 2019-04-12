@@ -18,17 +18,26 @@ def img_proc(q, flag):
     #cv2.imshow('current window', image)
 
     while True:
+
+        
         image = q.get()
+        
+        
+        #enable viewing of original image
         cv2.imshow("uncropped", image)
+        key = cv2.waitKey(1) & 0xFF
+
         image = image[0:240, 320:640, :]
-        #red_contours = contours.find_red(image)
-        red_contours = []
-        light_contours = contours.find_bright_spots(image)
+        red_contours = contours.find_red(image)
+        #red_contours = []
+        #light_contours = contours.find_bright_spots(image)
+        light_contours= []
         (winW, winH) = (70, 70)
         #start_time = time.time()
+        print "there are {} contours".format(len(red_contours))
         for img in red_contours + ['#'] + light_contours:
             if img == '#':
-                winH += 70  # change sliding window region to (70, 140) to match traffic light training image dimension
+                winH += 70  # change sliding window region to (70, 140) to match traffic light training image dimensions
                 continue
             for (x, y, window) in sliding_window(img, stepSize=35, windowSize=(winW, winH)):
                 if window.shape[0] != winH or window.shape[1] != winW:
@@ -36,6 +45,8 @@ def img_proc(q, flag):
                 ss_hit, tl_hit = detect(img[y:y+winH, x:x+winW, :], flag)
                 if(ss_hit):
                     print "found stop sign"
+                else:
+                    print "lost stop sign"
                 if(tl_hit):
                     print "found traffic light"
                 #cv2.waitKey(0)

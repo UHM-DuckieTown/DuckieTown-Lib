@@ -20,7 +20,7 @@ def runCamera(q, flag):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
-        camera.framerate = 20
+        camera.framerate = 5
         raw = PiRGBArray(camera, size=(640,480))
         #camera warm up
         time.sleep(0.1)
@@ -28,8 +28,9 @@ def runCamera(q, flag):
         for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
             #cv2.imshow("live feed", raw.array)
             #cv2.waitKey(20)
-            if q.qsize() < 5:
-                q.put(raw.array)
+            if q.qsize() >= 4:
+                q.get()
+            q.put(raw.array)
             raw.truncate(0)
             #print q.qsize()
 
