@@ -17,6 +17,7 @@ def img_proc(q, flag):
     #image = cv2.imread(PIC_PATH)
     #cv2.imshow('current window', image)
 
+
     while True:
 
         

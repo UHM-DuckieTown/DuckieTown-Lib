@@ -15,20 +15,20 @@ def find_red(image):
     #cv2.waitKey(0)
 
     #hsv - sepparates color from brightness
-    image_blur_hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    image_blur_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     #lower mask (0-10)
-    lower = np.array([110,50,50])
-    upper = np.array([130,255,255])
-    mask = cv2.inRange(image_blur_hsv, lower, upper)
+    lower = np.array([0,50,50])
+    upper = np.array([10,255,255])
+    mask0 = cv2.inRange(image_blur_hsv, lower, upper)
 
     #upper mask (170-180)
-    #lower = np.array([170,50,50])
-    #upper = np.array([180,255,255])
-    #mask1 = cv2.inRange(image_blur_hsv, lower, upper)
+    lower = np.array([170,50,50])
+    upper = np.array([180,255,255])
+    mask1 = cv2.inRange(image_blur_hsv, lower, upper)
     
     #join mask
-    #mask = mask0+mask1
+    mask = mask0+mask1
     cv2.imshow("red mask", mask)
     return crop_bounding_box(image, mask, min, max)
 
