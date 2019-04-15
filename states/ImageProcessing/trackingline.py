@@ -73,7 +73,7 @@ def detect_stop(mask1, stopsign):
         global stop
     #for c in contours:
      #   Moments = cv2.moments(c)
-     #  cX = int(Moments["m10"]/Moments["m00"])        
+     #  cX = int(Moments["m10"]/Moments["m00"])
      #   cY = int(Moments["m01"]/Moments["m00"])
     #For every line discovered by Hough Transform
         if lines is not None:
@@ -231,7 +231,7 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p(q, flag):
+def position_p(q, flag, slider):
     window_width = 480
     window_height = 360
     global camera
@@ -297,10 +297,10 @@ def position_p(q, flag):
                 raw = cv2.resize(image, (window_width, window_height))
                 #Find either the yellow or white line and what the average position
                 #of the Duck is
-                
+
                 #testing purpose, controls stop sign detection
                 flag.put(0)
-                
+
                 yellow,avg = linetracking(raw, 0)
                 #130 for yellow line, 450 for white
                 #If tracking off the yellow line this is the target position to use

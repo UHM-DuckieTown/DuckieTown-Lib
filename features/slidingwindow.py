@@ -12,7 +12,7 @@ def sliding_window(image, stepSize, windowSize):
             yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
 
 
-def img_proc(q, flag):
+def img_proc(q, flag, slider):
     #PIC_PATH = "dataset/fullsize_0.png"
     #image = cv2.imread(PIC_PATH)
     #cv2.imshow('current window', image)

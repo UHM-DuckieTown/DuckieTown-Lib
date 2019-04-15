@@ -49,7 +49,7 @@ def encode_string(image, topic, client):
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
 
-def paho_client(q):
+def paho_client(q, flag, slider):
     MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
     print config.duck1_feed1
@@ -61,11 +61,13 @@ def paho_client(q):
     DUCK1_TEXT = config.duck1_text
     DUCK1_SLIDER = config.duck1_slider
 
+    print "Slider queue size: "+ str(slider.qsize())
+
     # Create a client instance
     client = mqtt.Client()
     client.on_connect = on_connect
     #Connects the client to a broker
-    client.on_message_slider = on_message_slider
+    client.on_message_slider = o n_message_slider
     client.on_message_text = on_message_text
     client.connect(MQTT_SERVER, 1883, 60)
     #Runs a thread in the background to cal loop() automatically
