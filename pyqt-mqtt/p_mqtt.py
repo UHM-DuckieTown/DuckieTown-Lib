@@ -67,7 +67,7 @@ def paho_client(q, flag, slider):
     client = mqtt.Client()
     client.on_connect = on_connect
     #Connects the client to a broker
-    client.on_message_slider = o n_message_slider
+    client.on_message_slider = on_message_slider
     client.on_message_text = on_message_text
     client.connect(MQTT_SERVER, 1883, 60)
     #Runs a thread in the background to cal loop() automatically
