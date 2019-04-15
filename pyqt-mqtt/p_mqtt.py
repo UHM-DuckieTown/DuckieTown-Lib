@@ -6,15 +6,15 @@ import socket
 import config
 import Queue
 
-q = Queue.Queue()
-q.put("start")
+l = Queue.Queue()
+#q.put("start")
 
 def on_message_slider(client, userdata, msg):
     global duck_slider_val
     #Assign duck slider value based on received message topic
     # Receives value of the sliders as a text string
     duck_slider_val = msg.payload
-    q.put(duck_slider_val)
+    l.put(duck_slider_val)
     #print q.qsize()
     #print str(msg.payload)
     print'duck_slider_val' + ' '  + duck_slider_val
@@ -79,8 +79,8 @@ def paho_client(q, slider):
             image = q.get()
             print "Got Next Image"
             encode_string(image,DUCK1_FEED1,client)
-            if q.qsize() > 1:
-                    slider.put(q.get())
+            if l.qsize() != 0:
+                    slider.put(l.get())
             print "Slider queue size: "+ str(slider.qsize())
     finally:
         print("pau")
