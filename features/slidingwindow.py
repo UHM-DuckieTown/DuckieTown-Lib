@@ -24,9 +24,9 @@ def img_proc(q, flag):
         image = q.get()
         
         
-        #enable viewing of original image
-        cv2.imshow("uncropped", image)
-        key = cv2.waitKey(1) & 0xFF
+#enable viewing of original image
+#        cv2.imshow("uncropped", image)
+#        key = cv2.waitKey(1) & 0xFF
 
         image = image[0:240, 320:640, :]
         red_contours = contours.find_red(image)

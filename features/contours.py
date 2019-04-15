@@ -9,7 +9,9 @@ import imutils
 def find_red(image):
     min = 900     # contour has to have at least 30x30 px area
     max = 1000000000
-    cv2.imshow("image", image)
+
+#view mode
+#    cv2.imshow("image", image)
     image_blur = cv2.medianBlur(image, 15)
     cv2.imshow("image_blur", image_blur)
     #cv2.waitKey(0)
@@ -29,7 +31,9 @@ def find_red(image):
     
     #join mask
     mask = mask0+mask1
-    cv2.imshow("red mask", mask)
+
+#view mode
+#    cv2.imshow("red mask", mask)
     return crop_bounding_box(image, mask, min, max)
 
 def find_bright_spots(image):
@@ -67,7 +71,8 @@ def crop_bounding_box(original, filtered, min, max):
         #use to display current contour bounding box
         clone = original.copy()
         cv2.rectangle(clone, (x,y), (x+w,y+h), (255,0,0), 2)
-        cv2.imshow("bounding box", clone)
+#view mode
+#        cv2.imshow("bounding box", clone)
     return candidates
 '''
 #test run

@@ -70,8 +70,9 @@ def main():
 
         print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera, slidingwindow.img_proc]
-
+        cameraFunctions = [runCamera]
+        cameraFunctions.append(slidingwindow.img_proc)
+        cameraFunctions.append(runRoadTracking)
         for func in cameraFunctions:
             p = multiprocessing.Process(target=func, args=(q,flag,))
             jobs.append(p)

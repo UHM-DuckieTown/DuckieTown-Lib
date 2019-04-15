@@ -34,6 +34,9 @@ def detect(img, flag):
         #cv2.destroyAllWindows()
         flag.put(1)
         ss_hit = 1
+    else:
+        flag.put(0)
+        ss_hit = 0
     if(tl_conf > tl_threshold):
         #cv2.imshow('traffic light detect',img)
         #cv2.waitKey(0)
