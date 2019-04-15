@@ -107,9 +107,14 @@ def detect_stop(mask1, stopsign):
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw, stopsign):
-    print "in linetracking"
+
+#UI
+#    print "in linetracking"
     cv2.imshow('raw',raw)
-    #Minimize the region of interest to just the lower half of image
+
+    key = cv2.waitKey(1) & 0xFF
+
+#Minimize the region of interest to just the lower half of image
     #because that is where the road lines are
     raw = raw[200:480,0:480]
     #Blur the image to reduce the prominance of any noise
@@ -145,8 +150,8 @@ def linetracking(raw, stopsign):
     else:
         mask = mask1
 	yellow = False
-
-    cv2.imshow(" mask", mask)
+#ui
+#    cv2.imshow(" mask", mask)
     #AND the original frame with the mask to obtain a picture with only the
     #road lines in it and black pixels everywhere else
     masked_img = cv2.bitwise_and(hsv, hsv, mask=mask)
@@ -180,9 +185,9 @@ def linetracking(raw, stopsign):
     #Draw a point to show where the average x-value is
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
     detect_stop(mask1, stopsign)
-    cv2.imshow('frame', frame)
-    cv2.imshow('edges', edges)
-    cv2.waitKey(20)
+#    cv2.imshow('frame', frame)
+#    cv2.imshow('edges', edges)
+#    cv2.waitKey(20)
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
     return yellow,avg

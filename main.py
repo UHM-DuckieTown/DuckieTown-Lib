@@ -20,7 +20,7 @@ def runCamera(q, flag):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
-        camera.framerate = 20
+        camera.framerate = 5
         raw = PiRGBArray(camera, size=(640,480))
         #camera warm up
         time.sleep(0.1)
@@ -28,6 +28,8 @@ def runCamera(q, flag):
         for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
             #cv2.imshow("live feed", raw.array)
             #cv2.waitKey(20)
+            if q.qsize() >= 4:
+                q.get()
             q.put(raw.array)
             raw.truncate(0)
             #print q.qsize()
@@ -68,9 +70,9 @@ def main():
 
         print "starting up..."
         jobs = []
-        cameraFunctions = [runCamera, slidingwindow.img_proc, runRoadTracking]
-        #functions = [velocity.getVelocity, velocity.velocityPid]
-
+        cameraFunctions = [runCamera]
+        cameraFunctions.append(slidingwindow.img_proc)
+        cameraFunctions.append(runRoadTracking)
         for func in cameraFunctions:
             p = multiprocessing.Process(target=func, args=(q,flag,))
             jobs.append(p)

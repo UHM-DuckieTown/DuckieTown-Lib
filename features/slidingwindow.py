@@ -3,7 +3,7 @@ import cv2
 from PIL import Image
 import os
 import time
-from pisvm import stopSignDetect
+from pisvm import detect
 import contours
 
 def sliding_window(image, stepSize, windowSize):
@@ -17,21 +17,40 @@ def img_proc(q, flag):
     #image = cv2.imread(PIC_PATH)
     #cv2.imshow('current window', image)
 
+
     while True:
+
+        
         image = q.get()
-        #cv2.imshow("uncropped", image)
+        
+        
+#enable viewing of original image
+#        cv2.imshow("uncropped", image)
+#        key = cv2.waitKey(1) & 0xFF
+
         image = image[0:240, 320:640, :]
-        candidates = contours.find_red(image)
+        red_contours = contours.find_red(image)
+        #red_contours = []
+        #light_contours = contours.find_bright_spots(image)
+        light_contours= []
         (winW, winH) = (70, 70)
-        start_time = time.time()
-        for img in candidates:
+        #start_time = time.time()
+        print "there are {} contours".format(len(red_contours))
+        for img in red_contours + ['#'] + light_contours:
+            if img == '#':
+                winH += 70  # change sliding window region to (70, 140) to match traffic light training image dimensions
+                continue
             for (x, y, window) in sliding_window(img, stepSize=35, windowSize=(winW, winH)):
                 if window.shape[0] != winH or window.shape[1] != winW:
                     continue
-                hit = stopSignDetect(img[y:y+winH, x:x+winW, :], flag)
-                if(hit):
+                ss_hit, tl_hit = detect(img[y:y+winH, x:x+winW, :], flag)
+                if(ss_hit):
                     print "found stop sign"
-                    #cv2.waitKey(0)
+                else:
+                    print "lost stop sign"
+                if(tl_hit):
+                    print "found traffic light"
+                #cv2.waitKey(0)
                 #use to show sliding window
                 #clone = image.copy()
                 #cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)

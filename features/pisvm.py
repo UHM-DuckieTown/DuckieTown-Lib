@@ -20,17 +20,28 @@ def lbp(test_image):
     #add values to set
     return hist
 
-def stopSignDetect(img, flag):
+def detect(img, flag):
+    ss_threshold = 0.55
+    tl_threshold = 0.6
+    ss_hit = 0
+    tl_hit = 0
     clf = load("features/clf_grid_Stop")
     #cv2.imshow('stop sign detect',img)
-    if(clf.predict_proba([lbp(img)])[0][1] > 0.7):
-        print('found stop sign')
-        # cv2.imshow('stop sign detect',img)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+    neg_conf, ss_conf, tl_conf = clf.predict_proba([lbp(img)])[0]
+    if(ss_conf > ss_threshold):
+        #cv2.imshow('stop sign detect',img)
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()
         flag.put(1)
-        return 1
+        ss_hit = 1
     else:
-        print('miss')
         flag.put(0)
-        return 0
+        ss_hit = 0
+    if(tl_conf > tl_threshold):
+        #cv2.imshow('traffic light detect',img)
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()
+        tl_hit = 1
+    print '({} {} {})'.format(neg_conf, ss_conf, tl_conf)
+    return (ss_hit, tl_hit)
+
