@@ -61,9 +61,7 @@ def paho_client(q, slider):
     DUCK1_TEXT = config.duck1_text
     DUCK1_SLIDER = config.duck1_slider
 
-    if q.qsize() > 1:
-            slider.put(q.get())
-    print "Slider queue size: "+ str(slider.qsize())
+
 
     # Create a client instance
     client = mqtt.Client()
@@ -81,6 +79,9 @@ def paho_client(q, slider):
             image = q.get()
             print "Got Next Image"
             encode_string(image,DUCK1_FEED1,client)
+            if q.qsize() > 1:
+                    slider.put(q.get())
+            print "Slider queue size: "+ str(slider.qsize())
     finally:
         print("pau")
         client.loop_stop()
