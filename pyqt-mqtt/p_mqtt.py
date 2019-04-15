@@ -61,6 +61,8 @@ def paho_client(q, slider):
     DUCK1_TEXT = config.duck1_text
     DUCK1_SLIDER = config.duck1_slider
 
+    if q.qsize() > 1:
+            slider.put(q.get())
     print "Slider queue size: "+ str(slider.qsize())
 
     # Create a client instance
