@@ -62,7 +62,7 @@ def runRoadTracking(q, flag,slider):
                 job.join()
 
 def paho(q, flag, slider):
-        p_mqtt.paho_client(q)
+        p_mqtt.paho_client(q, slider)
 
 
 def main():
