@@ -45,7 +45,7 @@ def runRoadTracking(q, flag, slider, twofeed):
         functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
-            p = Thread(target=func, args=(q,flag,slider))
+            p = Thread(target=func, args=(q,flag,slider,twofeed))
             jobs.append(p)
             p.daemon = True
             p.start()
