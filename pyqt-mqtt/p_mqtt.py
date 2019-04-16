@@ -9,6 +9,8 @@ import Queue
 l = Queue.Queue()
 l.put("start")
 
+p = Queue.Queue()
+
 def on_message_slider(client, userdata, msg):
     global duck_slider_val
     #Assign duck slider value based on received message topic
@@ -49,7 +51,7 @@ def encode_string(image, topic, client):
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
 
-def paho_client(q, slider,twofeed):
+def paho_client(q, slider,twofeed, messagetext):
     MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
     print config.duck1_feed1
@@ -78,11 +80,14 @@ def paho_client(q, slider,twofeed):
         while(1):
             image = q.get()
             print "Got Next Image"
-            encode_string(image,DUCK1_FEED1,client)
             if l.qsize() != 0:
                     slider.put(l.get())
-            print "Slider queue size: "+ str(slider.qsize())
-            print "SecondFeed queue size: "+ str(twofeed.qsize())
+            if p.qsize() != 0:
+                    textfeed.put(p.get())
+            #print "Slider queue size: "+ str(slider.qsize())
+            #print "SecondFeed queue size: "+ str(twofeed.qsize())
+            print "Textfeed queue size: "+ str(textfeed.qsize())
+            encode_string(image,DUCK1_FEED1,client)
             encode_string(twofeed.get(),DUCK1_FEED2,client)
     finally:
         print("pau")
