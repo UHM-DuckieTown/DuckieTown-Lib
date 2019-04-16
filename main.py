@@ -72,7 +72,7 @@ def main():
         jobs = []
         cameraFunctions = [runCamera]
         cameraFunctions.append(slidingwindow.img_proc)
-        cameraFunctions.append(runRoadTracking)
+        #cameraFunctions.append(runRoadTracking)
         for func in cameraFunctions:
             p = multiprocessing.Process(target=func, args=(q,flag,))
             jobs.append(p)

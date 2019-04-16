@@ -27,6 +27,7 @@ def detect(img, flag):
     tl_hit = 0
     clf = load("features/clf_grid_Stop")
     #cv2.imshow('stop sign detect',img)
+    print clf.predict_proba([lbp(img)])
     neg_conf, ss_conf, tl_conf = clf.predict_proba([lbp(img)])[0]
     if(ss_conf > ss_threshold):
         #cv2.imshow('stop sign detect',img)
