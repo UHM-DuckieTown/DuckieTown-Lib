@@ -107,7 +107,7 @@ def detect_stop(mask1, stopsign):
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw, stopsign, slider, twofeed):
-    print "in linetracking"
+    #print "in linetracking"
     cv2.imshow('raw',raw)
     #Minimize the region of interest to just the lower half of image
     #because that is where the road lines are

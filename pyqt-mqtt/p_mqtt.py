@@ -47,7 +47,7 @@ def encode_string(image, topic, client):
     #Converts string to only contain ascii values
     encoded_str = base64.b64encode(img_str)
     #print "encoding"
-    print topic
+    #print topic
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
 
