@@ -186,7 +186,7 @@ def linetracking(raw, stopsign, slider, twofeed):
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
 
-    global old_render
+    global old_slider
 
     if not slider.empty():
         slider_val = slider.get()
