@@ -83,7 +83,7 @@ def paho_client(q, slider,twofeed):
                     slider.put(l.get())
             print "Slider queue size: "+ str(slider.qsize())
             print "SecondFeed queue size: "+ str(twofeed.qsize())
-
+            encode_string(twofeed.get(),DUCK1_FEED2,client)
     finally:
         print("pau")
         client.loop_stop()
