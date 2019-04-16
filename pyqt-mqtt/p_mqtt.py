@@ -7,7 +7,7 @@ import config
 import Queue
 
 l = Queue.Queue()
-#q.put("start")
+l.put("start")
 
 def on_message_slider(client, userdata, msg):
     global duck_slider_val
@@ -49,7 +49,7 @@ def encode_string(image, topic, client):
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
 
-def paho_client(q, slider):
+def paho_client(q, slider,twofeed):
     MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
     print config.duck1_feed1
@@ -82,6 +82,8 @@ def paho_client(q, slider):
             if l.qsize() != 0:
                     slider.put(l.get())
             print "Slider queue size: "+ str(slider.qsize())
+            print "SecondFeed queue size: "+ str(twofeed.qsize())
+
     finally:
         print("pau")
         client.loop_stop()

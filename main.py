@@ -18,7 +18,7 @@ import slidingwindow
 import p_mqtt
 
 
-def runCamera(q, flag, slider):
+def runCamera(q, flag, slider, twofeed):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
@@ -34,7 +34,7 @@ def runCamera(q, flag, slider):
             raw.truncate(0)
             #print q.qsize()
 
-def runRoadTracking(q, flag,slider):
+def runRoadTracking(q, flag, slider, twofeed):
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
@@ -61,8 +61,8 @@ def runRoadTracking(q, flag,slider):
         for job in jobs:
                 job.join()
 
-def paho(q, flag, slider):
-        p_mqtt.paho_client(q, slider)
+def paho(q, flag, slider, twofeed):
+        p_mqtt.paho_client(q, slider, twofeed)
 
 
 def main():
@@ -71,6 +71,7 @@ def main():
         q = multiprocessing.Queue()
         flag = multiprocessing.Queue()
         slider = multiprocessing.Queue()
+        twofeed = multiprocessing.Queue()
 
         print "starting up..."
         jobs = []
@@ -81,7 +82,7 @@ def main():
         #functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
-            p = multiprocessing.Process(target=func, args=(q,flag,slider))
+            p = multiprocessing.Process(target=func, args=(q,flag,slider, twofeed))
             jobs.append(p)
             p.daemon = True
             p.start()
