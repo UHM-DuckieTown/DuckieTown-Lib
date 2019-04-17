@@ -64,7 +64,6 @@ def main():
         #init sensors
         q = multiprocessing.Queue()
         flag = multiprocessing.Queue()
-
         print "starting up..."
         jobs = []
         cameraFunctions = [runCamera]
