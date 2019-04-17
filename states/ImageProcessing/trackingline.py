@@ -76,34 +76,34 @@ def detect_stop(mask1, stopsign):
      #  cX = int(Moments["m10"]/Moments["m00"])        
      #   cY = int(Moments["m01"]/Moments["m00"])
     #For every line discovered by Hough Transform
-    if lines is not None:
-        for line in lines:
-            x1, y1, x2, y2 = line[0]
-            cv2.line(mask, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.circle(mask, (x1, y1),2,(255,0,0),3)
-            cv2.circle(mask,(x2,y2),2,(255,0,0),3)
+        if lines is not None:
+            for line in lines:
+                x1, y1, x2, y2 = line[0]
+                cv2.line(mask, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.circle(mask, (x1, y1),2,(255,0,0),3)
+                cv2.circle(mask,(x2,y2),2,(255,0,0),3)
 
-        #Ignore the line if it leads to an undefined slope
-	    #if (x2-x1) == 0:
-	    #	continue
-	    #else:
-            	#m = (y2-y1)/(x2-x1)
+            #Ignore the line if it leads to an undefined slope
+	        #if (x2-x1) == 0:
+	        #	continue
+	        #else:
+            	    #m = (y2-y1)/(x2-x1)
 
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	#if abs((y2-y1)/(x2-x1)) < 0.01:
-            if np.all(cv2.bitwise_not(mask)) == False:
+                if np.all(cv2.bitwise_not(mask)) == False:
                 #if cY < 150:
                  #if y2 < 350:
-                 global state
-                 state = STOP
+                    global state
+                    state = STOP
                  #else:
                     #print "stop line too far"
 
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
-                 return
+                    return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw, stopsign):
@@ -304,9 +304,9 @@ def position_p(q, flag):
                 #of the Duck is
                 
                 #testing purpose, controls stop sign detection
-                flag.put(1)
+                flag.put(0)
                 
-                yellow,avg = linetracking(raw, flag.get())
+                yellow,avg = linetracking(raw, 0)
                 #130 for yellow line, 450 for white
                 #If tracking off the yellow line this is the target position to use
                 print "in state positioncontrol"
