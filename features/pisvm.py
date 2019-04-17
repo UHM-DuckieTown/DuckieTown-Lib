@@ -6,6 +6,7 @@ import numpy as np
 from joblib import load
 from picamera import PiCamera
 from picamera.array import PiRGBArray
+from contours import find_red
 
 def lbp(test_image):
     #convert to grayscale image
@@ -22,13 +23,14 @@ def lbp(test_image):
 
 def detect(img, flag):
     ss_threshold = 0.55
-    tl_threshold = 0.6
+    tl_threshold = 0.5
     ss_hit = 0
     tl_hit = 0
     clf = load("features/clf_grid_Stop")
     #cv2.imshow('stop sign detect',img)
-    print clf.predict_proba([lbp(img)])
-    neg_conf, ss_conf, tl_conf = clf.predict_proba([lbp(img)])[0]
+    conf = clf.predict_proba([lbp(img)])
+    print conf
+    neg_conf, ss_conf, tl_conf = conf[0]
     if(ss_conf > ss_threshold):
         #cv2.imshow('stop sign detect',img)
         #cv2.waitKey(0)
@@ -42,7 +44,8 @@ def detect(img, flag):
         #cv2.imshow('traffic light detect',img)
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()
-        tl_hit = 1
+        if len(find_red(img, 30, 350)) == 1:
+            tl_hit = 1
     print '({} {} {})'.format(neg_conf, ss_conf, tl_conf)
     return (ss_hit, tl_hit)
 

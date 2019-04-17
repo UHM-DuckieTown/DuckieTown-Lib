@@ -23,14 +23,16 @@ def img_proc(q, flag):
         key = cv2.waitKey(1) & 0xFF
 
         image = image[0:240, 320:640, :]
-        #red_contours = contours.find_red(image)
+        #red_contours = contours.find_red(image, 900, 1000000)
         red_contours = []
         light_contours = contours.find_bright_spots(image)
         #light_contours= []
         (winW, winH) = (70, 70)
         #start_time = time.time()
-        print "there are {} contours".format(len(red_contours))
+        print "there are {} contours".format(len(red_contours) + len(light_contours))
         for img in red_contours + light_contours:
+            cv2.imshow("current image", img)
+            cv2.waitKey(1)
             for (x, y, window) in sliding_window(img, stepSize=35, windowSize=(winW, winH)):
                 if window.shape[0] != winH or window.shape[1] != winW:
                     continue

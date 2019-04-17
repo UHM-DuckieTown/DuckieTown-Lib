@@ -6,9 +6,9 @@ import numpy as np
 from math import cos, sin
 import imutils
 
-def find_red(image):
-    min = 900     # contour has to have at least 30x30 px area
-    max = 1000000000
+def find_red(image, min, max):
+    #min = 900     # contour has to have at least 30x30 px area
+    #max = 1000000000
     offset = 0
     #view mode
     #cv2.imshow("image", image)
@@ -60,20 +60,23 @@ def find_bright_spots(image):
     #cv2.waitKey(20)
     return crop_bounding_box(image, filtered, min, max, offset)
 
-def crop_bounding_box(original, filtered, min, max, offset):
+def crop_bounding_box(original, filtered, minval, maxval, offset):
     _, contours, _ = cv2.findContours(filtered, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     #apply threshold for contours such that it has minimum area
-    contours = list(filter(lambda c: cv2.contourArea(c) >= min and cv2.contourArea(c) <= max, contours))
+    contours = list(filter(lambda c: cv2.contourArea(c) >= minval and cv2.contourArea(c) <= maxval, contours))
     candidates = []
     for c in contours:
         (x,y,w,h) = cv2.boundingRect(c)
-        candidates.append(original[y-offset:y+h+offset, x-offset:x+w+offset, :])
-
+        y_top = max(0, y-offset)
+        y_bot = min(480, y+h+offset)
+        x_left = min(640, x+w+offset)
+        x_right = max(0, x-offset)
+        candidates.append(original[y_top:y_bot, x_right:x_left, :])
         #use to display current contour bounding box
         clone = original.copy()
         print cv2.contourArea(c)
         cv2.rectangle(clone, (x,y), (x+w,y+h), (0,0,255), 2)
-        cv2.rectangle(clone, (x-offset,y-offset), (x+w+offset,y+h+offset), (255,0,0), 2)
+        cv2.rectangle(clone, (x_right,y_top), (x_left,y_bot), (255,0,0), 2)
         #view mode
         cv2.imshow("bounding box", clone)
         cv2.waitKey(0)
