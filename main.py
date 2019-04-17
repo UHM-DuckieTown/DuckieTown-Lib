@@ -15,7 +15,6 @@ import RPi.GPIO as GPIO
 import multiprocessing
 import slidingwindow
 
-
 def runCamera(q, flag):
         #camera config
         camera = PiCamera()
@@ -24,7 +23,6 @@ def runCamera(q, flag):
         raw = PiRGBArray(camera, size=(640,480))
         #camera warm up
         time.sleep(0.1)
-
         for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
             #cv2.imshow("live feed", raw.array)
             #cv2.waitKey(20)
@@ -64,7 +62,6 @@ def runRoadTracking(q, flag):
 
 def main():
         #init sensors
-        #q = Queue.Queue()
         q = multiprocessing.Queue()
         flag = multiprocessing.Queue()
 
