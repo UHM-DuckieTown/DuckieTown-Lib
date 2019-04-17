@@ -4,10 +4,10 @@ import cv2
 import base64
 import PyQt5
 import paho.mqtt.client as mqtt
-from PyQt5.QtWidgets import QMainWindow, QApplication, QCheckBox, QLabel
+from PyQt5.QtWidgets import QMainWindow, QApplication, QCheckBox, QLabel, QListView
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from DuckieTown_GUI import Ui_MainWindow
+from Slidersv2 import Ui_MainWindow
 import socket
 
 MQTT_SERVER = "localhost"
@@ -23,6 +23,7 @@ DUCK2_SLIDER = "192.168.0.70_slider"
 DUCK2_TEXT = "192.168.0.70_text"
 
 class MyApp(QMainWindow):
+
     client_message1 = pyqtSignal(QImage)
     client_message2 = pyqtSignal(QImage)
     client_message3 = pyqtSignal(QImage)
@@ -40,6 +41,9 @@ class MyApp(QMainWindow):
         self.ui.SetIP_Button.clicked.connect(self.SetIP)
         self.ui.Duck1_Slider.valueChanged.connect(self.Slider)
         self.ui.Duck2_Slider.valueChanged.connect(self.Slider2)
+
+        self.ui.D1 = QStandardItemModel(self.ui.Directions_List1)
+        self.ui.D2 = QStandardItemModel(self.ui.Directions_List2)
 
     @pyqtSlot(QImage)
     def setImage1(self, image1):
@@ -89,6 +93,9 @@ class MyApp(QMainWindow):
         self.ui.Duck2_Feed2.resize(447, 309)
         self.ui.Duck2_Feed2.move(482, 417)
 
+        self.ui.Directions_List1.show()
+        self.ui.Directions_List2.show()
+
     def on_message_duck1(self, client, userdata, msg):
         nparr1 = np.fromstring(msg.payload.decode('base64'), np.uint8)
         image1 = cv2.imdecode(nparr1, 1)
@@ -129,12 +136,106 @@ class MyApp(QMainWindow):
         message = self.ui.CommandBox.text()
         if self.ui.Duck1_Check.isChecked() and not self.ui.Duck2_Check.isChecked():
             self._client.publish(DUCK1_TEXT, message)
+
+            if message == 'Left' or message == 'left':
+                direction = QStandardItem('left')
+                direction.setCheckable(True)
+                direction.setEnabled(False)
+                self.ui.D1.appendRow(direction)
+                self.ui.Directions_List1.setModel(self.ui.D1)
+                self.ui.Directions_List1.show()
+
+            if message == 'Right' or message == 'right':
+                direction = QStandardItem('right')
+                direction.setCheckable(True)
+                direction.setEnabled(False)
+                self.ui.D1.appendRow(direction)
+                self.ui.Directions_List1.setModel(self.ui.D1)
+                self.ui.Directions_List1.show()
+
+            if message == 'Straight' or message == 'straight':
+                direction = QStandardItem('straight')
+                direction.setCheckable(True)
+                direction.setEnabled(False)
+                self.ui.D1.appendRow(direction)
+                self.ui.Directions_List1.setModel(self.ui.D1)
+                self.ui.Directions_List1.show()
+
         elif self.ui.Duck2_Check.isChecked() and not self.ui.Duck1_Check.isChecked():
             self._client.publish(DUCK2_TEXT, message)
+
+            if message == 'Left' or message == 'left':
+                direction2 = QStandardItem('left')
+                direction2.setCheckable(True)
+                direction2.setEnabled(False)
+                self.ui.D2.appendRow(direction2)
+                self.ui.Directions_List2.setModel(self.ui.D2)
+                self.ui.Directions_List2.show()
+
+            if message == 'Right' or message == 'right':
+                direction2 = QStandardItem('right')
+                direction2.setCheckable(True)
+                direction2.setEnabled(False)
+                self.ui.D2.appendRow(direction2)
+                self.ui.Directions_List2.setModel(self.ui.D2)
+                self.ui.Directions_List2.show()
+
+            if message == 'Straight' or message == 'straight':
+                direction2 = QStandardItem('straight')
+                direction2.setCheckable(True)
+                direction2.setEnabled(False)
+                self.ui.D2.appendRow(direction2)
+                self.ui.Directions_List2.setModel(self.ui.D2)
+                self.ui.Directions_List2.show()
+
         elif self.ui.Duck1_Check.isChecked() and self.ui.Duck2_Check.isChecked():
             self._client.publish(DUCK1_TEXT, message)
             self._client.publish(DUCK2_TEXT, message)
+
+            if message == 'Left' or message == 'left':
+                direction = QStandardItem('left')
+                direction2 = QStandardItem('left')
+                direction.setCheckable(True)
+                direction2.setCheckable(True)
+                direction.setEnabled(False)
+                direction2.setEnabled(False)
+                self.ui.D2.appendRow(direction)
+                self.ui.D1.appendRow(direction2)
+                self.ui.Directions_List1.setModel(self.ui.D1)
+                self.ui.Directions_List2.setModel(self.ui.D2)
+                self.ui.Directions_List1.show()
+                self.ui.Directions_List2.show()
+
+            if message == 'Right' or message == 'right':
+                direction = QStandardItem('right')
+                direction2 = QStandardItem('right')
+                direction.setCheckable(True)
+                direction2.setCheckable(True)
+                direction.setEnabled(False)
+                direction2.setEnabled(False)
+                self.ui.D2.appendRow(direction)
+                self.ui.D1.appendRow(direction2)
+                self.ui.Directions_List1.setModel(self.ui.D1)
+                self.ui.Directions_List2.setModel(self.ui.D2)
+                self.ui.Directions_List1.show()
+                self.ui.Directions_List2.show()
+
+            if message == 'Straight' or message == 'straight':
+                direction = QStandardItem('straight')
+                direction2 = QStandardItem('straight')
+                direction.setCheckable(True)
+                direction2.setCheckable(True)
+                direction.setEnabled(False)
+                direction2.setEnabled(False)
+                self.ui.D2.appendRow(direction)
+                self.ui.D1.appendRow(direction2)
+                self.ui.Directions_List1.setModel(self.ui.D1)
+                self.ui.Directions_List2.setModel(self.ui.D2)
+                self.ui.Directions_List1.show()
+                self.ui.Directions_List2.show()
+
         self.ui.CommandBox.clear()
+
 
     def SetIP(self):
         MQTT_SERVER = self.ui.IPBox.text()
