@@ -27,22 +27,13 @@ def detect(img, flag):
     ss_hit = 0
     tl_hit = 0
     clf = load("features/clf_grid_Stop")
-    #cv2.imshow('stop sign detect',img)
-    conf = clf.predict_proba([lbp(img)])
-    #print conf
-    neg_conf, ss_conf, tl_conf = conf[0]
+    neg_conf, ss_conf, tl_conf = clf.predict_proba([lbp(img)])[0]
     if(ss_conf > ss_threshold):
-        #cv2.imshow('stop sign detect',img)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
         flag.put(1)
         ss_hit = 1
     elif(tl_conf > tl_threshold):
-        #cv2.imshow('traffic light detect',img)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
         if len(find_red(img, 30, 350)) == 1:
-            cv2.imshow("traffic light detected", img)
+            # requires contour area to be min 30px^2 and max 350px^2 to be an LED
             flag.put(1)
             tl_hit = 1
     else:
