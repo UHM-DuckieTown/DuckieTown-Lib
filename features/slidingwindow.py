@@ -14,7 +14,7 @@ def sliding_window(image, stepSize, windowSize):
 
 def img_proc(q, flag):
     while True:
-        image = q.get()
+        image = q.value
         image = image[0:240, 320:640, :]    # crop raw image to show only top right quarter
         red_contours = contours.find_red(image, 900, 2000)
         #red_contours = []

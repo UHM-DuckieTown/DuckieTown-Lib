@@ -292,12 +292,12 @@ def position_p(q, flag):
             #for each frame that is taken from the camera
             #Just for Timing Purposes
             start = 0
-            flag.put(0)
+            flag.value = 0
             while True:
                 global image
 	            #print time.time()-start
 	            #start = time.time()
-                image = q.get()
+                image = q.value()
                 print "Got Next Image"
                 #resize the image to make processing more manageable
                 raw = cv2.resize(image, (window_width, window_height))
@@ -307,7 +307,7 @@ def position_p(q, flag):
                 #testing purpose, controls stop sign detection
                 #flag.put(0)
                 
-                yellow,avg = linetracking(raw, flag.get())
+                yellow,avg = linetracking(raw, flag.value)
                 #130 for yellow line, 450 for white
                 #If tracking off the yellow line this is the target position to use
                 print "in state positioncontrol"

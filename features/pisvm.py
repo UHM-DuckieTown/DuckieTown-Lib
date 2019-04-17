@@ -29,15 +29,15 @@ def detect(img, flag):
     clf = load("features/clf_grid_Stop")
     neg_conf, ss_conf, tl_conf = clf.predict_proba([lbp(img)])[0]
     if(ss_conf > ss_threshold):
-        flag.put(1)
+        flag.value = 1
         ss_hit = 1
     elif(tl_conf > tl_threshold):
         if len(find_red(img, 30, 350)) == 1:
             # requires contour area to be min 30px^2 and max 350px^2 to be an LED
-            flag.put(1)
+            flag.value = 1
             tl_hit = 1
     else:
-        flag.put(0)
+        flag.value = 0
     #print '({} {} {})'.format(neg_conf, ss_conf, tl_conf)
     return (ss_hit, tl_hit)
 
