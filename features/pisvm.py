@@ -29,7 +29,7 @@ def detect(img, flag):
     clf = load("features/clf_grid_Stop")
     #cv2.imshow('stop sign detect',img)
     conf = clf.predict_proba([lbp(img)])
-    print conf
+    #print conf
     neg_conf, ss_conf, tl_conf = conf[0]
     if(ss_conf > ss_threshold):
         #cv2.imshow('stop sign detect',img)
@@ -37,15 +37,16 @@ def detect(img, flag):
         #cv2.destroyAllWindows()
         flag.put(1)
         ss_hit = 1
-    else:
-        flag.put(0)
-        ss_hit = 0
-    if(tl_conf > tl_threshold):
+    elif(tl_conf > tl_threshold):
         #cv2.imshow('traffic light detect',img)
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()
         if len(find_red(img, 30, 350)) == 1:
+            cv2.imshow("traffic light detected", img)
+            flag.put(1)
             tl_hit = 1
-    print '({} {} {})'.format(neg_conf, ss_conf, tl_conf)
+    else:
+        flag.put(0)
+    #print '({} {} {})'.format(neg_conf, ss_conf, tl_conf)
     return (ss_hit, tl_hit)
 

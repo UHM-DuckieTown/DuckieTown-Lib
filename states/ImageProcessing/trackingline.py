@@ -62,7 +62,7 @@ def detect_stop(mask1, stopsign):
         print "Flag is true"
     #cv2.imshow('Stop Line Detection', mask1)
     mask = mask1[0:280, 0:180];
-    cv2.imshow('Stop Line Detection', mask)
+    #cv2.imshow('Stop Line Detection', mask)
     #_,contours,_ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     #Perform edge detection on the masked frame to find all edge points in image
     edges = cv2.Canny(mask, 50, 150, apertureSize=3)
@@ -110,9 +110,9 @@ def linetracking(raw, stopsign):
 
 #UI
 #    print "in linetracking"
-    cv2.imshow('raw',raw)
+#    cv2.imshow('raw',raw)
 
-    key = cv2.waitKey(1) & 0xFF
+#    key = cv2.waitKey(1) & 0xFF
 
 #Minimize the region of interest to just the lower half of image
     #because that is where the road lines are
