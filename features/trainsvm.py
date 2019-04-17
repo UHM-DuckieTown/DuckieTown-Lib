@@ -40,19 +40,10 @@ def lbp(train_images, lbpset):
         #add values to set
         lbpset.append(list(hist))
 
-
-
-# ARGUMENTS
-parser = ap.ArgumentParser()
-parser.add_argument("-ss_p", "--ssPosSet", help="Path to Stop Sign Positive Set", required="True")
-parser.add_argument("-tl_p", "--tlPosSet", help="Path to Traffic Light Positive Set", required="True")
-parser.add_argument("-n", "--negSet", help="Path to Negative Set", required="True")
-args = vars(parser.parse_args())
-
 #Get Training Images
-ssPosSet = cvutils.imlist(args["ssPosSet"])
-tlPosSet = cvutils.imlist(args["tlPosSet"])
-negSet = cvutils.imlist(args["negSet"])
+ssPosSet = cvutils.imlist("dataset/ss_positives/")
+tlPosSet = cvutils.imlist("dataset/tl_positives/")
+negSet = cvutils.imlist("dataset/negatives/")
 lbpset = []
 labels = [0]*len(negSet)+[1]*len(ssPosSet)+[2]*len(tlPosSet)
 lbp(negSet, lbpset)
