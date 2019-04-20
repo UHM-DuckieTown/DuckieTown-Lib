@@ -33,9 +33,9 @@ def img_proc(q, flag):
                 else:
                     print "no stop sign"
                 if(tl_hit):
-                    print "red light"
+                    print "found red light"
                 else:
-                    print "go"
+                    print "no red light"
                 #use to show sliding window
                 #clone = image.copy()
                 #cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
