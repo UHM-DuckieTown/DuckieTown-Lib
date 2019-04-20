@@ -19,7 +19,7 @@ def runCamera(q, flag):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
-        camera.framerate = 5
+        camera.framerate = 20
         raw = PiRGBArray(camera, size=(640,480))
         #camera warm up
         time.sleep(0.1)
