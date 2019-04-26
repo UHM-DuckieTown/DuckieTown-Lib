@@ -300,7 +300,7 @@ def position_p(d, flag):
 	            #print time.time()-start
 	            #start = time.time()
                 image = d["image"]
-                print "Got Next Image"
+                #print "Got Next Image"
                 #resize the image to make processing more manageable
                 raw = cv2.resize(image, (window_width, window_height))
                 #Find either the yellow or white line and what the average position
@@ -312,7 +312,7 @@ def position_p(d, flag):
                 yellow,avg = linetracking(raw, flag)
                 #130 for yellow line, 450 for white
                 #If tracking off the yellow line this is the target position to use
-                print "in state positioncontrol"
+                #print "in state positioncontrol"
                 if yellow:
                     threshold = 5
                 #If tracking off the white line use this target position instead
