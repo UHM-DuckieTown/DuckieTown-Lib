@@ -37,8 +37,7 @@ def runRoadTracking(q, flag):
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
-        time.sleep(0.1)
-        print "starting up..."
+        time.sleep(1)
         jobs = []
         cameraFunctions = [trackingline.position_p]
         functions = [velocity.getVelocity, velocity.velocityPid]

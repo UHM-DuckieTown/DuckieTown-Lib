@@ -19,15 +19,15 @@ def img_proc(d,flag):
         #cv2.imshow("raw", image)
         #cv2.waitKey(5)
         image = image[0:240, 320:640, :]    # crop raw image to show only top right quarter
-        red_contours = contours.find_red(image, 2000, 5000)
+        red_contours = contours.find_red(image, 2500, 5000)
         #red_contours = []
         #light_contours = contours.find_bright_spots(image)
         light_contours= []
         (winW, winH) = (70, 70)
         #start_time = time.time()
         #print "there are {} contours".format(len(red_contours) + len(light_contours))
-        cv2.imshow("live", image)
-        cv2.waitKey(1)
+        #cv2.imshow("live", image)
+        #cv2.waitKey(1)
         for img in red_contours + light_contours:
             for (x, y, window) in sliding_window(img, stepSize=35, windowSize=(winW, winH)):
                 if window.shape[0] != winH or window.shape[1] != winW:
