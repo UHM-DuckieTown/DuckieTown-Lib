@@ -5,16 +5,19 @@ import os
 import time
 from pisvm import detect
 import contours
+import sys
+import multiprocessing
 
 def sliding_window(image, stepSize, windowSize):
     for y in range(0, image.shape[0], stepSize):
         for x in range(0, image.shape[1], stepSize):
             yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
 
-
-def img_proc(q, flag):
+def img_proc(d,flag):
     while True:
-        image = q.value
+        image = d['image'] 
+        #cv2.imshow("raw", image)
+        #cv2.waitKey(5)
         image = image[0:240, 320:640, :]    # crop raw image to show only top right quarter
         red_contours = contours.find_red(image, 900, 2000)
         #red_contours = []
@@ -30,9 +33,7 @@ def img_proc(q, flag):
                 ss_hit, tl_hit = detect(img[y:y+winH, x:x+winW, :], flag)
                 if(ss_hit):
                     print "found stop sign"
-                else:
-                    print "no stop sign"
-                if(tl_hit):
+                elif(tl_hit):
                     print "red light"
                 else:
                     print "go"

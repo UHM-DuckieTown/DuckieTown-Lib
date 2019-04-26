@@ -22,6 +22,8 @@ def lbp(test_image):
     return hist
 
 def detect(img, flag):
+    if flag.value == 1:
+        continue
     ss_threshold = 0.55
     tl_threshold = 0.5
     ss_hit = 0
@@ -39,5 +41,8 @@ def detect(img, flag):
     else:
         flag.value = 0
     #print '({} {} {})'.format(neg_conf, ss_conf, tl_conf)
+    if flag.value == 1:
+        cv2.imshow("stop", img)
+        cv2.waitKey(5)
     return (ss_hit, tl_hit)
 

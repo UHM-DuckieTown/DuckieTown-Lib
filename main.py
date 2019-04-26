@@ -16,11 +16,11 @@ import multiprocessing
 import slidingwindow
 import numpy
 
-def runCamera(q, flag):
+def runCamera(d,flag):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
-        camera.framerate = 10
+        camera.framerate = 20
         raw = PiRGBArray(camera, size=(640,480))
         #camera warm up
         time.sleep(0.1)
@@ -29,7 +29,7 @@ def runCamera(q, flag):
             #cv2.waitKey(20)
             #if q.qsize() >= 10:
             #    q.get()
-            q.value = raw.array
+            d['image'] = raw.array
             raw.truncate(0)
             #print q.qsize()
 
@@ -64,7 +64,10 @@ def runRoadTracking(q, flag):
 def main():
         #init sensors
         #q = multiprocessing.Queue()
-        q = multiprocessing.Array(numpy.array, numpy.array([1,2,3]))
+        #q = multiprocessing.Array('d', numpy.zeros((480,640,3),numpy.uint8))
+        manager = multiprocessing.Manager()
+        d = manager.dict()
+        d['image'] = numpy.zeros((480,640,3),numpy.uint8)
         flag = multiprocessing.Value('i', 0)
         print "starting up..."
         jobs = []
@@ -72,7 +75,7 @@ def main():
         cameraFunctions.append(slidingwindow.img_proc)
         cameraFunctions.append(runRoadTracking)
         for func in cameraFunctions:
-            p = multiprocessing.Process(target=func, args=(q,flag,))
+            p = multiprocessing.Process(target=func, args=(d,flag,))
             jobs.append(p)
             p.daemon = True
             p.start()
