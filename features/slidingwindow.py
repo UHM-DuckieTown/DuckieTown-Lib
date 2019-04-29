@@ -38,7 +38,7 @@ def img_proc(d,flag):
                 elif(tl_hit):
                     print "red light"
                 else:
-                    print "go"
+                    print "no red light"
                 #use to show sliding window
                 #clone = image.copy()
                 #cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)
