@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from math import cos, sin
 import imutils
+from random import randint
 
 def find_red(image, min, max):
     '''
@@ -12,8 +13,8 @@ def find_red(image, min, max):
     max: maximum contour area
     min/max area are the allowed range for the desired contour being represented -> used to find stop sign and red LED
     '''
-    offset = 0
-    image_blur = cv2.medianBlur(image, 15)
+    offset = 20
+    image_blur = cv2.medianBlur(image, 23)
     
     #hsv - sepparates color from brightness
     image_blur_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -30,6 +31,8 @@ def find_red(image, min, max):
     
     #join mask
     mask = mask0+mask1
+    #cv2.imshow("red mask", mask)
+    #cv2.waitKey(1)
     return crop_bounding_box(image, mask, min, max, offset)
 
 def find_bright_spots(image):
@@ -67,9 +70,19 @@ def crop_bounding_box(original, filtered, minval, maxval, offset):
         y_bot = min(480, y+h+offset)
         x_left = min(640, x+w+offset)
         x_right = max(0, x-offset)
-        candidates.append(original[y_top:y_bot, x_right:x_left, :])
+        contour = original[y_top:y_bot, x_right:x_left, :]
+        candidates.append(contour)
         #use to display current contour bounding box
         clone = original.copy()
         cv2.rectangle(clone, (x,y), (x+w,y+h), (0,0,255), 2)
-        cv2.rectangle(clone, (x_right,y_top), (x_left,y_bot), (255,0,0), 2)
+        #cv2.rectangle(clone, (x_right,y_top), (x_left,y_bot), (255,0,0), 2)
+        
+        #cv2.imshow("bounding box", clone)
+        #cv2.waitKey(1)
+        #print cv2.contourArea(c)
     return candidates
+
+def take_picture(img):
+    img_name = "{}_{}.png".format("ss", randint(0,10000))
+    cv2.imwrite(img_name, img)
+    print "{} written!".format(img_name)

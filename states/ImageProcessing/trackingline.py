@@ -56,8 +56,9 @@ STRAIGHTTICKS = 1316
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
-def detect_stop(mask1, stopsign):
+def detect_stop(mask1, flag):
     global state
+    stopsign = flag.value
     if stopsign:
         print "Flag is true"
     	#cv2.imshow('Stop Line Detection', mask1)
@@ -103,6 +104,7 @@ def detect_stop(mask1, stopsign):
                     #stop = True
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
+        flag.value = 0
         return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
@@ -236,7 +238,7 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p(q, flag):
+def position_p(d, flag):
     window_width = 480
     window_height = 360
     global camera
@@ -292,13 +294,13 @@ def position_p(q, flag):
             #for each frame that is taken from the camera
             #Just for Timing Purposes
             start = 0
-            flag.put(0)
+            flag.value = 0
             while True:
                 global image
 	            #print time.time()-start
 	            #start = time.time()
-                image = q.get()
-                print "Got Next Image"
+                image = d["image"]
+                #print "Got Next Image"
                 #resize the image to make processing more manageable
                 raw = cv2.resize(image, (window_width, window_height))
                 #Find either the yellow or white line and what the average position
@@ -307,10 +309,10 @@ def position_p(q, flag):
                 #testing purpose, controls stop sign detection
                 #flag.put(0)
                 
-                yellow,avg = linetracking(raw, flag.get())
+                yellow,avg = linetracking(raw, flag)
                 #130 for yellow line, 450 for white
                 #If tracking off the yellow line this is the target position to use
-                print "in state positioncontrol"
+                #print "in state positioncontrol"
                 if yellow:
                     threshold = 5
                 #If tracking off the white line use this target position instead

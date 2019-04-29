@@ -14,8 +14,9 @@ import cv2
 import RPi.GPIO as GPIO
 import multiprocessing
 import slidingwindow
+import numpy
 
-def runCamera(q, flag):
+def runCamera(d,flag):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
@@ -26,9 +27,9 @@ def runCamera(q, flag):
         for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
             #cv2.imshow("live feed", raw.array)
             #cv2.waitKey(20)
-            if q.qsize() >= 4:
-                q.get()
-            q.put(raw.array)
+            #if q.qsize() >= 10:
+            #    q.get()
+            d['image'] = raw.array
             raw.truncate(0)
             #print q.qsize()
 
@@ -36,8 +37,7 @@ def runRoadTracking(q, flag):
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
-        time.sleep(0.1)
-        print "starting up..."
+        time.sleep(1)
         jobs = []
         cameraFunctions = [trackingline.position_p]
         functions = [velocity.getVelocity, velocity.velocityPid]
@@ -62,15 +62,19 @@ def runRoadTracking(q, flag):
 
 def main():
         #init sensors
-        q = multiprocessing.Queue()
-        flag = multiprocessing.Queue()
+        #q = multiprocessing.Queue()
+        #q = multiprocessing.Array('d', numpy.zeros((480,640,3),numpy.uint8))
+        manager = multiprocessing.Manager()
+        d = manager.dict()
+        d['image'] = numpy.zeros((480,640,3),numpy.uint8)
+        flag = multiprocessing.Value('i', 0)
         print "starting up..."
         jobs = []
         cameraFunctions = [runCamera]
         cameraFunctions.append(slidingwindow.img_proc)
         cameraFunctions.append(runRoadTracking)
         for func in cameraFunctions:
-            p = multiprocessing.Process(target=func, args=(q,flag,))
+            p = multiprocessing.Process(target=func, args=(d,flag,))
             jobs.append(p)
             p.daemon = True
             p.start()
