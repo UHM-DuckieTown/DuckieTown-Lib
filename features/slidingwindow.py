@@ -13,9 +13,9 @@ def sliding_window(image, stepSize, windowSize):
         for x in range(0, image.shape[1], stepSize):
             yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
 
-def img_proc(d,flag):
+def img_proc(d, flag, slider, twofeed, messagetext):
     while True:
-        image = d['image'] 
+        image = d['image']
         #cv2.imshow("raw", image)
         #cv2.waitKey(5)
         image = image[0:240, 320:640, :]    # crop raw image to show only top right quarter

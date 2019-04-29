@@ -74,7 +74,7 @@ def detect_stop(mask1, flag):
     	global stop
     	#for c in contours:
      	#   Moments = cv2.moments(c)
-     	#  cX = int(Moments["m10"]/Moments["m00"])        
+     	#  cX = int(Moments["m10"]/Moments["m00"])
      	#   cY = int(Moments["m01"]/Moments["m00"])
     	#For every line discovered by Hough Transform
         if lines is not None:
@@ -108,7 +108,7 @@ def detect_stop(mask1, flag):
         return
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
-def linetracking(raw, stopsign):
+def linetracking(raw, stopsign,slider, twofeed):
 
 #UI
 #    print "in linetracking"
@@ -192,6 +192,54 @@ def linetracking(raw, stopsign):
 #    cv2.waitKey(20)
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
+        global old_slider
+
+    if not slider.empty():
+        slider_val = slider.get()
+
+        #raw
+        if slider_val == "start":
+            twofeed.put(raw)
+            old_slider = "0"
+
+        elif slider_val == "0":
+            twofeed.put(frame)
+            old_slider = slider_val
+
+        #edges
+        elif slider_val == "1":
+            twofeed.put(edges)
+            old_slider = slider_val
+
+        #masked image
+        elif slider_val == "2":
+            twofeed.put(masked_img)
+            old_slider = slider_val
+
+        #white mask
+        elif slider == "3":
+            twofeed.put(mask1)
+            old_slider = slider_val
+
+        #yellow mask
+        elif slider == "4":
+            twofeed.put(mask2)
+            old_slider = slider_val
+
+    else:
+        #print "queue is empty"
+        #print "Olde Slider" + str(old_slider)
+        if old_slider == "0":
+            twofeed.put(frame);
+        if old_slider == "1":
+            twofeed.put(edges)
+        if old_slider == "2":
+            twofeed.put(masked_img);
+        if old_slider == "3":
+            twofeed.put(mask1);
+        if old_slider == "4":
+            twofeed.put(mask2);
+
     return yellow,avg
 
 
@@ -238,7 +286,7 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p(d, flag):
+def position_p(d, flag,slider, twofeed):
     window_width = 480
     window_height = 360
     global camera
@@ -305,11 +353,11 @@ def position_p(d, flag):
                 raw = cv2.resize(image, (window_width, window_height))
                 #Find either the yellow or white line and what the average position
                 #of the Duck is
-                
+
                 #testing purpose, controls stop sign detection
                 #flag.put(0)
-                
-                yellow,avg = linetracking(raw, flag)
+
+                yellow,avg = linetracking(raw, flag, slider, twofeed)
                 #130 for yellow line, 450 for white
                 #If tracking off the yellow line this is the target position to use
                 #print "in state positioncontrol"

@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, 'states/ImageProcessing/')
 sys.path.insert(0, 'features/')
+sys.path.insert(0, 'pyqt-mqtt/')
 from joblib import load
 from picamera import PiCamera
 from threading import Thread
@@ -15,8 +16,9 @@ import RPi.GPIO as GPIO
 import multiprocessing
 import slidingwindow
 import numpy
+import p_mqtt
 
-def runCamera(d,flag):
+def runCamera(d,flag,slider, twofeed, messagetext):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
@@ -33,7 +35,7 @@ def runCamera(d,flag):
             raw.truncate(0)
             #print q.qsize()
 
-def runRoadTracking(q, flag):
+def runRoadTracking(q, flag,slider, twofeed, messagetext):
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
@@ -43,7 +45,7 @@ def runRoadTracking(q, flag):
         functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
-            p = Thread(target=func, args=(q,flag))
+            p = Thread(target=func, args=(q,flag,slider, twofeed, messagetext))
             jobs.append(p)
             p.daemon = True
             p.start()
@@ -59,10 +61,15 @@ def runRoadTracking(q, flag):
         for job in jobs:
                 job.join()
 
+def paho(d, flag, slider, twofeed, messagetext):
+        p_mqtt.paho_client(d, slider, twofeed, messagetext)
 
 def main():
         #init sensors
         #q = multiprocessing.Queue()
+        slider = multiprocessing.Queue()
+        twofeed = multiprocessing.Queue()
+        messagetext = multiprocessing.Queue()
         #q = multiprocessing.Array('d', numpy.zeros((480,640,3),numpy.uint8))
         manager = multiprocessing.Manager()
         d = manager.dict()
@@ -73,8 +80,9 @@ def main():
         cameraFunctions = [runCamera]
         cameraFunctions.append(slidingwindow.img_proc)
         cameraFunctions.append(runRoadTracking)
+        cameraFunctions.append(paho)
         for func in cameraFunctions:
-            p = multiprocessing.Process(target=func, args=(d,flag,))
+            p = multiprocessing.Process(target=func, args=(d,flag,slider, twofeed, messagetext))
             jobs.append(p)
             p.daemon = True
             p.start()
