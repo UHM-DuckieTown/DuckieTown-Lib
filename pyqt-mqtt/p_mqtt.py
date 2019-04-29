@@ -85,8 +85,8 @@ def paho_client(d, slider,twofeed, messagetext):
             if p.qsize() != 0:
                     messagetext.put(p.get())
             #print "Slider queue size: "+ str(slider.qsize())
-            #print "SecondFeed queue size: "+ str(twofeed.qsize())
-            print "Textfeed queue size: "+ str(messagetext.qsize())
+            print "SecondFeed queue size: "+ str(twofeed.qsize())
+            #print "Textfeed queue size: "+ str(messagetext.qsize())
             encode_string(image,DUCK1_FEED1,client)
             encode_string(twofeed.get(),DUCK1_FEED2,client)
     finally:
