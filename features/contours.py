@@ -7,7 +7,7 @@ from math import cos, sin
 import imutils
 from random import randint
 
-def find_red(image, min, max):
+def find_red(image, min, max, slider, twofeed):
     '''
     min: minimum contour area
     max: maximum contour area
@@ -15,10 +15,10 @@ def find_red(image, min, max):
     '''
     offset = 20
     image_blur = cv2.medianBlur(image, 23)
-    
+
     #hsv - sepparates color from brightness
     image_blur_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    
+
     #lower mask (0-10)
     lower = np.array([0,50,50])
     upper = np.array([10,255,255])
@@ -28,9 +28,15 @@ def find_red(image, min, max):
     lower = np.array([170,50,50])
     upper = np.array([180,255,255])
     mask1 = cv2.inRange(image_blur_hsv, lower, upper)
-    
+
+
+
     #join mask
     mask = mask0+mask1
+
+    if slider.value == 4:
+        twofeed.put(mask)
+
     #cv2.imshow("red mask", mask)
     #cv2.waitKey(1)
     return crop_bounding_box(image, mask, min, max, offset)
@@ -76,7 +82,7 @@ def crop_bounding_box(original, filtered, minval, maxval, offset):
         clone = original.copy()
         cv2.rectangle(clone, (x,y), (x+w,y+h), (0,0,255), 2)
         #cv2.rectangle(clone, (x_right,y_top), (x_left,y_bot), (255,0,0), 2)
-        
+
         #cv2.imshow("bounding box", clone)
         #cv2.waitKey(1)
         #print cv2.contourArea(c)
