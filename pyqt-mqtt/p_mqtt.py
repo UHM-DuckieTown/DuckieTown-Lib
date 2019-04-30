@@ -7,7 +7,7 @@ import config
 import Queue
 
 l = Queue.Queue()
-l.put("start")
+l.put("0")
 
 p = Queue.Queue()
 

@@ -243,20 +243,18 @@ def linetracking(raw, stopsign,slider, twofeed):
     if slider.value == 0:
         twofeed.put(frame)
     #edges
-    elif slider_val == 1:
+    elif slider.value == 1:
         twofeed.put(edges)
 
     #masked image
-    elif slider_val == 2:
+    elif slider.value == 2:
         twofeed.put(masked_img)
 
     #white mask
     elif slider.value == 3:
-        twofeed.put(mask1)
+        twofeed.put(mask)
 
         #yellow mask
-    elif slider.value == 4:
-        twofeed.put(mask2)
 
     return yellow,avg
 
