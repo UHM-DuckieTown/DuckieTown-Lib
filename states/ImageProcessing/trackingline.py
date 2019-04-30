@@ -254,6 +254,8 @@ def linetracking(raw, stopsign,slider, twofeed):
     elif slider.value == 3:
         twofeed.put(mask)
 
+
+
         #yellow mask
 
     return yellow,avg

@@ -35,7 +35,7 @@ def runCamera(d,flag,slider, twofeed, messagetext):
             raw.truncate(0)
             #print q.qsize()
 
-def runRoadTracking(q, flag,slider, twofeed, messagetext):
+def runRoadTracking(q, flag,slider, twofeed, messagetext, direction):
         velocity.leftSensorCallback(4)
         velocity.rightSensorCallback(17)
         velocity.getEncoderTicks()
@@ -61,8 +61,8 @@ def runRoadTracking(q, flag,slider, twofeed, messagetext):
         for job in jobs:
                 job.join()
 
-def paho(d, flag, slider, twofeed, messagetext):
-        p_mqtt.paho_client(d, slider, twofeed, messagetext)
+def paho(d, flag, slider, twofeed, messagetext, direction):
+        p_mqtt.paho_client(d, slider, twofeed, messagetext, direction)
 
 def main():
         #init sensors
@@ -70,6 +70,7 @@ def main():
         slider = multiprocessing.Value('i', 0)
         twofeed = multiprocessing.Queue()
         messagetext = multiprocessing.Queue()
+        direction = multiprocessing.Queue()
         #q = multiprocessing.Array('d', numpy.zeros((480,640,3),numpy.uint8))
         manager = multiprocessing.Manager()
         d = manager.dict()
@@ -82,7 +83,7 @@ def main():
         cameraFunctions.append(runRoadTracking)
         cameraFunctions.append(paho)
         for func in cameraFunctions:
-            p = multiprocessing.Process(target=func, args=(d,flag,slider, twofeed, messagetext))
+            p = multiprocessing.Process(target=func, args=(d,flag,slider, twofeed, messagetext, direction))
             jobs.append(p)
             p.daemon = True
             p.start()

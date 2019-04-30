@@ -13,7 +13,7 @@ def sliding_window(image, stepSize, windowSize):
         for x in range(0, image.shape[1], stepSize):
             yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
 
-def img_proc(d, flag, slider, twofeed, messagetext):
+def img_proc(d, flag, slider, twofeed, messagetext, direction):
     while True:
         image = d['image']
         #cv2.imshow("raw", image)

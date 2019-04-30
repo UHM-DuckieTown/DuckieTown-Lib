@@ -11,6 +11,8 @@ l.put("0")
 
 p = Queue.Queue()
 
+d1 = Queue.Queue()
+
 def on_message_slider(client, userdata, msg):
     global duck_slider_val
     #Assign duck slider value based on received message topic
@@ -32,6 +34,14 @@ def on_message_text(client, userdata, msg):
     print 'In direction Queue' + ' '  + duck_text
     print 'Queue size: '+ str(p.qsize())
 
+    if duck_text[:2] == 'D:':
+        if duck_text[3] == 'l' or duck_text[3] == "L":
+            d1.put("left")
+        if duck_text[3] == 'r' or duck_text[3] == "R":
+            d1.put("right")
+        if duck_text[3] == 's' or duck_text[3] == "S":
+            d1.put("straight")
+
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     DUCK1_TEXT = config.duck1_text
@@ -51,7 +61,7 @@ def encode_string(image, topic, client):
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
 
-def paho_client(d, slider,twofeed, messagetext):
+def paho_client(d, slider,twofeed, messagetext, direction):
     MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
     print config.duck1_feed1
@@ -62,8 +72,6 @@ def paho_client(d, slider,twofeed, messagetext):
     DUCK1_FEED2 = config.duck1_feed2
     DUCK1_TEXT = config.duck1_text
     DUCK1_SLIDER = config.duck1_slider
-
-
 
     # Create a client instance
     client = mqtt.Client()
@@ -84,6 +92,8 @@ def paho_client(d, slider,twofeed, messagetext):
                     slider.value = int(l.get())
             if p.qsize() != 0:
                     messagetext.put(p.get())
+            if d1.qsize() != 0:
+                    direction.put(d1.get())
             #print "Slider queue size: "+ str(slider.qsize())
             #print "SecondFeed queue size: "+ str(twofeed.qsize())
             #print "Textfeed queue size: "+ str(messagetext.qsize())

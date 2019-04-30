@@ -10,6 +10,7 @@ duck1_feed2 = ip_duck + "_feed2"
 #Subscribed-Topics
 duck1_text = ip_duck + "_text"
 duck1_slider = ip_duck + "_slider"
+duck1_flag = ip_duck + "_flag"
 
 #def getter():
 #    return test
