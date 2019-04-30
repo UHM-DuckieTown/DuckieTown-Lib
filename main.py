@@ -18,7 +18,7 @@ import slidingwindow
 import numpy
 import p_mqtt
 
-def runCamera(d,flag,slider, twofeed, messagetext):
+def runCamera(d,flag,slider, twofeed, messagetext, direction):
         #camera config
         camera = PiCamera()
         camera.resolution = (640,480)
