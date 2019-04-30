@@ -37,19 +37,19 @@ def detect(img, flag):
             img_name = "a28"+str(randint(0,1000))+".png"
             cv2.imshow("stop sign??", img)
             k = cv2.waitKey(5000)
-            if k%256 == 27:  # ESC for positives 
-                path = os.path.join("/features/dataset/ss_positives",img_name) 
+            if k%256 == 27:  # ESC for positives
+                path = os.path.join("/features/dataset/ss_positives",img_name)
                 cv2.imwrite(path, img)
                 print "saved stop sign positive image to {}".format(path)
             elif k%256 == 32:   # SPACE for negatives
-                path = os.path.join("/features/dataset/negatives",img_name) 
+                path = os.path.join("/features/dataset/negatives",img_name)
                 cv2.imwrite(path, img)
                 print "saved negative image to {}".format(path)
             '''
             flag.value = 1
             ss_hit = 1
         elif(tl_conf > tl_threshold):
-            if len(find_red(img, 30, 350)) == 1:
+            if len(find_red(img, 30, 350,slider, twofeed)) == 1:
                 # requires contour area to be min 30px^2 and max 350px^2 to be an LED
                 flag.value = 1
                 tl_hit = 1
@@ -60,4 +60,3 @@ def detect(img, flag):
         #cv2.imshow("stop", img)
         #cv2.waitKey(1)
     return (ss_hit, tl_hit)
-
