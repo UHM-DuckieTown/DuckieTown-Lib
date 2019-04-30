@@ -81,7 +81,7 @@ def paho_client(d, slider,twofeed, messagetext):
             image = d["image"]
             #print "Got Next Image"
             if l.qsize() != 0:
-                    slider.put(l.get())
+                    slider.value = int(l.get())
             if p.qsize() != 0:
                     messagetext.put(p.get())
             #print "Slider queue size: "+ str(slider.qsize())

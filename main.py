@@ -67,7 +67,7 @@ def paho(d, flag, slider, twofeed, messagetext):
 def main():
         #init sensors
         #q = multiprocessing.Queue()
-        slider = multiprocessing.Queue()
+        slider = multiprocessing.Value('i', 0)
         twofeed = multiprocessing.Queue()
         messagetext = multiprocessing.Queue()
         #q = multiprocessing.Array('d', numpy.zeros((480,640,3),numpy.uint8))

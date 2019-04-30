@@ -192,53 +192,71 @@ def linetracking(raw, stopsign,slider, twofeed):
 #    cv2.waitKey(20)
     #if cv2.waitKey(20) & 0xFF == ord('q'):
         #break
-    global old_slider
+    # global old_slider
+    #
+    # if not slider.empty():
+    #     slider_val = slider.get()
+    #
+    #     #raw
+    #     if slider_val == "start":
+    #         twofeed.put(raw)
+    #         old_slider = "0"
+    #
+    #     elif slider_val == "0":
+    #         twofeed.put(frame)
+    #         old_slider = slider_val
+    #
+    #     #edges
+    #     elif slider_val == "1":
+    #         twofeed.put(edges)
+    #         old_slider = slider_val
+    #
+    #     #masked image
+    #     elif slider_val == "2":
+    #         twofeed.put(masked_img)
+    #         old_slider = slider_val
+    #
+    #     #white mask
+    #     elif slider == "3":
+    #         twofeed.put(mask1)
+    #         old_slider = slider_val
+    #
+    #     #yellow mask
+    #     elif slider == "4":
+    #         twofeed.put(mask2)
+    #         old_slider = slider_val
+    #
+    # else:
+    #     #print "queue is empty"
+    #     #print "Olde Slider" + str(old_slider)
+    #     if old_slider == "0":
+    #         twofeed.put(frame);
+    #     if old_slider == "1":
+    #         twofeed.put(edges)
+    #     if old_slider == "2":
+    #         twofeed.put(masked_img);
+    #     if old_slider == "3":
+    #         twofeed.put(mask1);
+    #     if old_slider == "4":
+    #         twofeed.put(mask2);
 
-    if not slider.empty():
-        slider_val = slider.get()
+    if slider.value == 0:
+        twofeed.put(frame)
+    #edges
+    elif slider_val == 1:
+        twofeed.put(edges)
 
-        #raw
-        if slider_val == "start":
-            twofeed.put(raw)
-            old_slider = "0"
+    #masked image
+    elif slider_val == 2:
+        twofeed.put(masked_img)
 
-        elif slider_val == "0":
-            twofeed.put(frame)
-            old_slider = slider_val
-
-        #edges
-        elif slider_val == "1":
-            twofeed.put(edges)
-            old_slider = slider_val
-
-        #masked image
-        elif slider_val == "2":
-            twofeed.put(masked_img)
-            old_slider = slider_val
-
-        #white mask
-        elif slider == "3":
-            twofeed.put(mask1)
-            old_slider = slider_val
+    #white mask
+    elif slider.value == 3:
+        twofeed.put(mask1)
 
         #yellow mask
-        elif slider == "4":
-            twofeed.put(mask2)
-            old_slider = slider_val
-
-    else:
-        #print "queue is empty"
-        #print "Olde Slider" + str(old_slider)
-        if old_slider == "0":
-            twofeed.put(frame);
-        if old_slider == "1":
-            twofeed.put(edges)
-        if old_slider == "2":
-            twofeed.put(masked_img);
-        if old_slider == "3":
-            twofeed.put(mask1);
-        if old_slider == "4":
-            twofeed.put(mask2);
+    elif slider.value == 4:
+        twofeed.put(mask2)
 
     return yellow,avg
 
