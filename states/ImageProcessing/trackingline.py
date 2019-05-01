@@ -326,14 +326,15 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
             velocity.resetEncoders()
 
                 #decision = random.randint(1,4)
-            decision = 4
-            if decision == 1:
+            decision = direction.get()
+            print decision
+            if decision == 'right':
                 state = RIGHTTURN
                 velocity.resetEncoders()
-            elif decision == 2:
+            elif decision == 'left':
                 state = LEFTTURN
                 velocity.resetEncoders()
-            elif decision == 3:
+            elif decision == 'straight':
                 state = STRAIGHT
                 velocity.resetEncoders()
             else:
