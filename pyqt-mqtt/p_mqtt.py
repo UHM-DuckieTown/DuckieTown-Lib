@@ -34,12 +34,12 @@ def on_message_text(client, userdata, msg):
     print 'In direction Queue' + ' '  + duck_text
     print 'Queue size: '+ str(p.qsize())
 
-    if duck_text[:2] == 'D:':
-        if duck_text[3] == 'l' or duck_text[3] == "L":
+    if duck_text[:1] == 'D:':
+        if duck_text[2] == 'l' or duck_text[2] == "L":
             d1.put("left")
-        if duck_text[3] == 'r' or duck_text[3] == "R":
+        if duck_text[2] == 'r' or duck_text[2] == "R":
             d1.put("right")
-        if duck_text[3] == 's' or duck_text[3] == "S":
+        if duck_text[2] == 's' or duck_text[2] == "S":
             d1.put("straight")
 
 def on_connect(client, userdata, flags, rc):

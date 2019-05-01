@@ -32,7 +32,7 @@ def img_proc(d, flag, slider, twofeed, messagetext, direction, GUIflag):
             for (x, y, window) in sliding_window(img, stepSize=35, windowSize=(winW, winH)):
                 if window.shape[0] != winH or window.shape[1] != winW:
                     continue
-                ss_hit, tl_hit = detect(img[y:y+winH, x:x+winW, :], flag)
+                ss_hit, tl_hit = detect(img[y:y+winH, x:x+winW, :], flag, twofeed, slider)
                 if(ss_hit):
                     print "found stop sign"
                 elif(tl_hit):
