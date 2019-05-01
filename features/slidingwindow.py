@@ -19,7 +19,7 @@ def img_proc(d, flag, slider, twofeed, messagetext, direction, GUIflag):
         #cv2.imshow("raw", image)
         #cv2.waitKey(5)
         image = image[0:240, 320:640, :]    # crop raw image to show only top right quarter
-        red_contours = contours.find_red(image, 2200, 5000, slider, twofeed)
+        red_contours = contours.find_red(image, 1800, 5000, slider, twofeed)
         #red_contours = []
         #light_contours = contours.find_bright_spots(image)
         light_contours= []

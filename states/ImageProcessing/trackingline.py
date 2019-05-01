@@ -59,10 +59,13 @@ STRAIGHTTICKS = 1316
 def detect_stop(mask1, flag):
     global state
     stopsign = flag.value
+    numx = 0
+    Sum = 0
+    avg = 0
     if stopsign:
         print "Flag is true"
     	#cv2.imshow('Stop Line Detection', mask1)
-    	mask = mask1[0:280, 0:180];
+    	mask = mask1[0:280, 50:350];
     	#cv2.imshow('Stop Line Detection', mask)
     	#_,contours,_ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     	#Perform edge detection on the masked frame to find all edge points in image
@@ -79,11 +82,17 @@ def detect_stop(mask1, flag):
     	#For every line discovered by Hough Transform
         if lines is not None:
         	for line in lines:
-                	x1, y1, x2, y2 = line[0]
-                	cv2.line(mask, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                	cv2.circle(mask, (x1, y1),2,(255,0,0),3)
-                	cv2.circle(mask,(x2,y2),2,(255,0,0),3)
-
+                    x1, y1, x2, y2 = line[0]
+                    cv2.line(mask, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.circle(mask, (x1, y1),2,(255,0,0),3)
+                    cv2.circle(mask,(x2,y2),2,(255,0,0),3)
+                    numx += 2
+                    Sum = Sum + y1 + y2
+        old_avg = avg
+        if numx is not 0:
+            avg = Sum/numx
+        else:
+            avg = old_avg
             #Ignore the line if it leads to an undefined slope
 	        #if (x2-x1) == 0:
 	        #	continue
@@ -93,11 +102,14 @@ def detect_stop(mask1, flag):
                 #If the numerator of the slope is close enough to 0, the stop
                 #line was found so anticipate stop
             	#if abs((y2-y1)/(x2-x1)) < 0.01:
-        if np.all(cv2.bitwise_not(mask)) == False:
+        print "avg: {}".format(avg)
+        if np.all(cv2.bitwise_not(mask)) == False and avg < 150:
                 #if cY < 150:
                  #if y2 < 350:
         	global state
                 state = STOP
+                print "Found Stop Line"
+                return 1
                  #else:
                     #print "stop line too far"
 
@@ -105,7 +117,7 @@ def detect_stop(mask1, flag):
 		    #print "Stop = ",stop
             #Exit Function once a stop is found
         flag.value = 0
-        return
+        return 0
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw, stopsign,slider, twofeed):
@@ -186,7 +198,7 @@ def linetracking(raw, stopsign,slider, twofeed):
         avg = old_avg
     #Draw a point to show where the average x-value is
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
-    detect_stop(mask1, stopsign)
+    stop_line = detect_stop(mask1, stopsign)
 #    cv2.imshow('frame', frame)
 #    cv2.imshow('edges', edges)
 #    cv2.waitKey(20)
@@ -258,7 +270,7 @@ def linetracking(raw, stopsign,slider, twofeed):
 
         #yellow mask
 
-    return yellow,avg
+    return yellow,avg,stop_line
 
 
 def position_controller(target, actual):
@@ -295,8 +307,8 @@ def right_turn():
 def left_turn():
     global rightspeed
     global leftspeed
-    leftspeed = 0.3
-    rightspeed = 0.42
+    leftspeed = 0.35
+    rightspeed = 0.45
 
 def go_straight():
     global rightspeed
@@ -310,37 +322,36 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
     global camera
     global capture
     global state
-    direction.put('straight')
-    direction.put('left')
+    #direction.put('straight')
+    #direction.put('left')
     while(1):
         if state == STOP:
            # go_straight()
             print "in state stop"
             #velocity.resetEncoders()
-           # if(velocity.rightencoderticks >= 800):
+            if(velocity.rightencoderticks >= 300):
             #print "Encoder's reached the value"
-            leftspeed = 0
-            rightspeed = 0
-            time.sleep(2)
-
-            velocity.resetEncoders()
+                leftspeed = 0
+                rightspeed = 0
+                time.sleep(2)
+                velocity.resetEncoders()
                 #decision = random.randint(1,4)
-            if direction.qsize() > 0:
-                decision = direction.get()
-            else:
-                decision = 'random'
-            print decision
-            if decision == 'right':
-                state = RIGHTTURN
-                velocity.resetEncoders()
-            elif decision == 'left':
-                state = LEFTTURN
-                velocity.resetEncoders()
-            elif decision == 'straight':
-                state = STRAIGHT
-                velocity.resetEncoders()
-            else:
-                state = POSITIONCONTROLLER
+                if direction.qsize() > 0:
+                    decision = direction.get()
+                else:
+                    decision = 'random'
+                print decision
+                if decision == 'right':
+                    state = RIGHTTURN
+                    velocity.resetEncoders()
+                elif decision == 'left':
+                    state = LEFTTURN
+                    velocity.resetEncoders()
+                elif decision == 'straight':
+                    state = STRAIGHT
+                    velocity.resetEncoders()
+                else:
+                    state = POSITIONCONTROLLER
         if state == RIGHTTURN:
             right_turn()
             print "in state rightturn"
@@ -381,7 +392,7 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
                 #testing purpose, controls stop sign detection
                 #flag.put(0)
 
-                yellow,avg = linetracking(raw, flag, slider, twofeed)
+                yellow,avg,stop_line = linetracking(raw, flag, slider, twofeed)
                 #130 for yellow line, 450 for white
                 #If tracking off the yellow line this is the target position to use
                 #print "in state positioncontrol"
@@ -390,13 +401,15 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
                 #If tracking off the white line use this target position instead
                 else:
                     threshold = 475
-                if state == STOP:
-			        global rightspeed
-			        global leftspeed
-			        rightspeed = 0.5
-			        leftspeed = 0.5
-			        velocity.resetEncoders()
-			        break
+                if stop_line:
+                    global rightspeed
+                    global leftspeed
+                    rightspeed = 0.2
+                    leftspeed = 0.2
+                    velocity.resetEncoders()
+                    velocity.L_errorI_v = 0
+                    velocity.R_errorI_v = 0
+                    break
                 else:
                     global rightspeed
                     global leftspeed
