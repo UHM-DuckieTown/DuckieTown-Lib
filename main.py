@@ -45,7 +45,7 @@ def runRoadTracking(q, flag,slider, twofeed, messagetext, direction, GUIflag):
         functions = [velocity.getVelocity, velocity.velocityPid]
 
         for func in cameraFunctions:
-            p = Thread(target=func, args=(q,flag,slider, twofeed))
+            p = Thread(target=func, args=(q,flag,slider, twofeed, direction, GUIflag))
             jobs.append(p)
             p.daemon = True
             p.start()
@@ -62,7 +62,7 @@ def runRoadTracking(q, flag,slider, twofeed, messagetext, direction, GUIflag):
                 job.join()
 
 def paho(d, flag, slider, twofeed, messagetext, direction, GUIflag):
-        p_mqtt.paho_client(d, slider, twofeed, messagetext, direction, GUIflag)
+        p_mqtt.paho_client(d, flag, slider, twofeed, messagetext, direction, GUIflag)
 
 def main():
         #init sensors

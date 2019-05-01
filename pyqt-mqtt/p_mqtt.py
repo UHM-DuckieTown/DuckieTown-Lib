@@ -61,7 +61,7 @@ def encode_string(image, topic, client):
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
 
-def paho_client(d, slider,twofeed, messagetext, direction):
+def paho_client(d, flag, slider,twofeed, messagetext, direction, GUIflag):
     MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
     print config.duck1_feed1

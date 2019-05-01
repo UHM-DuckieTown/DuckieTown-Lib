@@ -304,7 +304,7 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p(d, flag,slider, twofeed):
+def position_p(d, flag,slider, twofeed, direction, GUIflag):
     window_width = 480
     window_height = 360
     global camera
