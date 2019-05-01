@@ -33,8 +33,9 @@ def on_message_text(client, userdata, msg):
     #print str(msg.payload)
     print 'In direction Queue' + ' '  + duck_text
     print 'Queue size: '+ str(p.qsize())
-
-    if duck_text[:1] == 'D:':
+    print duck_text[:1]
+    if duck_text[:2] == 'D:':
+        print "In Direction if"
         if duck_text[2] == 'l' or duck_text[2] == "L":
             d1.put("left")
         if duck_text[2] == 'r' or duck_text[2] == "R":
@@ -94,6 +95,7 @@ def paho_client(d, flag, slider,twofeed, messagetext, direction, GUIflag):
                     messagetext.put(p.get())
             if d1.qsize() != 0:
                     direction.put(d1.get())
+                    print "Direction: "+ str(direction.qsize())
             #print "Slider queue size: "+ str(slider.qsize())
             #print "SecondFeed queue size: "+ str(twofeed.qsize())
             #print "Textfeed queue size: "+ str(messagetext.qsize())

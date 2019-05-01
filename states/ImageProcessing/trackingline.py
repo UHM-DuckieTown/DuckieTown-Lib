@@ -310,23 +310,25 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
     global camera
     global capture
     global state
-
+    direction.put('straight')
+    direction.put('left')
     while(1):
-
         if state == STOP:
            # go_straight()
             print "in state stop"
             #velocity.resetEncoders()
            # if(velocity.rightencoderticks >= 800):
-            #    print "Encoder's reached the value"
+            #print "Encoder's reached the value"
             leftspeed = 0
             rightspeed = 0
             time.sleep(2)
 
             velocity.resetEncoders()
-
                 #decision = random.randint(1,4)
-            decision = direction.get()
+            if direction.qsize() > 0:
+                decision = direction.get()
+            else:
+                decision = 'random'
             print decision
             if decision == 'right':
                 state = RIGHTTURN
@@ -339,30 +341,33 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
                 velocity.resetEncoders()
             else:
                 state = POSITIONCONTROLLER
-        elif state == RIGHTTURN:
+        if state == RIGHTTURN:
             right_turn()
             print "in state rightturn"
             if(velocity.rightencoderticks >= RTURNRTICKS or velocity.leftencoderticks >= RTURNLTICKS):
                 state = POSITIONCONTROLLER
 
-
-        elif state == LEFTTURN:
+        if state == LEFTTURN:
             left_turn()
             print "in state leftturn"
+            print"\t Rs: " + str(velocity.rightencoderticks)
+            print"\t L: " + str(velocity.leftencoderticks)
             if(velocity.rightencoderticks >= LTURNRTICKS or velocity.leftencoderticks >= LTURNLTICKS):
+                print "setting to position controller"
                 state = POSITIONCONTROLLER
 
-        elif state == STRAIGHT:
+        if state == STRAIGHT:
             go_straight()
             print "in state straight"
             if(velocity.rightencoderticks >= STRAIGHTTICKS or velocity.leftencoderticks >= STRAIGHTTICKS):
                 state = POSITIONCONTROLLER
-        else:
+        if state == POSITIONCONTROLLER:
             #for each frame that is taken from the camera
             #Just for Timing Purposes
             start = 0
             flag.value = 0
             while True:
+                #print "Loop"
                 global image
 	            #print time.time()-start
 	            #start = time.time()
