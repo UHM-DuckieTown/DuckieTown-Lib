@@ -47,9 +47,9 @@ LEFTTURN = 4
 STRAIGHT = 5
 
 RTURNRTICKS = 300#602
-RTURNLTICKS = 630#1279
-LTURNRTICKS = 600#1692
-LTURNLTICKS = 400#1222
+RTURNLTICKS = 600#1279
+LTURNRTICKS = 1200#1692
+LTURNLTICKS = 800#1222
 STRAIGHTTICKS = 700#1316
 
 
@@ -301,7 +301,7 @@ def position_controller(target, actual):
 def right_turn():
     global rightspeed
     global leftspeed
-    leftspeed = 0.44
+    leftspeed = 0.55
     rightspeed = 0.3
 
 def left_turn():

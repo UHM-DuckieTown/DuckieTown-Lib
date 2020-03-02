@@ -40,6 +40,20 @@ def lbp(train_images, lbpset):
         #add values to set
         lbpset.append(list(hist))
 
+def orb_matcher(training_images):
+    test_image = cv2.imread("stop_sign.png", cv2.IMREAD_GRAYSCALE)
+    orb = cv2.ORB_create(scoreType=cv2.ORB_FAST_SCORE)
+    kp1, des1 = orb.detectAndCompute(img1, None)
+    feature_list = []
+
+    for image in training_images:
+        img_gray = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
+        kp2, des2 = orb.detectAndCompute(img2, None)
+        bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+        matches = bf.match(des1, des2)
+        matches = sorted(matches, key = lambda x:x.distance)
+        feature_list.append(list(matches))
+
 #Get Training Images
 ssPosSet = cvutils.imlist("dataset/ss_positives/")
 tlPosSet = cvutils.imlist("dataset/tl_positives/")
@@ -49,8 +63,6 @@ labels = [0]*len(negSet)+[1]*len(ssPosSet)+[2]*len(tlPosSet)
 lbp(negSet, lbpset)
 lbp(ssPosSet, lbpset)
 lbp(tlPosSet, lbpset)
-
-# print lbpset
 
 # test_size: split data to train and test on 70-30 ratio (default is 75-25)
 # random_state: decides split of which files to use for train and test; use 0 or any int for consistent RNG outcome sequence

@@ -58,9 +58,9 @@ class FilterPipeline:
         self.__filter_contours_contours = self.find_contours_output
         self.__filter_contours_min_area = 200.0
         self.__filter_contours_min_perimeter = 0
-        self.__filter_contours_min_width = 40.0
+        self.__filter_contours_min_width = 20.0
         self.__filter_contours_max_width = 1000.0 
-        self.__filter_contours_min_height = 40.0
+        self.__filter_contours_min_height = 20.0
         self.__filter_contours_max_height = 1000
         self.__filter_contours_solidity = [0.0, 100]
         self.__filter_contours_max_vertices = 1000000.0
@@ -77,15 +77,15 @@ class FilterPipeline:
         # Step CV_erode0:
         self.__cv_erode_src = source0
         (self.cv_erode_output) = self.__cv_erode(self.__cv_erode_src, self.__cv_erode_kernel, self.__cv_erode_anchor, self.__cv_erode_iterations, self.__cv_erode_bordertype, self.__cv_erode_bordervalue)
-
+        
         # Step CV_dilate0:
         self.__cv_dilate_src = self.cv_erode_output
         (self.cv_dilate_output) = self.__cv_dilate(self.__cv_dilate_src, self.__cv_dilate_kernel, self.__cv_dilate_anchor, self.__cv_dilate_iterations, self.__cv_dilate_bordertype, self.__cv_dilate_bordervalue)
-
+        
         # Step HSV_Threshold0:
         self.__hsv_threshold_0_input = self.cv_dilate_output
         (self.hsv_threshold_0_output) = self.__hsv_threshold(self.__hsv_threshold_0_input, self.__hsv_threshold_0_hue, self.__hsv_threshold_0_saturation, self.__hsv_threshold_0_value)
-
+        
         # Step HSV_Threshold1:
         self.__hsv_threshold_1_input = self.cv_dilate_output
         (self.hsv_threshold_1_output) = self.__hsv_threshold(self.__hsv_threshold_1_input, self.__hsv_threshold_1_hue, self.__hsv_threshold_1_saturation, self.__hsv_threshold_1_value)

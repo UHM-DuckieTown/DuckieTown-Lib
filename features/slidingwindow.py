@@ -7,6 +7,7 @@ from pisvm import detect
 import contours
 import sys
 import multiprocessing
+from imutils.video import FPS
 
 def sliding_window(image, stepSize, windowSize):
     for y in range(0, image.shape[0], stepSize):
@@ -14,12 +15,13 @@ def sliding_window(image, stepSize, windowSize):
             yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
 
 def img_proc(d, flag, slider, twofeed, messagetext, direction, GUIflag):
+    fps = FPS().start()
     while True:
         image = d['image']
         #cv2.imshow("raw", image)
         #cv2.waitKey(5)
         image = image[0:240, 320:640, :]    # crop raw image to show only top right quarter
-        red_contours = contours.find_red(image, 1800, 5000, slider, twofeed)
+        red_contours = contours.find_red(image, 2500, 5000, slider, twofeed)
         #red_contours = []
         #light_contours = contours.find_bright_spots(image)
         light_contours= []
@@ -28,7 +30,18 @@ def img_proc(d, flag, slider, twofeed, messagetext, direction, GUIflag):
         #print "there are {} contours".format(len(red_contours) + len(light_contours))
         #cv2.imshow("live", image)
         #cv2.waitKey(1)
+        print(len(red_contours))
         for img in red_contours + light_contours:
+            ss_hit, tl_hit = detect(img, flag, twofeed, slider)
+            if(ss_hit):
+                print "found stop sign"
+            elif(tl_hit):
+                print "red light"
+            else:
+                print "no red light"
+        fps.update()
+        print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+            '''
             for (x, y, window) in sliding_window(img, stepSize=35, windowSize=(winW, winH)):
                 if window.shape[0] != winH or window.shape[1] != winW:
                     continue
@@ -39,6 +52,7 @@ def img_proc(d, flag, slider, twofeed, messagetext, direction, GUIflag):
                     print "red light"
                 else:
                     print "no red light"
+            '''
                 #use to show sliding window
                 #clone = image.copy()
                 #cv2.rectangle(clone, (x,y), (x + winW, y + winH), (0, 255, 0), 2)

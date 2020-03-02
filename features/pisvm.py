@@ -24,7 +24,7 @@ def lbp(test_image):
     return hist
 
 def detect(img, flag, twofeed, slider):
-    ss_threshold = 0.35
+    ss_threshold = 0.40
     tl_threshold = 0.5
     ss_hit = 0
     tl_hit = 0

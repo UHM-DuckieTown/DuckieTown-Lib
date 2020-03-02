@@ -2,11 +2,15 @@ import numpy as np
 import cv2
 from skimage.feature import local_binary_pattern
 from joblib import load
+from os import path
 
 class Classifier:
     def __init__(self):
-        self.clf = load("clf_stop_sign")
-        self.pos_threshold = 0.9
+        if path.exists("clf_stop_sign"):
+            self.clf = load("clf_stop_sign")
+        else:
+            self.clf = load("vision_processing/clf_stop_sign")
+        self.pos_threshold = 0.95
 
     def detect_stop_sign(self, image):
         neg_conf, pos_conf = self.clf.predict_proba([self.__lbp(image)])[0]
