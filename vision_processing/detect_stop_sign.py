@@ -14,11 +14,11 @@ def crop_contour(contour, frame):
     x_right = max(0, x)
     return frame[y_top:y_bot, x_right:x_left, :]
 
-def process(d, flag, slider, twofeed, messagetext, direction, GUIflag):
+def process(d, flag, slider, twofeed, messagetext, direction):
     fp = FilterPipeline()
     clf = Classifier()
     while True:
-        image = d['image']
+        image = d['raw']
         contours = fp.process(image)
         for c in contours:
             '''

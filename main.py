@@ -1,7 +1,6 @@
 import sys
 sys.path.insert(0, 'states/ImageProcessing/')
-sys.path.insert(0, 'features/')
-#sys.path.insert(0, 'vision_processing/')
+sys.path.insert(0, 'vision_processing/')
 sys.path.insert(0, 'pyqt-mqtt/')
 from joblib import load
 from threading import Thread
@@ -15,13 +14,13 @@ import pisvm
 import cv2
 import RPi.GPIO as GPIO
 import multiprocessing
-#import detect_stop_sign
+import detect_stop_sign
 import numpy
 import p_mqtt
 
 from pi_video_stream import PiCamVideoStream
 
-def runCamera(d,flag,slider, twofeed, messagetext, direction, GUIflag):
+def runCamera(frame, drive_state, display_option, display_frame, messagetext, direction):
     camera = PiCamera()
     camera.resolution = (640,480)
     camera.framerate = 20
@@ -31,7 +30,7 @@ def runCamera(d,flag,slider, twofeed, messagetext, direction, GUIflag):
     for _ in camera.capture_continuous(raw, format='bgr', use_video_port = True):
         cv2.imshow("raw", raw.array)
         cv2.waitKey(1)
-        d['image'] = raw.array
+        frame['raw'] = raw.array
         raw.truncate(0)
     '''
     vs = PiCamVideoStream().start()
@@ -40,7 +39,7 @@ def runCamera(d,flag,slider, twofeed, messagetext, direction, GUIflag):
         d['image'] = vs.read()
     '''
 
-def runRoadTracking(q, flag,slider, twofeed, messagetext, direction, GUIflag):
+def runRoadTracking(frame, drive_state, display_option, display_frame, messagetext, direction):
     velocity.leftSensorCallback(4)
     velocity.rightSensorCallback(17)
     velocity.getEncoderTicks()
@@ -50,47 +49,43 @@ def runRoadTracking(q, flag,slider, twofeed, messagetext, direction, GUIflag):
     functions = [velocity.getVelocity, velocity.velocityPid]
 
     for func in cameraFunctions:
-        p = Thread(target=func, args=(q,flag,slider, twofeed, direction, GUIflag))
+        p = Thread(target=func, args=(frame, drive_state, display_option, display_frame, direction))
         jobs.append(p)
         p.daemon = True
         p.start()
-        #print "started {}".format(func)
 
     for func in functions:
         p = Thread(target=func)
         jobs.append(p)
         p.daemon = True
         p.start()
-        #print "started {}".format(func)
 
     for job in jobs:
         job.join()
 
-def paho(d, flag, slider, twofeed, messagetext, direction, GUIflag):
-    p_mqtt.paho_client(d, flag, slider, twofeed, messagetext, direction, GUIflag)
+def paho(frame, drive_state, display_option, display_frame, messagetext, direction):
+    p_mqtt.paho_client(frame, drive_state, display_option, display_frame, messagetext, direction)
 
 def main():
     #init sensors
-    slider = multiprocessing.Value('i', 0)
-    twofeed = multiprocessing.Queue()
+    display_option = multiprocessing.Value('i', 0)
+    display_frame = multiprocessing.Queue()
     messagetext = multiprocessing.Queue()
     direction = multiprocessing.Queue()
 
     manager = multiprocessing.Manager()
-    d = manager.dict()
-    d['image'] = numpy.zeros((480,640,3),numpy.uint8)
-    flag = multiprocessing.Value('i', 0)
-    GUIflag = multiprocessing.Value('i', 0)
+    frame = manager.dict()
+    frame['raw'] = numpy.zeros((480,640,3),numpy.uint8)
+    drive_state = multiprocessing.Value('i', 0)
     print "starting up..."
 
     jobs = []
     cameraFunctions = [runCamera]
-    #cameraFunctions.append(detect_stop_sign.process)
-    cameraFunctions.append(slidingwindow.img_proc)
-    #cameraFunctions.append(runRoadTracking)
+    cameraFunctions.append(detect_stop_sign.process)
+    cameraFunctions.append(runRoadTracking)
     cameraFunctions.append(paho)
     for func in cameraFunctions:
-        p = multiprocessing.Process(target=func, args=(d,flag,slider, twofeed, messagetext, direction, GUIflag))
+        p = multiprocessing.Process(target=func, args=(frame, drive_state, display_option, display_frame, messagetext, direction))
         jobs.append(p)
         p.daemon = True
         p.start()

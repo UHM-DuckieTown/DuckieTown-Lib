@@ -21,48 +21,23 @@ global right_vel
 right_vel = 0
 
 #initialize global variables for pid controllers
-#global L_errorP_v
-#L_errorP_v = 0
 global L_old_errorP_v
 L_old_errorP_v = 0
-#global L_errorD_v
-#L_errorD_v = 0
 global L_errorI_v
 L_errorI_v = 0
-#global L_totalError_v
-#L_totalError_v = 0
-
-
-#global R_errorP_v
-#R_errorP_v = 0
 global R_old_errorP_v
 R_old_errorP_v = 0
-#global R_errorD_v
-#R_errorD_v = 0
 global R_errorI_v
 R_errorI_v = 0
-#global R_totalError_v
-#R_totalError_v = 0
 
 global left_target
 left_target = 0
 global right_target
 right_target = 0
 
-#initialize values for pid constants
-LEFTP = 3
-LEFTI = 0.0001
-LEFTD = 0.005
-LEFTF = 0
-
-RIGHTP = 3
-RIGHTI = 0.0001
-RIGHTD= 0.005
-RIGHTF = 0
-
 #initialize global variables used for plotting debug
 global left_velocity
-left_velocity= []
+left_velocity = []
 global right_velocity
 right_velocity = []
 global samples
@@ -73,6 +48,17 @@ global target_left
 target_left = []
 global target_right
 target_right = []
+
+# MACRO values for pid constants
+LEFTP = 3
+LEFTI = 0.0001
+LEFTD = 0.005
+LEFTF = 0
+
+RIGHTP = 3
+RIGHTI = 0.0001
+RIGHTD= 0.005
+RIGHTF = 0
 
 # Tell GPIO library to use GPIO references
 GPIO.setmode(GPIO.BCM)
@@ -153,6 +139,7 @@ def getVelocity():
                 #print "Left Cm/Sec: " + str(left_vel)
                 #print "Right Cm/Sec: " + str(right_vel)
                 time.sleep(0.01)
+
 def setMotorSpeed(motor):
     global R_errorI_v
     global L_errorI_v
@@ -206,115 +193,10 @@ def velocityPid():
     L_errorI_v = 0
     R_errorI_v = 0
     while True:
-
-    #if stop line was found
-	#if trackingline.stop == True:
-    #    	global state
-        #waits for 100 iterations of the thread before stopping the motors for the stop sign
-	    #if waiting_for_thread == 100:
-		#print "I entered that if statement"
-	    #	stopMotors()
-        #stops motors for 1 second
-		#time.sleep(1)
-
-	'''
-		global rightencoderticks
-        	currentencoderticks = rightencoderticks
-        	if(rightencoderticks - currentencoderticks == 1152):
-            		trackingline.stop = False
-            		state = STOP
-            		decision = randomn.randint(1,4)
-            		if decision == 1:
-                		state = RIGHTTURN
-            		elif decision == 2:
-                		state = LEFTTURN
-            		elif decision == 3:
-                		state = STRAIGHT
-            		else:
-                		state = POSITIONCONTROLLER
-'''
-
-                #startMotors()
-		#left_Motor.setSpeed(100)
-		#right_Motor.setSpeed(100)
-		#waiting_for_thread = 0
-	    #waiting_for_thread+=1
-
         #when no stop line is detected, resume normal operation
         #set targets equal to the speed given through position controller
         setMotorSpeed(1)
         setMotorSpeed(0)
-	'''
-            global left_target
-            global right_target
-            left_target = trackingline.leftspeed
-            right_target = trackingline.rightspeed
-
-
-        #calculate error for each pid controller constant
-        global L_errorP_v
-        L_errorP_v = left_target - left_vel
-        global L_errorI_v
-        L_errorI_v = L_errorI_v + L_errorP_v
-        global L_errorD_v
-        L_errorD_v = L_errorP_v - L_old_errorP_v
-        global L_totalError_v
-        L_totalError_v = LEFTP * L_errorP_v + LEFTI * L_errorI_v + LEFTD * L_errorD_v + LEFTF
-        global L_old_errorP_v
-        L_old_errorP_v = L_errorP_v
-
-
-        #convert based on linear equation back to a motor speed value to
-        #be fed into the motor hat function to set motor speed
-        L_totalError_v = (L_totalError_v+0.006)/0.004
-	if L_totalError_v > 255:
-            speedL = 255
-        elif L_totalError_v <0:
-            speedL = 0
-        else:
-            speedL = int(L_totalError_v)
-        leftMotor.setSpeed(int(speedL))
-
-        #PID calculations
-        global R_errorP_v
-        R_errorP_v = right_target - right_vel
-        global R_errorI_v
-        R_errorI_v = R_errorI_v + R_errorP_v
-        global R_errorD_v
-        R_errorD_v = R_errorP_v - R_old_errorP_v
-        global R_totalError_v
-        R_totalError_v = RIGHTP * R_errorP_v + RIGHTI * R_errorI_v + RIGHTD * R_errorD_v + RIGHTF
-        global R_old_errorP_v
-        R_old_errorP_v = R_errorP_v
-
-	R_totalError_v = (R_totalError_v+0.006)/0.004
-        if R_totalError_v > 255:
-            speedR = 255
-        elif R_totalError_v <0:
-            speedR = 0
-        else:
-            speedR = int(R_totalError_v)
-        rightMotor.setSpeed(int(speedR))
-
-'''
-
-
-	'''
-        if len(samples) <= 5000:
-            global left_velocity
-            global right_velocity
-            global samples
-            global t
-            global target_left
-            global target_right
-            left_velocity.append(left_vel)
-            right_velocity.append(right_vel)
-            t += 0.001
-            samples.append(t)
-            target_left.append(left_target_vel)
-            target_right.append(right_target_vel)
-
-'''
         time.sleep(0.001)
 
 #function for thread to count encoder ticks

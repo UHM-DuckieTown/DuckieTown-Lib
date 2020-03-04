@@ -1,11 +1,10 @@
 import numpy as np
 import cv2
-from picamera import PiCamera
 import time
 import velocity
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
-from picamera.array import PiRGBArray
 import random #remove this after states testing is done
+
 #Global variables for the right and left speed of motor
 global rightspeed
 rightspeed = 0
@@ -30,7 +29,6 @@ Position_totalError_v = 0
 #Flag to check if the Duck is stopped
 #global stop
 #stop = False
-global image
 #Kp, KD, and KI values
 POSITIONP = 0.1
 POSITIONI = 0.0000
@@ -52,7 +50,6 @@ LTURNRTICKS = 1200#1692
 LTURNLTICKS = 800#1222
 STRAIGHTTICKS = 700#1316
 
-
 #This function takes in a frame that has already been converted
 #into HSV and detects stop lines. If a stop line is found,
 #the stop flag is set which stops the Duck.
@@ -64,10 +61,7 @@ def detect_stop(mask1, flag):
     avg = 0
     if stopsign:
         print "Flag is true"
-    	#cv2.imshow('Stop Line Detection', mask1)
     	mask = mask1[0:280, 50:350];
-    	#cv2.imshow('Stop Line Detection', mask)
-    	#_,contours,_ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     	#Perform edge detection on the masked frame to find all edge points in image
     	edges = cv2.Canny(mask, 50, 150, apertureSize=3)
     	#Use Hough Transform to find all lines in an image. The line of interest
@@ -75,10 +69,7 @@ def detect_stop(mask1, flag):
     	lines = cv2.HoughLinesP(edges, 1, np.pi/180,10, minLineLength= 10, maxLineGap=1)
     	cv2.waitKey(20)
     	global stop
-    	#for c in contours:
-     	#   Moments = cv2.moments(c)
-     	#  cX = int(Moments["m10"]/Moments["m00"])
-     	#   cY = int(Moments["m01"]/Moments["m00"])
+
     	#For every line discovered by Hough Transform
         if lines is not None:
         	for line in lines:
@@ -93,19 +84,9 @@ def detect_stop(mask1, flag):
             avg = Sum/numx
         else:
             avg = old_avg
-            #Ignore the line if it leads to an undefined slope
-	        #if (x2-x1) == 0:
-	        #	continue
-	        #else:
-            	    #m = (y2-y1)/(x2-x1)
 
-                #If the numerator of the slope is close enough to 0, the stop
-                #line was found so anticipate stop
-            	#if abs((y2-y1)/(x2-x1)) < 0.01:
         print "avg: {}".format(avg)
         if np.all(cv2.bitwise_not(mask)) == False and avg < 150:
-                #if cY < 150:
-                 #if y2 < 350:
         	global state
                 state = STOP
                 print "Found Stop Line"
@@ -118,6 +99,7 @@ def detect_stop(mask1, flag):
             #Exit Function once a stop is found
         flag.value = 0
         return 0
+
 #This function takes in the raw image from the camera and will
 #detect either the yellow or white road lines in the image
 def linetracking(raw, stopsign,slider, twofeed):
@@ -164,8 +146,7 @@ def linetracking(raw, stopsign,slider, twofeed):
     else:
         mask = mask1
 	yellow = False
-#ui
-#    cv2.imshow(" mask", mask)
+
     #AND the original frame with the mask to obtain a picture with only the
     #road lines in it and black pixels everywhere else
     masked_img = cv2.bitwise_and(hsv, hsv, mask=mask)
@@ -199,58 +180,6 @@ def linetracking(raw, stopsign,slider, twofeed):
     #Draw a point to show where the average x-value is
     cv2.circle(frame,(avg,300),2,(0,0,255),3)
     stop_line = detect_stop(mask1, stopsign)
-#    cv2.imshow('frame', frame)
-#    cv2.imshow('edges', edges)
-#    cv2.waitKey(20)
-    #if cv2.waitKey(20) & 0xFF == ord('q'):
-        #break
-    # global old_slider
-    #
-    # if not slider.empty():
-    #     slider_val = slider.get()
-    #
-    #     #raw
-    #     if slider_val == "start":
-    #         twofeed.put(raw)
-    #         old_slider = "0"
-    #
-    #     elif slider_val == "0":
-    #         twofeed.put(frame)
-    #         old_slider = slider_val
-    #
-    #     #edges
-    #     elif slider_val == "1":
-    #         twofeed.put(edges)
-    #         old_slider = slider_val
-    #
-    #     #masked image
-    #     elif slider_val == "2":
-    #         twofeed.put(masked_img)
-    #         old_slider = slider_val
-    #
-    #     #white mask
-    #     elif slider == "3":
-    #         twofeed.put(mask1)
-    #         old_slider = slider_val
-    #
-    #     #yellow mask
-    #     elif slider == "4":
-    #         twofeed.put(mask2)
-    #         old_slider = slider_val
-    #
-    # else:
-    #     #print "queue is empty"
-    #     #print "Olde Slider" + str(old_slider)
-    #     if old_slider == "0":
-    #         twofeed.put(frame);
-    #     if old_slider == "1":
-    #         twofeed.put(edges)
-    #     if old_slider == "2":
-    #         twofeed.put(masked_img);
-    #     if old_slider == "3":
-    #         twofeed.put(mask1);
-    #     if old_slider == "4":
-    #         twofeed.put(mask2);
 
     if slider.value == 0:
         twofeed.put(frame)
@@ -265,10 +194,6 @@ def linetracking(raw, stopsign,slider, twofeed):
     #white mask
     elif slider.value == 3:
         twofeed.put(mask)
-
-
-
-        #yellow mask
 
     return yellow,avg,stop_line
 
@@ -316,21 +241,17 @@ def go_straight():
     leftspeed = 0.4
     rightspeed = 0.4
 
-def position_p(d, flag,slider, twofeed, direction, GUIflag):
+def position_p(d, flag,slider, twofeed, direction):
     window_width = 480
     window_height = 360
     global camera
     global capture
     global state
-    #direction.put('straight')
-    #direction.put('left')
     while(1):
         if state == STOP:
-           # go_straight()
+            # go_straight()
             print "in state stop"
-            #velocity.resetEncoders()
             if(velocity.rightencoderticks >= 300):
-            #print "Encoder's reached the value"
                 leftspeed = 0
                 rightspeed = 0
                 time.sleep(2)
@@ -378,19 +299,12 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
             start = 0
             flag.value = 0
             while True:
-                #print "Loop"
-                global image
-	            #print time.time()-start
-	            #start = time.time()
-                image = d["image"]
-                #print "Got Next Image"
+                image = d["raw"]
                 #resize the image to make processing more manageable
                 raw = cv2.resize(image, (window_width, window_height))
                 #Find either the yellow or white line and what the average position
                 #of the Duck is
-
                 #testing purpose, controls stop sign detection
-                #flag.put(0)
 
                 yellow,avg,stop_line = linetracking(raw, flag, slider, twofeed)
                 #130 for yellow line, 450 for white
@@ -417,8 +331,6 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
                     #depending on the error in the position to correct the Duck
                     rightspeed = int(100 + position_controller(threshold,avg))
                     leftspeed = int(100 - position_controller(threshold,avg))
-                    #rightspeed = 100
-                    #leftspeed = 100
                     #Cap the Right and Left Motor speeds so that they do not go
                     #above 255 or less than 0
                     if rightspeed > 255:
@@ -433,9 +345,6 @@ def position_p(d, flag,slider, twofeed, direction, GUIflag):
                     if leftspeed < 0:
                         leftspeed = 0
 
-
-            	    #leftspeed = ((leftspeed*0.004)-0.006)
-            	    #rightspeed = ((rightspeed*0.004)-0.006)
                     #Convert the left and right motor speed from 0-255 to a speed in
                     #cm/s since the velocity controller only takes in speeds in this unit
                     leftspeed = ((leftspeed*0.004)-0.006)

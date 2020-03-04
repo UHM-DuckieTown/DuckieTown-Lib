@@ -62,7 +62,7 @@ def encode_string(image, topic, client):
     #Sends image string to topic specified
     client.publish(topic, encoded_str, 0)
 
-def paho_client(d, flag, slider,twofeed, messagetext, direction, GUIflag):
+def paho_client(d, flag, slider,twofeed, messagetext, direction):
     MQTT_SERVER = "192.168.0.100" #IP Address of Base Station
 
     print config.duck1_feed1
@@ -87,7 +87,7 @@ def paho_client(d, flag, slider,twofeed, messagetext, direction, GUIflag):
 
     try:
         while(1):
-            image = d["image"]
+            image = d["raw"]
             #print "Got Next Image"
             if l.qsize() != 0:
                     slider.value = int(l.get())
