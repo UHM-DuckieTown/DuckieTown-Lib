@@ -10,7 +10,6 @@ import time
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import Queue
-import pisvm
 import cv2
 import RPi.GPIO as GPIO
 import multiprocessing

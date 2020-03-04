@@ -317,8 +317,8 @@ def position_p(d, flag,slider, twofeed, direction):
                     threshold = 475
                 if stop_line:
                     global rightspeed
-                    global leftspeed
                     rightspeed = 0.2
+                    global leftspeed
                     leftspeed = 0.2
                     velocity.resetEncoders()
                     velocity.L_errorI_v = 0

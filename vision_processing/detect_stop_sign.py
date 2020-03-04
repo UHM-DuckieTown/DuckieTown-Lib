@@ -3,9 +3,6 @@ import cv2
 from filter import FilterPipeline
 from classifier import Classifier
 
-import random
-import string
-
 def crop_contour(contour, frame):
     x,y,w,h = cv2.boundingRect(contour)
     y_top = max(0, y)
@@ -33,9 +30,6 @@ def process(d, flag, slider, twofeed, messagetext, direction):
             '''
 
             contour = crop_contour(c, image)
-            imgname = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(12)])
-            cv2.imwrite("{}.png".format(imgname), contour)
-            print("saved {}.png".format(imgname))
             is_detected, pos_conf = clf.detect_stop_sign(contour)
             '''
             if is_detected and not flag.value:
