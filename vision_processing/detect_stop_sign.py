@@ -14,11 +14,18 @@ def crop_contour(contour, frame):
 def process(d, flag, slider, twofeed, messagetext, direction):
     fp = FilterPipeline()
     clf = Classifier()
+    img_counter = 1
+    filename = "neg"
     while True:
         image = d['raw']
-        contours = fp.process(image)
-        for c in contours:
-            '''
+        image = image[70:190, :, :]
+        img_name = "{}_{}.png".format(filename, img_counter)
+        cv2.imwrite(img_name, image)
+        print("{} written!".format(img_name))
+        img_counter += 1
+        '''
+        #contours = fp.process(image)
+        #for c in contours:
             x,y,w,h = cv2.boundingRect(c)
             y_top = max(0, y)
             y_bot = min(480, y+h)
@@ -27,11 +34,9 @@ def process(d, flag, slider, twofeed, messagetext, direction):
             clone = image.copy()
             cv2.rectangle(clone, (x_right,y_top), (x_left,y_bot), (255,0,0), 2)
             cropped = image[y_top:y_bot, x_right:x_left, :]
-            '''
 
-            contour = crop_contour(c, image)
-            is_detected, pos_conf = clf.detect_stop_sign(contour)
-            '''
+         #  contour = crop_contour(c, image)
+         #  is_detected, pos_conf = clf.detect_stop_sign(contour)
             if is_detected and not flag.value:
                 flag.value = 1
                 cv2.imshow("bounding box on frame", clone)

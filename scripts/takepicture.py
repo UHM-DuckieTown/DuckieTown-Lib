@@ -12,7 +12,7 @@ raw = PiRGBArray(camera, size=(640, 480))
 
 for frame in camera.capture_continuous(raw, format='bgr', use_video_port=True):
     image = raw.array
-    image = image[140:210, 420:490, :]
+    image = image[70:190, :, :]
 
     cv2.imshow("test", image)
     k = cv2.waitKey(1)
@@ -30,5 +30,4 @@ for frame in camera.capture_continuous(raw, format='bgr', use_video_port=True):
     raw.truncate(0)
 
 cam.release()
-
 cv2.destroyAllWindows()
